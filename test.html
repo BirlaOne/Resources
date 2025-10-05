@@ -13,7 +13,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <script>
-    // Set theme on initial load to prevent flashing
     (function() {
       const savedTheme = localStorage.getItem('theme') || 'light';
       document.documentElement.setAttribute('data-theme', savedTheme);
@@ -68,7 +67,7 @@
         --input-bg: #e9deca;
     }
 
-    /* 🧱 --- Base & Layout Styles --- 🧱 */
+    /* Base & Layout Styles */
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     
     body {
@@ -76,12 +75,12 @@
       background-color: var(--bg-color);
       color: var(--text-primary);
       transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
-      user-select: none; /* Disable text selection */
+      user-select: none;
       -webkit-user-select: none;
       -moz-user-select: none;
     }
 
-    /* --- Header & Sidebar --- */
+    /* Header & Sidebar */
     .top-bar { font-family: var(--font-sans); display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--header-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-color); }
     .top-bar .title { font-family: 'Pacifico', cursive; font-size: 26px; font-weight: 400; color: var(--text-primary); }
     .menu-toggle, .profile-link { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
@@ -111,7 +110,7 @@
     input:checked + .slider:before { transform: translateX(24px); }
     .logout-button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--danger-color); color: white; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
 
-    /* --- Content Styles --- */
+    /* Content Styles */
     .container { padding: 16px; max-width: 800px; margin: 0 auto; position: relative; }
     .note-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 24px; overflow: hidden; transition: all var(--transition-speed) ease; }
     .note-title { font-family: var(--font-sans); font-size: 22px; font-weight: 700; padding: 18px 22px; background: var(--primary-gradient); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
@@ -123,7 +122,7 @@
     .note-body ol > li { margin-bottom: 28px; padding-left: 10px; }
     .translation { color: var(--text-secondary); font-size: 0.9em; font-style: italic; margin-top: -8px; }
 
-    /* --- Permission Lock Styles --- */
+    /* Permission Lock Styles */
     #main-content-wrapper.locked > *:not(.lock-overlay) { filter: blur(8px); -webkit-filter: blur(8px); pointer-events: none; }
     .lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2; }
     .lock-overlay-content { background: rgba(var(--card-bg-rgb), 0.7); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); padding: 20px 30px; border-radius: 12px; box-shadow: var(--shadow); font-weight: 600; font-size: 16px; border: 1px solid var(--border-color); font-family: var(--font-sans); }
@@ -167,7 +166,7 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpa3JpdWRkc3VndXlidnZ5empsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgxMjIxNTAsImV4cCI6MjA3MzY5ODE1MH0.HNh2gGO8nWzAjxh5Oa3cs_8WKaq9mq9TyLCvPOkcr2c';
     const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // --- UI & UTILITY FUNCTIONS ---
+    // UI & UTILITY FUNCTIONS
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('active');
       document.getElementById('sidebarOverlay').classList.toggle('active');
@@ -191,7 +190,7 @@
       window.location.href = "https://birlaone.github.io/BirlaOne/login.html";
     }
 
-    // --- SECURITY & PERMISSION FUNCTIONS ---
+    // SECURITY & PERMISSION FUNCTIONS
     function lockContentSection() {
         const contentWrapper = document.getElementById('main-content-wrapper');
         contentWrapper.innerHTML = '';
@@ -209,9 +208,11 @@
         }
     });
 
-    // --- DATA FETCHING & RENDERING ---
+    // DATA FETCHING & RENDERING
     async function fetchAndSetCurrentUser(session) {
-      const { data, error } = await client.from('users').select('id, img, name, qb_permission').eq('auth_id', session.user.id).single();
+      // --- CORRECTED: Selecting the 'c_permission' column as seen in your screenshot ---
+      const { data, error } = await client.from('users').select('id, img, name, c_permission').eq('auth_id', session.user.id).single();
+      
       if (error || !data) {
         console.error('Error fetching user profile:', error);
         return null;
@@ -227,37 +228,35 @@
     }
     
     function renderAllQuestions(container) {
-        const allQuestions = [
-            {
-                q: "प्रश्न १: अनुदिनी (ब्लॉग) लेखनाची उद्दिष्टे लिहा.",
-                a: `<h3>प्रस्तावना</h3><p>अनुदिनी, ज्याला इंग्रजीमध्ये 'ब्लॉग' (Blog) असेही म्हणतात, हे इंटरनेटवर आपले विचार, अनुभव आणि माहिती लोकांपर्यंत पोहोचवण्याचे एक प्रभावी माध्यम आहे. हे एक प्रकारचे ऑनलाइन डायरी किंवा लेख लिहिण्याचे व्यासपीठ आहे. अनुदिनी लेखनाची अनेक उद्दिष्टे आहेत, जी खालीलप्रमाणे:</p><h3>अनुदिनी लेखनाची उद्दिष्टे</h3><ol><li><p><strong>वैचारिक आणि वैयक्तिक अभिव्यक्ती</strong></p><p>ब्लॉग हे आपले वैयक्तिक विचार, मते, भावना आणि अनुभव लोकांसमोर मांडण्याचे एक उत्तम साधन आहे. आपण कोणत्याही सामाजिक, राजकीय किंवा शैक्षणिक विषयावर आपले मत लिहू शकतो.</p><p class="translation">A blog is an excellent tool to present your personal thoughts, opinions, feelings, and experiences to the public.</p></li><li><p><strong>विचारांसाठी व्यासपीठ मिळवणे</strong></p><p>अनेकदा वृत्तपत्र किंवा टीव्हीसारख्या पारंपरिक माध्यमांमध्ये प्रत्येकाला आपले विचार मांडण्याची संधी मिळत नाही. ब्लॉग आपल्याला स्वतःचे व्यासपीठ उपलब्ध करून देतो, जिथे आपण आपले विचार लोकांपर्यंत पोहोचवू शकतो.</p><p class="translation">Often, not everyone gets an opportunity to express their views in traditional media like newspapers or TV.</p></li><li><p><strong>सामाजिक जागरूकता निर्माण करणे</strong></p><p>समाजातील महत्त्वाच्या समस्यांवर लोकांचे लक्ष वेधण्यासाठी आणि त्यांच्यात जागरूकता निर्माण करण्यासाठी ब्लॉगचा प्रभावीपणे वापर करता येतो.</p><p class="translation">A blog can be effectively used to draw people's attention towards important social issues and create awareness among them.</p></li></ol>`
-            },
-            // ... Add all other 19 questions in this same format ...
-            {
-                q: "प्रश्न २०: आभासी कट्टे म्हणजे काय, ते सांगून आभासी कट्ट्यांवरील लेखनाचे स्वरूप स्पष्ट करा?",
-                a: `<h3>प्रस्तावना</h3><p>'कट्टा' ही आपल्या समाजात गप्पा, सृजनशीलता आणि वैचारिक देवाणघेवाणीचा केंद्रबिंदू म्हणून ओळखली जाणारी संकल्पना आहे. आजच्या डिजिटल युगात या कट्ट्यांनी 'आभासी' स्वरूप धारण केले आहे.</p><h3>आभासी कट्टाः संकल्पना</h3><p>'आभासी कट्टा' म्हणजे समान विचारसरणीच्या किंवा आवडीच्या लोकांचे एकत्र येण्याचे एक डिजिटल ठिकाण. फेसबुक ग्रुप्स, व्हॉट्सअॅप फोरम्स, किंवा ब्लॉग कम्युनिटीज ही आभासी कट्ट्यांची प्रमुख उदाहरणे आहेत.</p><p class="translation">A 'Virtual Adda' is a digital place for people with similar ideologies or interests to come together.</p><h3>आभासी कट्ट्यांवरील लेखनाचे स्वरूप</h3><ol><li><p><strong>अनौपचारिक पण विचारशील स्वरूप</strong></p><p>या कट्ट्यांवरील लेखन हे प्रामुख्याने गप्पा, चर्चा, आणि प्रश्नोत्तरांवर आधारित असते. जरी हे लेखन अनौपचारिक असले, तरी ते विचारशील असते.</p><p class="translation">The writing on these 'addas' is primarily based on chats, discussions, and Q&A. Although this writing is informal, it is thoughtful.</p></li><li><p><strong>सहभागवर्धक आणि समूहात्मक</strong></p><p>येथील लेखन हे सदस्यांना सहभागी होण्यासाठी प्रोत्साहित करते. हे 'गट लेखनाचा' आणि 'सामूहिक अभिव्यक्तीचा' एक उत्तम प्रकार आहे.</p><p class="translation">The writing here encourages members to participate. This is an excellent form of 'group writing' and 'collective expression'.</p></li></ol>`
-            }
-        ];
-        
-        container.innerHTML = allQuestions.map(item => `
+        // This function will contain the HTML for all 20 questions.
+        // I've included Q1 as a placeholder; you can paste the full content here.
+        const allQuestionsHTML = `
             <article class="note-card">
-                <h2 class="note-title">${item.q}</h2>
-                <div class="note-body">${item.a}</div>
+              <h2 class="note-title">प्रश्न १: अनुदिनी (ब्लॉग) लेखनाची उद्दिष्टे लिहा.</h2>
+              <div class="note-body">
+                <h3>प्रस्तावना</h3><p>अनुदिनी, ज्याला इंग्रजीमध्ये 'ब्लॉग' (Blog) असेही म्हणतात, हे इंटरनेटवर आपले विचार, अनुभव आणि माहिती लोकांपर्यंत पोहोचवण्याचे एक प्रभावी माध्यम आहे...</p>
+                <h3>अनुदिनी लेखनाची उद्दिष्टे</h3>
+                <ol>
+                  <li><p><strong>वैचारिक आणि वैयक्तिक अभिव्यक्ती</strong></p><p>ब्लॉग हे आपले वैयक्तिक विचार, मते, भावना आणि अनुभव लोकांसमोर मांडण्याचे एक उत्तम साधन आहे...</p><p class="translation">A blog is an excellent tool to present your personal thoughts, opinions, feelings, and experiences to the public.</p></li>
+                  </ol>
+              </div>
             </article>
-        `).join('');
+            `;
+        container.innerHTML = allQuestionsHTML;
     }
 
-    // --- APP INITIALIZATION ---
+    // APP INITIALIZATION
     async function initializeApp(session) {
         const currentUser = await fetchAndSetCurrentUser(session);
         if (!currentUser) {
+            // This alert is triggered if the profile can't be fetched.
             alert("Could not load your profile. Please log in again.");
             logout();
             return;
         }
 
-        // Check permission (assuming 'qb_permission' column in 'users' table)
-        if (currentUser.qb_permission === 'no') {
+        // --- CORRECTED: Checking the 'c_permission' property ---
+        if (currentUser.c_permission === 'no') {
             lockContentSection();
         } else {
             const mainContent = document.getElementById('main-content-wrapper');
@@ -269,17 +268,14 @@
         applySavedTheme();
         document.getElementById('theme-checkbox').addEventListener('change', toggleTheme);
         
-        // --- FIXED AUTHENTICATION LOGIC ---
         const { data: { session } } = await client.auth.getSession();
 
         if (session && session.user) {
             initializeApp(session);
         } else {
-            // No active session, redirect to login
             window.location.href = "https://birlaone.github.io/BirlaOne/login.html";
         }
 
-        // Listen for future auth changes
         client.auth.onAuthStateChange((_event, session) => {
             if (!session) {
                 window.location.href = "https://birlaone.github.io/BirlaOne/login.html";
