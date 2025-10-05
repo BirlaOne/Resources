@@ -45,7 +45,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body { font-family: var(--font-sans); background-color: var(--bg-color); color: var(--text-primary); transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease; user-select: none; -webkit-user-select: none; -moz-user-select: none; }
 
-    /* Header & Sidebar */
     .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--header-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-color); }
     .top-bar .title { font-family: 'Pacifico', cursive; font-size: 26px; font-weight: 400; color: var(--text-primary); }
     .menu-toggle { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
@@ -66,7 +65,6 @@
     .logout-button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--danger-color); color: white; font-weight: 600; cursor: pointer; }
     .theme-selector select { background-color: var(--input-bg); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 6px 10px; font-size: 14px; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 28px; }
 
-    /* Content & Card Styles */
     .container { padding: 16px; max-width: 800px; margin: 0 auto; position: relative; }
     .note-card { font-family: var(--font-serif); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 24px; overflow: hidden; }
     .note-title { font-family: var(--font-sans); font-size: 22px; font-weight: 700; padding: 18px 22px; background: var(--primary-gradient); color: white; }
@@ -76,23 +74,15 @@
     .note-body ol { list-style: none; padding-left: 0; } .note-body ol > li { margin-bottom: 28px; padding-left: 10px; }
     .translation { color: var(--text-secondary); font-size: 0.9em; font-style: italic; margin-top: -8px; }
 
-    /* --- CORRECTED VIEW SWITCH --- */
     .view-switch { display: flex; background-color: var(--input-bg); border-radius: 10px; padding: 4px; margin-bottom: 24px; border: 1px solid var(--border-color); }
     .view-switch label { flex: 1; text-align: center; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-    /* Hide the actual radio buttons */
     .radio-inputs { display: none; }
-    /* Style labels based on checked state of sibling radio button */
-    #brief-view-radio:checked ~ .view-switch label[for="brief-view-radio"],
-    #mcq-view-radio:checked ~ .view-switch label[for="mcq-view-radio"] {
-        background: var(--card-bg);
-        color: var(--primary-accent);
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
+    #brief-view-radio:checked ~ #main-content-wrapper .view-switch label[for="brief-view-radio"],
+    #mcq-view-radio:checked ~ #main-content-wrapper .view-switch label[for="mcq-view-radio"] { background: var(--card-bg); color: var(--primary-accent); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     #brief-questions-container, #mcq-container { display: none; }
-    #brief-view-radio:checked ~ #brief-questions-container,
-    #mcq-view-radio:checked ~ #mcq-container { display: block; }
+    #brief-view-radio:checked ~ #main-content-wrapper #brief-questions-container,
+    #mcq-view-radio:checked ~ #main-content-wrapper #mcq-container { display: block; }
     
-    /* MCQ View Styles */
     .mcq-topic-card { background: var(--card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 24px; border: 1px solid var(--border-color); }
     .mcq-topic-card h2 { font-size: 20px; font-weight: 700; padding: 16px; border-bottom: 1px solid var(--border-color); }
     .mcq-item { padding: 16px; border-bottom: 1px solid var(--border-color); }
@@ -106,7 +96,6 @@
     .mcq-option.reveal-correct { background-color: transparent; border: 2px solid var(--correct-color); color: var(--correct-color); }
     .mcq-options.answered .mcq-option:not(.incorrect-selected):not(.reveal-correct) { opacity: 0.6; }
 
-    /* Permission Lock Styles */
     #main-content-wrapper.locked > *:not(.lock-overlay) { filter: blur(8px); -webkit-filter: blur(8px); pointer-events: none; }
     .lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2; }
     .lock-overlay-content { background: rgba(var(--card-bg-rgb), 0.7); backdrop-filter: blur(2px); padding: 20px 30px; border-radius: 12px; box-shadow: var(--shadow); font-weight: 600; border: 1px solid var(--border-color); }
@@ -142,12 +131,12 @@
     </div>
   </header>
   
-  <main class="container" id="main-content-wrapper">
-    <div class="radio-inputs">
-        <input type="radio" id="brief-view-radio" name="view-toggle" checked>
-        <input type="radio" id="mcq-view-radio" name="view-toggle">
-    </div>
+  <div class="radio-inputs">
+      <input type="radio" id="brief-view-radio" name="view-toggle" checked>
+      <input type="radio" id="mcq-view-radio" name="view-toggle">
+  </div>
 
+  <main class="container" id="main-content-wrapper">
     <div class="view-switch">
         <label for="brief-view-radio">Brief Questions</label>
         <label for="mcq-view-radio">MCQs</label>
@@ -206,32 +195,35 @@
     }
     
     function renderBriefQuestions(container) {
-        // Full HTML for all 20 brief questions
-        container.innerHTML = ``;
+        container.innerHTML = `
+            <article class="note-card"> <h2 class="note-title">प्रश्न १: अनुदिनी (ब्लॉग) लेखनाची उद्दिष्टे लिहा.</h2> <div class="note-body"> <h3>प्रस्तावना</h3> <p>अनुदिनी, ज्याला इंग्रजीमध्ये 'ब्लॉग' (Blog) असेही म्हणतात, हे इंटरनेटवर आपले विचार, अनुभव आणि माहिती लोकांपर्यंत पोहोचवण्याचे एक प्रभावी माध्यम आहे...</p> <h3>अनुदिनी लेखनाची उद्दिष्टे</h3> <ol><li><p><strong>वैचारिक आणि वैयक्तिक अभिव्यक्ती</strong></p><p>ब्लॉग हे आपले वैयक्तिक विचार, मते, भावना आणि अनुभव लोकांसमोर मांडण्याचे एक उत्तम साधन आहे...</p><p class="translation">A blog is an excellent tool to present your personal thoughts, opinions, feelings, and experiences to the public.</p></li></ol> </div> </article>
+            `;
     }
 
     function renderMcqQuestions(container) {
         const mcqTopics = [
-            {
-                title: "अनुदिनी लेखन (Diary Writing)",
-                questions: [
-                    { q: "अनुदिनी लेखनाचा मुख्य उद्देश कोणता आहे?", o: ["इतरांना पत्र लिहिणे", "आपल्या वैयक्तिक अनुभवांची नोंद करणे", "वृत्तपत्रात लेख लिहिणे", "कविता लिहिणे"], a: "b" },
-                    { q: "अनुदिनी लेखन करताना कोणती तारीख लिहिली जाते?", o: ["उद्याची तारीख", "कालची तारीख", "वर्तमान दिवसाची तारीख", "वर्षाची सुरुवातीची तारीख"], a: "c" },
-                    { q: "अनुदिनी लेखन कोणत्या प्रकारच्या लेखनात मोडते?", o: ["सर्जनशील लेखन", "औपचारिक लेखन", "व्यवहारिक लेखन", "शासकीय लेखन"], a: "a" },
-                    { q: "अनुदिनी कोणासाठी लिहिली जाते?", o: ["मित्रांसाठी", "शिक्षकांसाठी", "स्वतःसाठी", "कुटुंबासाठी"], a: "c" },
-                    { q: "अनुदिनी लेखनात कोणत्या प्रकारची भाषा योग्य ठरते?", o: ["कडक औपचारिक भाषा", "वैयक्तिक आणि मनमोकळी भाषा", "केवळ साहित्यिक भाषा", "जाहीरातीतील भाषा"], a: "b" }
-                ]
-            },
-            {
-                title: "विकिपीडिया (Wikipedia)",
-                questions: [
-                    { q: "विकिपीडिया कोणत्या प्रकारचे संकेतस्थळ आहे?", o: ["सामाजिक माध्यम", "मुक्त ज्ञानकोश", "शैक्षणिक संस्था", "वृत्तपत्र"], a: "b" },
-                    { q: "विकिपीडिया कधी स्थापन झाले?", o: ["1991", "2001", "2010", "1995"], a: "b" },
-                    { q: "विकिपीडियावरील लेखन कोण करू शकतो?", o: ["फक्त प्राध्यापक", "फक्त विद्यार्थी", "इंटरनेटवरील कोणताही वापरकर्ता", "फक्त संपादक"], a: "c" },
-                    { q: "विकिपीडियावरील लेखनाचा मुख्य उद्देश काय आहे?", o: ["नफा कमावणे", "ज्ञान सर्वांसाठी मुक्त करणे", "जाहिरात करणे", "केवळ मनोरंजन"], a: "b" },
-                ]
-            }
-            // Add other MCQ topics here
+            { title: "अनुदिनी लेखन (Diary Writing)", questions: [
+                { q: "अनुदिनी लेखनाचा मुख्य उद्देश कोणता आहे?", o: ["इतरांना पत्र लिहिणे", "आपल्या वैयक्तिक अनुभवांची नोंद करणे", "वृत्तपत्रात लेख लिहिणे", "कविता लिहिणे"], a: "b" },
+                { q: "अनुदिनी लेखन करताना कोणती तारीख लिहिली जाते?", o: ["उद्याची तारीख", "कालची तारीख", "वर्तमान दिवसाची तारीख", "वर्षाची सुरुवातीची तारीख"], a: "c" },
+                { q: "अनुदिनी लेखन कोणत्या प्रकारच्या लेखनात मोडते?", o: ["सर्जनशील लेखन", "औपचारिक लेखन", "व्यवहारिक लेखन", "शासकीय लेखन"], a: "a" },
+                { q: "अनुदिनी कोणासाठी लिहिली जाते?", o: ["मित्रांसाठी", "शिक्षकांसाठी", "स्वतःसाठी", "कुटुंबासाठी"], a: "c" },
+                { q: "अनुदिनी लेखनात कोणत्या प्रकारची भाषा योग्य ठरते?", o: ["कडक औपचारिक भाषा", "वैयक्तिक आणि मनमोकळी भाषा", "केवळ साहित्यिक भाषा", "जाहीरातीतील भाषा"], a: "b" },
+                { q: "अनुदिनी लेखन करताना शेवटी काय लिहिले जाते?", o: ["आपले नाव किंवा सही", "वृत्तपत्रातील बातमी", "कविता", "प्रश्नोत्तर"], a: "a" },
+                { q: "अनुदिनी लेखनाचा कालखंड कोणता असतो?", o: ["आठवड्यातून एकदा", "महिन्यातून एकदा", "रोज किंवा नियमितपणे", "वर्षातून एकदा"], a: "c" }
+            ]},
+            { title: "विकिपीडिया (Wikipedia)", questions: [
+                { q: "विकिपीडिया कोणत्या प्रकारचे संकेतस्थळ आहे?", o: ["सामाजिक माध्यम", "मुक्त ज्ञानकोश", "शैक्षणिक संस्था", "वृत्तपत्र"], a: "b" },
+                { q: "विकिपीडिया कधी स्थापन झाले?", o: ["1991", "2001", "2010", "1995"], a: "b" },
+                { q: "विकिपीडियाचे संस्थापक कोण आहेत?", o: ["मार्क झुकरबर्ग", "जिमी वेल्स आणि लॅरी सॅंगर", "बिल गेट्स", "टीम बर्नर्स-ली"], a: "b" },
+                { q: "विकिपीडियावरील लेखन कोण करू शकतो?", o: ["फक्त प्राध्यापक", "फक्त विद्यार्थी", "इंटरनेटवरील कोणताही वापरकर्ता", "फक्त संपादक"], a: "c" },
+                { q: "विकिपीडियावरील लेखनाचा मुख्य उद्देश काय आहे?", o: ["नफा कमावणे", "ज्ञान सर्वांसाठी मुक्त करणे", "जाहिरात करणे", "केवळ मनोरंजन"], a: "b" }
+            ]},
+            { title: "फेसबुक (Facebook)", questions: [
+                { q: "फेसबुकची स्थापना कोणत्या वर्षी झाली?", o: ["2002", "2004", "2006", "2008"], a: "b" },
+                { q: "फेसबुकचा संस्थापक कोण आहे?", o: ["बिल गेट्स", "मार्क झुकरबर्ग", "एलॉन मस्क", "लॅरी पेज"], a: "b" },
+                { q: "फेसबुकने इंस्टाग्राम कोणत्या वर्षी विकत घेतले?", o: ["2008", "2010", "2012", "2015"], a: "c" },
+                { q: "फेसबुकचे नवीन नाव (Meta) कोणत्या वर्षी जाहीर करण्यात आले?", o: ["2018", "2019", "2020", "2021"], a: "d" }
+            ]}
         ];
 
         container.innerHTML = mcqTopics.map(topic => `
@@ -241,10 +233,7 @@
                     <div class="mcq-item">
                         <p class="mcq-question">${index + 1}. ${item.q}</p>
                         <div class="mcq-options">
-                            <button class="mcq-option" data-option="a" onclick="checkAnswer(this, '${item.a}')">a) ${item.o[0]}</button>
-                            <button class="mcq-option" data-option="b" onclick="checkAnswer(this, '${item.a}')">b) ${item.o[1]}</button>
-                            <button class="mcq-option" data-option="c" onclick="checkAnswer(this, '${item.a}')">c) ${item.o[2]}</button>
-                            <button class="mcq-option" data-option="d" onclick="checkAnswer(this, '${item.a}')">d) ${item.o[3]}</button>
+                            ${item.o.map((option, i) => `<button class="mcq-option" data-option="${String.fromCharCode(97 + i)}" onclick="checkAnswer(this, '${item.a}')">${String.fromCharCode(97 + i)}) ${option}</button>`).join('')}
                         </div>
                     </div>
                 `).join('')}
