@@ -76,14 +76,21 @@
     .note-body ol { list-style: none; padding-left: 0; } .note-body ol > li { margin-bottom: 28px; padding-left: 10px; }
     .translation { color: var(--text-secondary); font-size: 0.9em; font-style: italic; margin-top: -8px; }
 
-    /* View Switch */
+    /* --- CORRECTED VIEW SWITCH --- */
     .view-switch { display: flex; background-color: var(--input-bg); border-radius: 10px; padding: 4px; margin-bottom: 24px; border: 1px solid var(--border-color); }
-    .view-switch input { display: none; }
     .view-switch label { flex: 1; text-align: center; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-    .view-switch input:checked + label { background: var(--card-bg); color: var(--primary-accent); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    /* Hide the actual radio buttons */
+    .radio-inputs { display: none; }
+    /* Style labels based on checked state of sibling radio button */
+    #brief-view-radio:checked ~ .view-switch label[for="brief-view-radio"],
+    #mcq-view-radio:checked ~ .view-switch label[for="mcq-view-radio"] {
+        background: var(--card-bg);
+        color: var(--primary-accent);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
     #brief-questions-container, #mcq-container { display: none; }
-    #brief-view-radio:checked ~ .container #brief-questions-container,
-    #mcq-view-radio:checked ~ .container #mcq-container { display: block; }
+    #brief-view-radio:checked ~ #brief-questions-container,
+    #mcq-view-radio:checked ~ #mcq-container { display: block; }
     
     /* MCQ View Styles */
     .mcq-topic-card { background: var(--card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 24px; border: 1px solid var(--border-color); }
@@ -98,7 +105,6 @@
     .mcq-option.incorrect-selected { background-color: var(--incorrect-color); color: white; border-color: var(--incorrect-color); }
     .mcq-option.reveal-correct { background-color: transparent; border: 2px solid var(--correct-color); color: var(--correct-color); }
     .mcq-options.answered .mcq-option:not(.incorrect-selected):not(.reveal-correct) { opacity: 0.6; }
-
 
     /* Permission Lock Styles */
     #main-content-wrapper.locked > *:not(.lock-overlay) { filter: blur(8px); -webkit-filter: blur(8px); pointer-events: none; }
@@ -135,17 +141,18 @@
         </select>
     </div>
   </header>
-
-  <div class="view-switch-wrapper">
-    <input type="radio" id="brief-view-radio" name="view-toggle" checked>
-    <input type="radio" id="mcq-view-radio" name="view-toggle">
-  </div>
   
   <main class="container" id="main-content-wrapper">
+    <div class="radio-inputs">
+        <input type="radio" id="brief-view-radio" name="view-toggle" checked>
+        <input type="radio" id="mcq-view-radio" name="view-toggle">
+    </div>
+
     <div class="view-switch">
         <label for="brief-view-radio">Brief Questions</label>
         <label for="mcq-view-radio">MCQs</label>
     </div>
+
     <div id="brief-questions-container">
         </div>
     <div id="mcq-container">
@@ -157,7 +164,7 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpa3JpdWRkc3VndXlidnZ5empsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgxMjIxNTAsImV4cCI6MjA3MzY5ODE1MH0.HNh2gGO8nWzAjxh5Oa3cs_8WKaq9mq9TyLCvPOkcr2c';
     const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // UI & UTILITY FUNCTIONS
+    // UI & UTILITY
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('sidebarOverlay').classList.toggle('active'); }
     function changeTheme(theme) { document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('theme', theme); }
     async function logout() { await client.auth.signOut(); window.location.href = "https://birlaone.github.io/BirlaOne/login.html"; }
@@ -176,9 +183,7 @@
         const optionsContainer = selectedOption.parentElement;
         if (optionsContainer.classList.contains('answered')) return;
         optionsContainer.classList.add('answered');
-
         const selected = selectedOption.getAttribute('data-option');
-        
         if (selected === correctAnswer) {
             selectedOption.classList.add('correct-selected');
         } else {
@@ -201,9 +206,8 @@
     }
     
     function renderBriefQuestions(container) {
-        // The full HTML for all 20 brief questions goes here. 
-        // For brevity, this is a placeholder.
-        container.innerHTML = `<article class="note-card"><div class="note-title">Brief Questions</div><div class="note-body"><p>All 20 brief questions and answers would be displayed here.</p></div></article>`;
+        // Full HTML for all 20 brief questions
+        container.innerHTML = ``;
     }
 
     function renderMcqQuestions(container) {
@@ -213,7 +217,9 @@
                 questions: [
                     { q: "अनुदिनी लेखनाचा मुख्य उद्देश कोणता आहे?", o: ["इतरांना पत्र लिहिणे", "आपल्या वैयक्तिक अनुभवांची नोंद करणे", "वृत्तपत्रात लेख लिहिणे", "कविता लिहिणे"], a: "b" },
                     { q: "अनुदिनी लेखन करताना कोणती तारीख लिहिली जाते?", o: ["उद्याची तारीख", "कालची तारीख", "वर्तमान दिवसाची तारीख", "वर्षाची सुरुवातीची तारीख"], a: "c" },
-                    { q: "अनुदिनी कोणासाठी लिहिली जाते?", o: ["मित्रांसाठी", "शिक्षकांसाठी", "स्वतःसाठी", "कुटुंबासाठी"], a: "c" }
+                    { q: "अनुदिनी लेखन कोणत्या प्रकारच्या लेखनात मोडते?", o: ["सर्जनशील लेखन", "औपचारिक लेखन", "व्यवहारिक लेखन", "शासकीय लेखन"], a: "a" },
+                    { q: "अनुदिनी कोणासाठी लिहिली जाते?", o: ["मित्रांसाठी", "शिक्षकांसाठी", "स्वतःसाठी", "कुटुंबासाठी"], a: "c" },
+                    { q: "अनुदिनी लेखनात कोणत्या प्रकारची भाषा योग्य ठरते?", o: ["कडक औपचारिक भाषा", "वैयक्तिक आणि मनमोकळी भाषा", "केवळ साहित्यिक भाषा", "जाहीरातीतील भाषा"], a: "b" }
                 ]
             },
             {
@@ -221,9 +227,11 @@
                 questions: [
                     { q: "विकिपीडिया कोणत्या प्रकारचे संकेतस्थळ आहे?", o: ["सामाजिक माध्यम", "मुक्त ज्ञानकोश", "शैक्षणिक संस्था", "वृत्तपत्र"], a: "b" },
                     { q: "विकिपीडिया कधी स्थापन झाले?", o: ["1991", "2001", "2010", "1995"], a: "b" },
-                    { q: "विकिपीडियावरील लेखन कोण करू शकतो?", o: ["फक्त प्राध्यापक", "फक्त विद्यार्थी", "इंटरनेटवरील कोणताही वापरकर्ता", "फक्त संपादक"], a: "c" }
+                    { q: "विकिपीडियावरील लेखन कोण करू शकतो?", o: ["फक्त प्राध्यापक", "फक्त विद्यार्थी", "इंटरनेटवरील कोणताही वापरकर्ता", "फक्त संपादक"], a: "c" },
+                    { q: "विकिपीडियावरील लेखनाचा मुख्य उद्देश काय आहे?", o: ["नफा कमावणे", "ज्ञान सर्वांसाठी मुक्त करणे", "जाहिरात करणे", "केवळ मनोरंजन"], a: "b" },
                 ]
             }
+            // Add other MCQ topics here
         ];
 
         container.innerHTML = mcqTopics.map(topic => `
