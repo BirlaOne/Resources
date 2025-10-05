@@ -24,6 +24,8 @@
       --primary-accent: #56ab2f;
       --primary-gradient: linear-gradient(90deg, #a8e063, #56ab2f);
       --danger-color: #e53935;
+      --correct-color: #2e7d32;
+      --incorrect-color: #c62828;
       --font-sans: 'Inter', sans-serif;
       --font-serif: 'Lora', serif;
       --border-radius: 14px;
@@ -40,6 +42,7 @@
       --shadow: 0 6px 25px rgba(0, 0, 0, 0.07);
       --header-bg: rgba(255, 255, 255, 0.8);
       --input-bg: #f0f0f0;
+      --switch-bg: #e9e9ea;
     }
 
     html[data-theme="dark"] {
@@ -52,8 +55,9 @@
       --shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
       --header-bg: rgba(28, 28, 30, 0.75);
       --input-bg: #2c2c2e;
+      --switch-bg: #2c2c2e;
     }
-     
+      
     html[data-theme="sepia"] {
         --bg-color: #f4ecd8;
         --card-bg: #fbf5e9;
@@ -65,6 +69,7 @@
         --shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
         --header-bg: rgba(244, 236, 216, 0.8);
         --input-bg: #e9deca;
+        --switch-bg: #e9deca;
     }
 
     /* Base & Layout Styles */
@@ -124,6 +129,7 @@
 
     /* Content Styles */
     .container { padding: 16px; max-width: 800px; margin: 0 auto; position: relative; }
+    #mcq-container { display: none; } /* Initially hide MCQ section */
     .note-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 24px; overflow: hidden; transition: all var(--transition-speed) ease; }
     .note-title { font-family: var(--font-sans); font-size: 22px; font-weight: 700; padding: 18px 22px; background: var(--primary-gradient); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
     .note-body { padding: 12px 22px 22px 22px; }
@@ -133,6 +139,25 @@
     .note-body ol { list-style: none; padding-left: 0; }
     .note-body ol > li { margin-bottom: 28px; padding-left: 10px; }
     .translation { color: var(--text-secondary); font-size: 0.9em; font-style: italic; margin-top: -8px; }
+
+    /* Section Switcher */
+    .section-switcher { display: flex; background-color: var(--switch-bg); border-radius: var(--border-radius); padding: 5px; margin-bottom: 24px; font-family: var(--font-sans); }
+    .switch-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-secondary); font-weight: 600; font-size: 16px; cursor: pointer; transition: all 0.3s ease; border-radius: 10px; }
+    .switch-btn.active { background-color: var(--card-bg); color: var(--primary-accent); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+
+    /* MCQ Styles */
+    .mcq-topic-title { font-family: var(--font-sans); font-size: 24px; font-weight: 700; margin-top: 30px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 3px solid var(--primary-accent); }
+    .mcq-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 20px; padding: 20px; }
+    .mcq-question { font-family: var(--font-sans); font-size: 18px; font-weight: 600; margin-bottom: 18px; }
+    .mcq-question span { color: var(--primary-accent); margin-right: 8px; }
+    .mcq-options { display: flex; flex-direction: column; gap: 12px; }
+    .mcq-option { display: flex; align-items: center; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; transition: all 0.2s ease; }
+    .mcq-option:hover { background-color: rgba(86, 171, 47, 0.05); border-color: var(--primary-accent); }
+    .mcq-option.correct { background-color: rgba(46, 125, 50, 0.1); border-color: var(--correct-color); color: var(--correct-color); font-weight: 600; }
+    .mcq-option.incorrect { background-color: rgba(198, 40, 40, 0.1); border-color: var(--incorrect-color); color: var(--incorrect-color); font-weight: 600; }
+    .mcq-option-letter { font-family: var(--font-sans); font-weight: 700; margin-right: 12px; color: var(--text-secondary); }
+    .mcq-option.correct .mcq-option-letter, .mcq-option.incorrect .mcq-option-letter { color: inherit; }
+    .mcq-option.answered { pointer-events: none; }
 
     /* Permission Lock Styles */
     #main-content-wrapper.locked > *:not(.lock-overlay) { filter: blur(8px); -webkit-filter: blur(8px); pointer-events: none; }
@@ -173,7 +198,17 @@
   </header>
 
   <main class="container" id="main-content-wrapper">
-    </main>
+      <div class="section-switcher">
+          <button id="brief-btn" class="switch-btn active" onclick="showSection('brief')">Brief Questions</button>
+          <button id="mcq-btn" class="switch-btn" onclick="showSection('mcq')">MCQ</button>
+      </div>
+
+      <div id="brief-questions-container">
+          </div>
+
+      <div id="mcq-container">
+          </div>
+  </main>
 
 <script>
     const SUPABASE_URL = 'https://eikriuddsuguybvvyzjl.supabase.co';
@@ -190,6 +225,26 @@
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
     }
+
+    function showSection(section) {
+        const briefContainer = document.getElementById('brief-questions-container');
+        const mcqContainer = document.getElementById('mcq-container');
+        const briefBtn = document.getElementById('brief-btn');
+        const mcqBtn = document.getElementById('mcq-btn');
+
+        if (section === 'brief') {
+            briefContainer.style.display = 'block';
+            mcqContainer.style.display = 'none';
+            briefBtn.classList.add('active');
+            mcqBtn.classList.remove('active');
+        } else {
+            briefContainer.style.display = 'none';
+            mcqContainer.style.display = 'block';
+            briefBtn.classList.remove('active');
+            mcqBtn.classList.add('active');
+        }
+    }
+
 
     async function logout() {
       await client.auth.signOut();
@@ -224,7 +279,6 @@
       }
       
       const picUrl = data.img || 'https://t4.ftcdn.net/jpg/05/89/93/27/360_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg';
-      // No longer a profile pic in the header, only in the sidebar
       document.getElementById('sidebarProfilePic').src = picUrl;
       document.getElementById('sidebar-username').innerText = data.name || 'Student';
       document.getElementById('sidebar-user-id').innerText = `Student ID: ${data.id || 'N/A'}`;
@@ -232,7 +286,7 @@
       return data;
     }
     
-    function renderAllQuestions(container) {
+    function renderBriefQuestions(container) {
         const allQuestionsHTML = `
         <article class="note-card"> <h2 class="note-title">प्रश्न १: अनुदिनी (ब्लॉग) लेखनाची उद्दिष्टे लिहा.</h2> <div class="note-body"> <h3>प्रस्तावना (Introduction)</h3> <p>अनुदिनी, ज्याला इंग्रजीमध्ये 'ब्लॉग' (Blog) असेही म्हणतात, हे इंटरनेटवर आपले विचार, अनुभव आणि माहिती लोकांपर्यंत पोहोचवण्याचे एक प्रभावी माध्यम आहे. हे एक प्रकारचे ऑनलाइन डायरी किंवा लेख लिहिण्याचे व्यासपीठ आहे. अनुदिनी लेखनाची अनेक उद्दिष्टे आहेत, जी खालीलप्रमाणे:</p> <h3>अनुदिनी लेखनाची उद्दिष्टे (Objectives of Blog Writing)</h3> <ol> <li> <p><strong>वैचारिक आणि वैयक्तिक अभिव्यक्ती (To Express Thoughts and Personal Views)</strong></p> <p>ब्लॉग हे आपले वैयक्तिक विचार, मते, भावना आणि अनुभव लोकांसमोर मांडण्याचे एक उत्तम साधन आहे. आपण कोणत्याही सामाजिक, राजकीय किंवा शैक्षणिक विषयावर आपले मत लिहू शकतो.</p> <p class="translation">A blog is an excellent tool to present your personal thoughts, opinions, feelings, and experiences to the public. You can write your views on any social, political, or educational topic.</p> </li> <li> <p><strong>विचारांसाठी व्यासपीठ मिळवणे (To Get a Platform for Ideas)</strong></p> <p>अनेकदा वृत्तपत्र किंवा टीव्हीसारख्या पारंपरिक माध्यमांमध्ये प्रत्येकाला आपले विचार मांडण्याची संधी मिळत नाही. ब्लॉग आपल्याला स्वतःचे व्यासपीठ (platform) उपलब्ध करून देतो, जिथे आपण आपले विचार लोकांपर्यंत पोहोचवू शकतो.</p> <p class="translation">Often, not everyone gets an opportunity to express their views in traditional media like newspapers or TV. A blog provides you with your own platform where you can make your ideas reach the people.</p> </li> <li> <p><strong>सामाजिक जागरूकता निर्माण करणे (To Create Social Awareness)</strong></p> <p>समाजातील महत्त्वाच्या समस्यांवर लोकांचे लक्ष वेधण्यासाठी आणि त्यांच्यात जागरूकता निर्माण करण्यासाठी ब्लॉगचा प्रभावीपणे वापर करता येतो. उदाहरणार्थ, पर्यावरण संरक्षण, स्वच्छता मोहीम यांसारख्या विषयांवर लिहून लोकांचे मत तयार करता येते.</p> <p class="translation">A blog can be effectively used to draw people's attention towards important social issues and create awareness among them. For instance, one can write on topics like environmental protection or cleanliness campaigns to shape public opinion.</p> </li> <li> <p><strong>ज्ञान आणि माहितीचे आदान-प्रदान (To Exchange Knowledge and Information)</strong></p> <p>ब्लॉगच्या माध्यमातून लेखक आपल्या वाचनातून, अनुभवातून किंवा अभ्यासातून मिळवलेली माहिती आणि ज्ञान इतरांपर्यंत पोहोचवतो. यामुळे वाचकांच्या ज्ञानातही भर पडते.</p> <p class="translation">Through a blog, a writer shares information and knowledge gained from their reading, experiences, or studies. This also helps in increasing the knowledge of the readers.</p> </li> <li> <p><strong>व्यावसायिक विकास (For Professional Development)</strong></p> <p>एखाद्या विशिष्ट विषयातील तज्ज्ञ व्यक्ती ब्लॉग लिहून आपले ज्ञान लोकांपर्यंत पोहोचवू शकते. यामुळे त्या क्षेत्रातील लोकांमध्ये त्यांची ओळख निर्माण होते आणि त्यांच्या व्यावसायिक विकासाला मदत मिळते.</p> <p class="translation">An expert in a particular field can write a blog to share their knowledge with people. This helps in building their identity among people in that field and aids their professional development.</p> </li> <li> <p><strong>आर्थिक कमाईचे साधन (As a Means of Earning Money)</strong></p> <p>आजकाल अनेक लोक ब्लॉग लेखनाला व्यवसायाचे साधन म्हणून वापरतात. लोकप्रिय ब्लॉगवर जाहिराती (advertisements) किंवा इतर मार्गांनी पैसे कमावता येतात.</p> <p class="translation">Nowadays, many people use blog writing as a profession. One can earn money through popular blogs by placing advertisements or through other means.</p> </li> <li> <p><strong>वैयक्तिक अनुभवांची नोंद (To Record Personal Experiences)</strong></p> <p>काहीजण ब्लॉगचा वापर आपली वैयक्तिक डायरी म्हणून करतात. ते आपल्या दैनंदिन जीवनातील घटना, प्रवास किंवा खास अनुभव यात नोंदवून ठेवतात.</p> <p class="translation">Some people use a blog as their personal diary. They record daily life events, travel stories, or special experiences in it.</p> </li> </ol> </div> </article>
         <article class="note-card"> <h2 class="note-title">प्रश्न २: अनुदिनी (ब्लॉग) लेखनाचे प्रकार स्पष्ट करा.</h2> <div class="note-body"> <h3>प्रस्तावना (Introduction)</h3> <p>अनुदिनी (ब्लॉग) हे कोणत्याही विषयावर लिहिले जाऊ शकते. त्याच्या विषय आणि लेखनशैलीनुसार ब्लॉगचे वेगवेगळे प्रकार पडतात. प्रत्येक प्रकारच्या ब्लॉगचा उद्देश आणि वाचकवर्ग वेगळा असतो. ब्लॉग लेखनाचे काही प्रमुख प्रकार खालीलप्रमाणे आहेत:</p> <h3>अनुदिनी लेखनाचे प्रकार (Types of Blog Writing)</h3> <ol> <li> <p><strong>वैयक्तिक अनुदिनी (Personal Blog)</strong></p> <p>हा ब्लॉगचा सर्वात प्रसिद्ध प्रकार आहे. यात लेखक आपल्या वैयक्तिक जीवनातील अनुभव, विचार, भावना किंवा दैनंदिन घडामोडींबद्दल लिहितो. हे एका ऑनलाइन डायरीसारखे असते.</p> <p class="translation">This is the most famous type of blog. The writer writes about their personal life experiences, thoughts, feelings, or daily events. It is like an online diary.</p> </li> <li> <p><strong>विषयाधारित अनुदिनी (Thematic Blog)</strong></p> <p>या प्रकारच्या ब्लॉगमध्ये लेखक फक्त एकाच विशिष्ट विषयावर सातत्याने लिहितो. उदाहरणार्थ, केवळ शिक्षण, पर्यावरण, फॅशन किंवा आरोग्य यांसारख्या एकाच विषयावर आधारित ब्लॉग.</p> <p class="translation">In this type of blog, the writer consistently writes on only one specific topic. For example, a blog based on a single subject like education, environment, fashion, or health.</p> </li> <li> <p><strong>माहितीपर / शैक्षणिक अनुदिनी (Informative / Educational Blog)</strong></p> <p>या ब्लॉगचा उद्देश वाचकांना माहिती किंवा मार्गदर्शन देणे हा असतो. यामध्ये करिअर, स्पर्धा परीक्षा, अभ्यासक्रम किंवा एखाद्या नवीन कौशल्याबद्दल माहिती दिली जाते.</p> <p class="translation">The purpose of this blog is to provide information or guidance to the readers. It contains information about careers, competitive exams, academic syllabus, or a new skill.</p> </li> <li> <p><strong>प्रवासवर्णन अनुदिनी (Travel Blog)</strong></p> <p>यामध्ये लेखक आपल्या प्रवासाचे अनुभव, वेगवेगळ्या ठिकाणांची माहिती, तेथील संस्कृती आणि छायाचित्रे (photos) वाचकांसोबत शेअर करतो. इतरांना प्रवासाचे नियोजन करण्यासाठी हा ब्लॉग उपयुक्त ठरतो.</p> <p class="translation">In a travel blog, the writer shares their travel experiences, information about different places, the local culture, and photographs with the readers. This blog is helpful for others to plan their travels.</p> </li> <li> <p><strong>सामाजिक अनुदिनी (Social Commentary Blog)</strong></p> <p>या ब्लॉगमध्ये लेखक समाजातील चालू घडामोडी, समस्या किंवा राजकीय विषयांवर आपले मत मांडतो. याचा उद्देश सामाजिक विषयांवर चर्चा घडवून आणणे हा असतो.</p> <p class="translation">In this blog, the writer expresses their opinion on current social events, problems, or political issues. The purpose is to initiate discussions on social topics.</p> </li> <li> <p><strong>पाकृती अनुदिनी (Food / Recipe Blog)</strong></p> <p>हा ब्लॉग खाद्यपदार्थांशी संबंधित असतो. यामध्ये जेवण बनवण्याच्या पद्धती (recipes), वेगवेगळ्या ठिकाणची खाद्यसंस्कृती किंवा हॉटेल परीक्षण (hotel reviews) याबद्दल लिहिले जाते.</p> <p class="translation">This blog is related to food. It includes content about cooking methods (recipes), food culture of different places, or hotel reviews.</p> </li> <li> <p><strong>आरोग्यविषयक अनुदिनी (Health and Wellness Blog)</strong></p> <p>यामध्ये आरोग्य, व्यायाम, योग्य आहार, आजार आणि मानसिक आरोग्य यांसारख्या विषयांवर माहिती आणि सल्ले दिले जातात.</p> <p class="translation">This blog provides information and advice on topics like health, exercise, proper diet, diseases, and mental wellness.</p> </li> <li> <p><strong>साहित्यिक / ललित अनुदिनी (Creative / Literary Blog)</strong></p> <p>या ब्लॉगवर लेखक आपले साहित्यिक लेखन जसे की कविता, कथा, लघुनिबंध इत्यादी प्रकाशित करतो. हे सर्जनशील (creative) लेखनासाठी एक व्यासपीठ आहे.</p> <p class="translation">On this blog, the writer publishes their literary work such as poems, stories, short essays, etc. It is a platform for creative writing.</p> </li> <li> <p><strong>आर्थिक / व्यावसायिक अनुदिनी (Finance / Business Blog)</strong></p> <p>या प्रकारच्या ब्लॉगमध्ये शेअर बाजार, गुंतवणूक (investment), व्यवसाय, स्टार्टअप्स आणि पैशांचे नियोजन यांसारख्या आर्थिक विषयांवर माहिती दिली जाते.</p> <p class="translation">This type of blog provides information on financial topics like the stock market, investment, business, startups, and money management.</p> </li> <li> <p><strong>तंत्रज्ञान विषयक अनुदिनी (Tech Blog)</strong></p> <p>यामध्ये नवीन मोबाईल, कॉम्प्युटर, गॅजेट्स, सॉफ्टवेअर आणि इंटरनेट जगातील नवीन घडामोडींविषयी माहिती आणि परीक्षण (reviews) दिलेले असते.</p> <p class="translation">It provides information and reviews about new mobiles, computers, gadgets, software, and the latest updates in the world of technology and the internet.</p> </li> </ol> <h3>निष्कर्ष (Conclusion)</h3> <p>वरील प्रकारांवरून लक्षात येते की, ब्लॉग लेखन हे एक व्यापक क्षेत्र असून, लेखक आपल्या आवडीनुसार आणि कौशल्यानुसार कोणत्याही विषयावर ब्लॉग लिहू शकतो.</p> </div> </article>
@@ -258,20 +312,197 @@
         container.innerHTML = allQuestionsHTML;
     }
 
+    function renderMCQs(container) {
+        const mcqData = [
+            {
+                topic: "अनुदिनी लेखन (Diary Writing)",
+                questions: [
+                    { q: "अनुदिनी लेखनाचा मुख्य उद्देश कोणता आहे?", o: ["इतरांना पत्र लिहिणे", "आपल्या वैयक्तिक अनुभवांची नोंद करणे", "वृत्तपत्रात लेख लिहिणे", "कविता लिहिणे"], a: 1 },
+                    { q: "अनुदिनी लेखन करताना कोणती तारीख लिहिली जाते?", o: ["उद्याची तारीख", "कालची तारीख", "वर्तमान दिवसाची तारीख", "वर्षाची सुरुवातीची तारीख"], a: 2 },
+                    { q: "अनुदिनी लेखन कोणत्या प्रकारच्या लेखनात मोडते?", o: ["सर्जनशील लेखन", "औपचारिक लेखन", "व्यवहारिक लेखन", "शासकीय लेखन"], a: 0 },
+                    { q: "अनुदिनी कोणासाठी लिहिली जाते?", o: ["मित्रांसाठी", "शिक्षकांसाठी", "स्वतःसाठी", "कुटुंबासाठी"], a: 2 },
+                    { q: "अनुदिनी लेखनात कोणत्या प्रकारची भाषा योग्य ठरते?", o: ["कडक औपचारिक भाषा", "वैयक्तिक आणि मनमोकळी भाषा", "केवळ साहित्यिक भाषा", "जाहीरातीतील भाषा"], a: 1 },
+                    { q: "अनुदिनी लेखन करताना शेवटी काय लिहिले जाते?", o: ["आपले नाव किंवा सही", "वृत्तपत्रातील बातमी", "कविता", "प्रश्नोत्तर"], a: 0 },
+                    { q: "अनुदिनी लेखनाचा कालखंड कोणता असतो?", o: ["आठवड्यातून एकदा", "महिन्यातून एकदा", "रोज किंवा नियमितपणे", "वर्षातून एकदा"], a: 2 },
+                    { q: "अनुदिनीमध्ये कोणते घटक असणे आवश्यक आहे?", o: ["शीर्षक, तारीख, मजकूर", "तारीख, वेळ, अनुभवांची नोंद", "पत्राचा पत्ता व अभिवादन", "प्रश्न व उत्तरे"], a: 1 },
+                    { q: "अनुदिनी लेखन करताना शैली कशी असावी?", o: ["अधिकृत", "संक्षिप्त व थोडक्यात", "स्वच्छंद व वैयक्तिक", "शासकीय अहवालासारखी"], a: 2 },
+                    { q: "खालीलपैकी अनुदिनी लेखनाचे वैशिष्ट्य कोणते नाही?", o: ["वैयक्तिक भावना व्यक्त होतात", "शासकीय कागदपत्र असते", "दैनंदिन घटना नोंदवल्या जातात", "स्वतःच्या विचारांचे प्रतिबिंब असते"], a: 1 },
+                    { q: "अनुदिनीचे लेखन कोणत्या दृष्टीने उपयुक्त ठरते?", o: ["स्मरणशक्ती वाढवण्यासाठी", "इतरांना शिकवण्यासाठी", "परीक्षेचे प्रश्नपत्र तयार करण्यासाठी", "वृत्तपत्र छापण्यासाठी"], a: 0 },
+                    { q: "अनुदिनी लेखनाचा योग्य प्रारंभ कसा करावा?", o: ["\"प्रिय मित्रा,\"", "\"आदरणीय महोदय,\"", "तारीख लिहून", "\"तुमचा नम्र\""], a: 2 },
+                    { q: "अनुदिनीमध्ये सर्वाधिक काय प्रतिबिंबित होते?", o: ["वैयक्तिक जीवनातील अनुभव", "शाळेचे अभ्यासक्रम", "सरकारी सूचना", "पत्रव्यवहार"], a: 0 },
+                    { q: "अनुदिनी लिहिताना कोणत्या गोष्टीला महत्त्व दिले जाते?", o: ["भाषा अलंकार", "सत्यता व भावनिक अभिव्यक्ती", "नियम व कायदे", "इतरांचे मत"], a: 1 },
+                    { q: "अनुदिनी लेखन कधीपासून सुरू करणे उचित मानले जाते?", o: ["वर्षाच्या सुरुवातीपासून", "दहावी नंतर", "जेव्हा इच्छा असेल तेव्हा", "निवृत्तीनंतर"], a: 2 },
+                    { q: "अनुदिनी लेखन करताना कोणता काळ वापरला जातो?", o: ["भविष्यकाळ", "वर्तमानकाळ", "भूतकाळ", "संभाव्यकाळ"], a: 2 },
+                    { q: "अनुदिनी लेखनात कोणती गोष्ट टाळावी?", o: ["वैयक्तिक विचार", "असत्य व अतिशयोक्ती", "वैयक्तिक अनुभव", "मनातील भावना"], a: 1 }
+                ]
+            },
+            {
+                topic: "विकिपीडिया (Wikipedia)",
+                questions: [
+                    { q: "विकिपीडिया कोणत्या प्रकारचे संकेतस्थळ आहे?", o: ["सामाजिक माध्यम", "मुक्त ज्ञानकोश", "शैक्षणिक संस्था", "वृत्तपत्र"], a: 1 },
+                    { q: "विकिपीडिया कधी स्थापन झाले?", o: ["1991", "2001", "2010", "1995"], a: 1 },
+                    { q: "विकिपीडियाचे संस्थापक कोण आहेत?", o: ["मार्क झुकरबर्ग", "जिमी वेल्स आणि लॅरी सॅंगर", "बिल गेट्स", "टीम बर्नर्स-ली"], a: 1 },
+                    { q: "विकिपीडियावरील लेखन कोण करू शकतो?", o: ["फक्त प्राध्यापक", "फक्त विद्यार्थी", "इंटरनेटवरील कोणताही वापरकर्ता", "फक्त संपादक"], a: 2 },
+                    { q: "विकिपीडियावरील लेखनाचा मुख्य उद्देश काय आहे?", o: ["नफा कमावणे", "ज्ञान सर्वांसाठी मुक्त करणे", "जाहिरात करणे", "केवळ मनोरंजन"], a: 1 },
+                    { q: "विकिपीडिया कोणत्या तत्वावर चालते?", o: ["मुक्त स्रोत", "व्यावसायिक सेवा", "खासगी नफा", "बंद संकेतस्थळ"], a: 0 },
+                    { q: "विकिपीडियावरील लेख कोणत्या भाषेत लिहिले जाऊ शकतात?", o: ["फक्त इंग्रजी", "फक्त भारतीय भाषा", "जगातील अनेक भाषा", "फक्त फ्रेंच"], a: 2 },
+                    { q: "विकिपीडियावरील माहिती कशी असावी?", o: ["सत्य आणि पडताळणीय", "अफवा व तर्कावर आधारित", "वैयक्तिक मत", "जाहिरात स्वरूपात"], a: 0 },
+                    { q: "विकिपीडियावरील लेखन करताना कोणती गोष्ट टाळली पाहिजे?", o: ["संदर्भ देणे", "निष्पक्ष भाषा वापरणे", "स्वतःचे मत लादणे", "स्रोतांचा उल्लेख करणे"], a: 2 },
+                    { q: "विकिपीडियावरील संपादनास काय म्हणतात?", o: ["पोस्ट करणे", "एडिट करणे", "सबमिट करणे", "शेअर करणे"], a: 1 },
+                    { q: "विकिपीडियाचे मुख्य घोषवाक्य काय आहे?", o: ["Free Knowledge for All", "The Free Encyclopedia", "Knowledge is Money", "Internet for Everyone"], a: 1 },
+                    { q: "विकिपीडियाची देखरेख कोण करते?", o: ["Google", "Wikimedia Foundation", "Facebook", "Microsoft"], a: 1 },
+                    { q: "विकिपीडियावरील लेखनाचे सर्वात मोठे वैशिष्ट्य कोणते आहे?", o: ["ते सतत संपादित केले जाऊ शकते", "ते कधीही बदलता येत नाही", "ते केवळ एकदाच लिहिले जाते", "ते फक्त लेखकालाच वाचता येते"], a: 0 },
+                    { q: "विकिपीडियामधील लेख विश्वासार्ह ठरवण्यासाठी काय आवश्यक आहे?", o: ["जाहिरात", "विश्वासार्ह संदर्भ", "वैयक्तिक अनुभव", "अफवा"], a: 1 },
+                    { q: "विकिपीडिया कोणत्या प्रकारच्या परवान्याअंतर्गत मोफत उपलब्ध आहे?", o: ["GPL (General Public License)", "Creative Commons License", "Private License", "Copyright Protected License"], a: 1 }
+                ]
+            },
+            {
+                topic: "फेसबुक (Facebook)",
+                questions: [
+                    { q: "फेसबुकची स्थापना कोणत्या वर्षी झाली?", o: ["2002", "2004", "2006", "2008"], a: 1 },
+                    { q: "फेसबुकची स्थापना कोणत्या विद्यापीठात झाली?", o: ["ऑक्सफर्ड विद्यापीठ", "कॅम्ब्रिज विद्यापीठ", "हार्वर्ड विद्यापीठ", "स्टॅनफर्ड विद्यापीठ"], a: 2 },
+                    { q: "फेसबुकचा संस्थापक कोण आहे?", o: ["बिल गेट्स", "मार्क झुकरबर्ग", "एलॉन मस्क", "लॅरी पेज"], a: 1 },
+                    { q: "फेसबुकच्या लोगोमध्ये कोणता रंग मुख्यत्वे वापरला जातो?", o: ["हिरवा", "निळा", "लाल", "काळा"], a: 1 },
+                    { q: "फेसबुकने इंस्टाग्राम कोणत्या वर्षी विकत घेतले?", o: ["2008", "2010", "2012", "2015"], a: 2 },
+                    { q: "फेसबुकवरील \"Like\" बटण कधी सुरू करण्यात आले?", o: ["2005", "2007", "2009", "2011"], a: 2 },
+                    { q: "फेसबुकचे नवीन नाव (Meta) कोणत्या वर्षी जाहीर करण्यात आले?", o: ["2018", "2019", "2020", "2021"], a: 3 },
+                    { q: "फेसबुकचा \"News Feed\" कोणत्या वर्षी सुरू करण्यात आला?", o: ["2004", "2006", "2008", "2010"], a: 1 },
+                    { q: "फेसबुक मेसेंजर स्वतंत्र ॲप म्हणून कधी उपलब्ध झाला?", o: ["2010", "2011", "2012", "2013"], a: 1 },
+                    { q: "फेसबुकवर वापरकर्त्यांना ग्रुपमध्ये सामील होण्यासाठी कोणता पर्याय असतो?", o: ["Like", "Join", "Add", "Follow"], a: 1 },
+                    { q: "फेसबुकचा मुख्य उत्पन्न स्रोत कोणता आहे?", o: ["ई-कॉमर्स", "जाहिरात (Advertising)", "सबस्क्रिप्शन फी", "दान"], a: 1 },
+                    { q: "फेसबुक Live सुविधा वापरकर्त्यांना काय करण्याची संधी देते?", o: ["त्वरित मेसेजिंग", "थेट प्रसारण (Live Streaming)", "फोटो एडिटिंग", "व्हिडिओ डाउनलोड"], a: 1 },
+                    { q: "फेसबुकवरील \"Timeline\" सुविधा कोणत्या वर्षी सुरू झाली?", o: ["2008", "2010", "2011", "2013"], a: 2 },
+                    { q: "फेसबुकने कोणते व्हिडिओ-शेअरिंग प्लॅटफॉर्म विकत घेतले?", o: ["TikTok", "Vimeo", "WhatsApp", "यापैकी कोणतेही नाही"], a: 3 },
+                    { q: "फेसबुकवर वापरकर्त्यांना \"Friends\" यादीत कोणत्या पर्यायाने जोडता येते?", o: ["Follow", "Add Friend", "Subscribe", "Join"], a: 1 }
+                ]
+            },
+            {
+                topic: "समाज गट (Social Groups)",
+                questions: [
+                    { q: "समाज गटाची मूलभूत ओळख कोणती आहे?", o: ["एक व्यक्ती", "दोन किंवा अधिक व्यक्तींचा समूह", "शासकीय संघटना", "एक कुटुंब"], a: 1 },
+                    { q: "समाज गटाचा मुख्य उद्देश कोणता असतो?", o: ["मनोरंजन करणे", "सामाजिक परस्पर संबंध प्रस्थापित करणे", "राजकीय पक्ष स्थापन करणे", "नोकरी मिळवणे"], a: 1 },
+                    { q: "समाज गटाला समाज माध्यम का म्हणतात?", o: ["कारण ते फक्त तंत्रज्ञानाशी निगडित आहे", "कारण ते समाजातील माहिती, विचार व भावना प्रसारित करते", "कारण त्यात केवळ जाहिराती येतात", "कारण ते आर्थिक साधन आहे"], a: 1 },
+                    { q: "प्राथमिक गटाचे उदाहरण कोणते?", o: ["नाट्य मंडळ", "मित्रमंडळी", "उद्योग संघटना", "राजकीय पक्ष"], a: 1 },
+                    { q: "द्वितीयक गटाचे उदाहरण कोणते?", o: ["कुटुंब", "मित्र", "सहकारी संस्था", "शेजारी"], a: 2 },
+                    { q: "कोणत्या गटात जवळीक, आत्मीयता व प्रत्यक्ष संबंध दिसतात?", o: ["द्वितीयक गट", "प्राथमिक गट", "औपचारिक गट", "असंघटित गट"], a: 1 },
+                    { q: "समाज गट व्यक्तीच्या कोणत्या विकासास सहाय्यक ठरतो?", o: ["शारीरिक विकास", "सामाजिक व मानसिक विकास", "आर्थिक विकास", "तांत्रिक विकास"], a: 1 },
+                    { q: "फेसबुक, व्हॉट्सॲप यांसारख्या माध्यमांमुळे तयार होणारा गट कोणत्या प्रकारात मोडतो?", o: ["औपचारिक गट", "असंघटित गट", "आभासी गट (Virtual group)", "प्राथमिक गट"], a: 2 },
+                    { q: "समाज माध्यम म्हणून गटांचे मुख्य कार्य कोणते?", o: ["एकमेकांशी माहिती व विचारांची देवाणघेवाण", "केवळ मनोरंजन करणे", "फक्त अर्थव्यवस्थेचा अभ्यास करणे", "नोकरी मिळवून देणे"], a: 0 },
+                    { q: "\"समाज गट\" या संकल्पनेचा अभ्यास कोणत्या समाजशास्त्रज्ञाने प्रथम केला?", o: ["ऑगस्ट कॉम्प्ट", "मॅक्स वेबर", "चार्ल्स एच. कूली", "कार्ल मार्क्स"], a: 2 },
+                    { q: "प्राथमिक गटाला \"नर्सरी ऑफ ह्युमन नेचर\" असे कोणी म्हटले?", o: ["मॅक्स वेबर", "ऑगस्ट कॉम्प्ट", "चार्ल्स कूली", "हरबर्ट स्पेन्सर"], a: 2 },
+                    { q: "समाज गट समाजातील कोणत्या गोष्टीला चालना देतो?", o: ["वैयक्तिक अलगाव", "सामाजिक एकात्मता व सहकार्य", "केवळ आर्थिक व्यवहार", "राजकीय संघर्ष"], a: 1 },
+                    { q: "ऑनलाईन गट हे प्रामुख्याने कोणत्या गटात मोडतात?", o: ["प्राथमिक", "द्वितीयक", "औपचारिक", "असंघटित"], a: 1 },
+                    { q: "समाज गट व्यक्तीला कोणता अनुभव देतो?", o: ["वैयक्तिक स्वार्थ", "सामाजिक परस्परावलंबन", "स्पर्धा व संघर्ष फक्त", "अलगाव"], a: 1 },
+                    { q: "समाज माध्यमाच्या माध्यमातून समाज गट काय साध्य करतात?", o: ["एकमेकांपासून दुरावा", "परस्पर संबंध, माहिती प्रसारण व संस्कृती संवर्धन", "केवळ आर्थिक नफा", "केवळ राजकीय सत्ता"], a: 1 }
+                ]
+            },
+            {
+                topic: "आभासी कट्टे (Virtual Hangouts)",
+                questions: [
+                    { q: "आभासी कट्ट्याचा मुख्य उद्देश कोणता असतो?", o: ["खेळ खेळणे", "सामाजिक, शैक्षणिक किंवा वैचारिक संवाद साधणे", "बाजारपेठ चालवणे", "चित्रपट पाहणे"], a: 1 },
+                    { q: "आभासी कट्टे कोणत्या माध्यमावर प्रामुख्याने चालवले जातात?", o: ["रेडिओ", "दूरदर्शन", "इंटरनेट", "वृत्तपत्र"], a: 2 },
+                    { q: "खालीलपैकी कोणते साधन आभासी कट्ट्यासाठी वापरले जात नाही?", o: ["व्हॉट्सॲप ग्रुप", "फेसबुक ग्रुप", "गावातील पाटी", "गूगल मीट"], a: 2 },
+                    { q: "आभासी कट्ट्याचा शैक्षणिक उपयोग कोणता आहे?", o: ["शिकवणी वर्ग ऑनलाईन घेणे", "वस्तू विकणे", "नाच गाणी पाहणे", "फोन रिचार्ज करणे"], a: 0 },
+                    { q: "आभासी कट्ट्यामुळे कोणता फायदा होतो?", o: ["वेळ वाचतो आणि लोक दूरूनही संवाद साधतात", "खर्च जास्त वाढतो", "फक्त गावातील लोकच बोलू शकतात", "फक्त जाहिराती दाखवल्या जातात"], a: 0 },
+                    { q: "आभासी कट्टे हे प्रामुख्याने कोणत्या पिढीत लोकप्रिय झाले आहेत?", o: ["जुन्या पिढीत", "तरुण पिढीत", "फक्त शेतकऱ्यांत", "फक्त सरकारी अधिकाऱ्यांत"], a: 1 },
+                    { q: "खालीलपैकी आभासी कट्ट्याचे एक मर्यादित वैशिष्ट्य कोणते आहे?", o: ["वेळेची बचत", "इंटरनेटशिवाय वापरता येतो", "जागतिक स्तरावर संपर्क", "विविध विषयांवर चर्चा"], a: 1 },
+                    { q: "आभासी कट्ट्याद्वारे कोणता सांस्कृतिक उपक्रम साध्य होतो?", o: ["ऑनलाईन कविसंमेलन", "शेतातील काम", "रस्ते बांधकाम", "बँकेतील व्यवहार"], a: 0 },
+                    { q: "आभासी कट्ट्यातील संवाद कसा असतो?", o: ["फक्त प्रत्यक्ष", "ऑनलाईन माध्यमातून", "पोस्टाने", "फक्त फोनवर"], a: 1 },
+                    { q: "आभासी कट्ट्याचा समाज माध्यमाशी काय संबंध आहे?", o: ["समाज माध्यमावर आधारित असतो", "समाज माध्यमाशी काहीही संबंध नाही", "फक्त क्रीडा विषयक असतो", "फक्त शासकीय कामकाजासाठी असतो"], a: 0 }
+                ]
+            },
+            {
+                topic: "इंस्टाग्राम (Instagram)",
+                questions: [
+                    { q: "इंस्टाग्राम ही कोणत्या प्रकारची ॲप आहे?", o: ["शैक्षणिक", "सोशल मीडिया", "गेमिंग", "बँकिंग"], a: 1 },
+                    { q: "इंस्टाग्रामची सुरुवात कोणत्या वर्षी झाली?", o: ["2005", "2010", "2012", "2015"], a: 1 },
+                    { q: "इंस्टाग्रामचे मूळ संस्थापक कोण होते?", o: ["मार्क झुकरबर्ग", "केविन सिस्ट्रॉम आणि माइक क्रिगर", "एलोन मस्क", "लॅरी पेज"], a: 1 },
+                    { q: "इंस्टाग्राममध्ये ‘Stories’ हे फिचर किती वेळेसाठी उपलब्ध असते?", o: ["12 तास", "24 तास", "48 तास", "कायमस्वरूपी"], a: 1 },
+                    { q: "इंस्टाग्राम कोणत्या कंपनीने विकत घेतले?", o: ["ट्विटर", "मायक्रोसॉफ्ट", "फेसबुक (Meta)", "गूगल"], a: 2 },
+                    { q: "इंस्टाग्रामवरील ‘IGTV’ फिचरचा उपयोग कशासाठी होतो?", o: ["लांब व्हिडिओ पोस्ट करण्यासाठी", "फोटो एडिट करण्यासाठी", "मेसेज पाठवण्यासाठी", "लोकेशन शेअर करण्यासाठी"], a: 0 },
+                    { q: "इंस्टाग्रामवरील ‘Reels’ हे फिचर कोणत्या प्रकारच्या कंटेंटसाठी आहे?", o: ["स्टोरीज", "लाईव्ह व्हिडिओ", "शॉर्ट व्हिडिओ क्लिप्स", "फोटो अल्बम"], a: 2 },
+                    { q: "इंस्टाग्रामवर फोटो/व्हिडिओ अपलोड करताना कोणता चिन्ह वापरतात?", o: ["+ (प्लस)", "– (मायनस)", "@ (ॲट)", "# (हॅश)"], a: 0 },
+                    { q: "इंस्टाग्रामवरील ‘Explore’ टॅब कशासाठी असतो?", o: ["खाते डिलीट करण्यासाठी", "नवीन कंटेंट आणि अकाउंट शोधण्यासाठी", "सेटिंग बदलण्यासाठी", "जाहिराती बंद करण्यासाठी"], a: 1 },
+                    { q: "इंस्टाग्रामवरील लोकप्रिय हॅशटॅगचा उद्देश काय असतो?", o: ["पासवर्ड लपवणे", "अकाउंट हॅक करणे", "पोस्टला जास्त लोकांपर्यंत पोहोचवणे", "मेसेज लपवणे"], a: 2 }
+                ]
+            },
+            {
+                topic: "एक्स (X / Twitter)",
+                questions: [
+                    { q: "एक्स (ट्विटर) या ॲपवर सर्वाधिक वापरली जाणारी मर्यादित शब्दसंख्या किती आहे?", o: ["100 अक्षरे", "280 अक्षरे", "500 अक्षरे", "1000 अक्षरे"], a: 1 },
+                    { q: "ट्विटरचे (एक्स) मालक कोण आहेत?", o: ["मार्क झुकरबर्ग", "एलन मस्क", "बिल गेट्स", "सुंदर पिचाई"], a: 1 },
+                    { q: "ट्विटरची स्थापना कोणत्या वर्षी झाली?", o: ["2002", "2006", "2010", "2015"], a: 1 },
+                    { q: "ट्विटरवरील ओळख (हॅण्डल) कोणत्या चिन्हाने सुरू होते?", o: ["#", "@", "$", "%"], a: 1 },
+                    { q: "ट्विटरवरील \"ट्रेंडिंग\" म्हणजे काय दर्शवते?", o: ["लोकप्रिय बातम्या", "जास्त वापरलेले हॅशटॅग", "फक्त जाहिराती", "सरकारी माहिती"], a: 1 },
+                    { q: "ट्विटरवरील \"रीट्विट\" या सुविधेचा उपयोग कशासाठी होतो?", o: ["फोटो संपादित करण्यासाठी", "दुसऱ्याचा ट्वीट शेअर करण्यासाठी", "खाते बंद करण्यासाठी", "फॉलोअर्स काढण्यासाठी"], a: 1 },
+                    { q: "ट्विटरवरील \"ब्लू टिक\" म्हणजे काय दर्शवते?", o: ["वापरकर्त्याचे खाते खासगी आहे", "खातं अधिकृत व सत्यापित आहे", "खाते हॅक झाले आहे", "खाते नवीन आहे"], a: 1 },
+                    { q: "ट्विटरवरील संदेश (ट्वीट) मध्ये फोटो, व्हिडिओ आणि लिंक जोडता येतात का?", o: ["होय", "नाही"], a: 0 },
+                    { q: "ट्विटरला \"एक्स\" हे नाव कोणत्या वर्षी देण्यात आले?", o: ["2020", "2022", "2023", "2024"], a: 2 },
+                    { q: "ट्विटरवर \"हॅशटॅग (#)\" वापरण्याचा उद्देश काय असतो?", o: ["संदेश लपवणे", "फक्त मित्रांना पाठवणे", "विषय वर्गीकरण व शोध सुलभ करणे", "खाते सुरक्षित ठेवणे"], a: 2 }
+                ]
+            }
+        ];
+
+        let html = '';
+        let globalQuestionCounter = 1;
+
+        mcqData.forEach(topicData => {
+            html += `<h2 class="mcq-topic-title">${topicData.topic}</h2>`;
+
+            topicData.questions.forEach(qData => {
+                const optionsHTML = qData.o.map((option, index) =>
+                    `<div class="mcq-option" data-index="${index}" onclick="checkAnswer(this, ${qData.a})">
+                        <span class="mcq-option-letter">${String.fromCharCode(65 + index)})</span>
+                        <span>${option}</span>
+                    </div>`
+                ).join('');
+
+                html += `
+                    <div class="mcq-card">
+                        <div class="mcq-question">
+                            <span>${globalQuestionCounter}.</span>${qData.q}
+                        </div>
+                        <div class="mcq-options">${optionsHTML}</div>
+                    </div>
+                `;
+                globalQuestionCounter++;
+            });
+        });
+        container.innerHTML = html;
+    }
+
+    function checkAnswer(selectedOption, correctIndex) {
+        const parentOptions = selectedOption.parentElement;
+        const allOptions = parentOptions.querySelectorAll('.mcq-option');
+        
+        // Disable all options after one is clicked
+        allOptions.forEach(opt => opt.classList.add('answered'));
+
+        if (parseInt(selectedOption.dataset.index) === correctIndex) {
+            selectedOption.classList.add('correct');
+        } else {
+            selectedOption.classList.add('incorrect');
+            parentOptions.querySelector(`[data-index='${correctIndex}']`).classList.add('correct');
+        }
+    }
+
+
     // APP INITIALIZATION
     async function initializeApp(session) {
         const currentUser = await fetchAndSetCurrentUser(session);
         if (!currentUser) {
-            alert("Could not load your profile. Please log in again.");
-            logout();
-            return;
+          alert("Could not load your profile. Please log in again.");
+          logout();
+          return;
         }
 
         if (currentUser.c_permission === 'no') {
             lockContentSection();
         } else {
-            const mainContent = document.getElementById('main-content-wrapper');
-            renderAllQuestions(mainContent);
+            const briefContent = document.getElementById('brief-questions-container');
+            const mcqContent = document.getElementById('mcq-container');
+            renderBriefQuestions(briefContent);
+            renderMCQs(mcqContent);
         }
     }
 
