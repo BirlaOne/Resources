@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="mr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>Marathi QB - BirlaOne</title>
+  <link rel="icon" type="image/png" href="https://i.ibb.co/N6QNPW56/logo-1-modified.png" />
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <script>
+    // Set theme on initial load to prevent flashing
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+
+  <style>
+    :root {
+      --primary-accent: #56ab2f;
+      --primary-gradient: linear-gradient(90deg, #a8e063, #56ab2f);
+      --danger-color: #e53935;
+      --font-sans: 'Inter', sans-serif;
+      --font-serif: 'Lora', serif;
+      --border-radius: 14px;
+      --transition-speed: 0.3s;
+    }
+    
+    html[data-theme="light"] {
+      --bg-color: #f7f7f9;
+      --card-bg: #ffffff;
+      --card-bg-rgb: 255, 255, 255;
+      --text-primary: #1c1c1e;
+      --text-secondary: #636366;
+      --border-color: #e5e5ea;
+      --shadow: 0 6px 25px rgba(0, 0, 0, 0.07);
+      --header-bg: rgba(255, 255, 255, 0.8);
+      --input-bg: #f0f0f0;
+    }
+
+    html[data-theme="dark"] {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --card-bg-rgb: 30, 30, 30;
+      --text-primary: #f2f2f7;
+      --text-secondary: #98989f;
+      --border-color: #38383a;
+      --shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+      --header-bg: rgba(28, 28, 30, 0.75);
+      --input-bg: #2c2c2e;
+    }
+     
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      font-family: var(--font-serif);
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+      user-select: none; /* Disable text selection */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+    }
+
+    /* --- Header & Sidebar --- */
+    .top-bar { font-family: var(--font-sans); display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--header-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-color); }
+    .top-bar .title { font-family: 'Pacifico', cursive; font-size: 26px; font-weight: 400; color: var(--text-primary); }
+    .menu-toggle, .profile-link { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
+    .profile-img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--primary-accent); object-fit: cover; }
+    .menu-icon { color: var(--text-primary); font-size: 24px; }
+    .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 199; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+    .sidebar-overlay.active { opacity: 1; visibility: visible; }
+    .sidebar { position: fixed; top: 0; left: 0; width: 280px; height: 100%; background: var(--card-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); box-shadow: 2px 0 20px rgba(0,0,0,0.2); transform: translateX(-100%); transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94); z-index: 200; display: flex; flex-direction: column; font-family: var(--font-sans); }
+    .sidebar.active { transform: translateX(0); }
+    .sidebar-profile-card { display: flex; align-items: center; gap: 15px; padding: 20px; border-bottom: 1px solid var(--border-color); }
+    .sidebar-profile-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--primary-accent); object-fit: cover; flex-shrink: 0; }
+    .sidebar-user-info { overflow: hidden; }
+    #sidebar-username { font-weight: 600; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #sidebar-user-id { font-size: 14px; color: var(--text-secondary); }
+    .sidebar nav { flex-grow: 1; padding: 10px 0; }
+    .sidebar nav a { display: flex; align-items: center; gap: 15px; color: var(--text-primary); text-decoration: none; padding: 15px 20px; font-weight: 500; font-size: 16px; transition: background-color 0.2s, color 0.2s; border-radius: 0 30px 30px 0; margin-right: 10px; }
+    .sidebar nav a:hover { background-color: rgba(86, 171, 47, 0.1); color: var(--primary-accent); }
+    .nav-icon { width: 24px; height: 24px; stroke-width: 2; }
+    .sidebar-footer { padding: 20px; margin-top: auto; border-top: 1px solid var(--border-color); }
+    .theme-switch-wrapper { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 10px; background-color: rgba(128, 128, 128, 0.1); margin-bottom: 15px; }
+    .theme-switch-label { font-weight: 500; }
+    .theme-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+    .theme-switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #4a4a6a; transition: 0.4s; border-radius: 26px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: 0.4s; border-radius: 50%; }
+    input:checked + .slider { background: var(--primary-gradient); }
+    input:checked + .slider:before { transform: translateX(24px); }
+    .logout-button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--danger-color); color: white; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+
+    /* --- Content Styles --- */
+    .container { padding: 16px; max-width: 800px; margin: 0 auto; position: relative; }
+    .note-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 24px; overflow: hidden; transition: all var(--transition-speed) ease; }
+    .note-title { font-family: var(--font-sans); font-size: 22px; font-weight: 700; padding: 18px 22px; background: var(--primary-gradient); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    .note-body { padding: 12px 22px 22px 22px; }
+    .note-body h3 { font-family: var(--font-sans); font-size: 1.2rem; font-weight: 700; border-bottom: 2px solid var(--primary-accent); padding-bottom: 6px; margin-top: 24px; margin-bottom: 12px; }
+    .note-body p { margin-bottom: 16px; text-align: justify; line-height: 1.8; font-size: 17px; }
+    .note-body strong { font-family: var(--font-sans); font-weight: 700; }
+    .note-body ol { list-style: none; padding-left: 0; }
+    .note-body ol > li { margin-bottom: 28px; padding-left: 10px; }
+    .translation { color: var(--text-secondary); font-size: 0.9em; font-style: italic; margin-top: -8px; }
+
+    /* --- Permission Lock Styles --- */
+    #main-content-wrapper.locked > *:not(.lock-overlay) { filter: blur(8px); -webkit-filter: blur(8px); pointer-events: none; }
+    .lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2; }
+    .lock-overlay-content { background: rgba(var(--card-bg-rgb), 0.7); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); padding: 20px 30px; border-radius: 12px; box-shadow: var(--shadow); font-weight: 600; font-size: 16px; border: 1px solid var(--border-color); font-family: var(--font-sans); }
+  </style>
+</head>
+<body>
+  
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-profile-card">
+      <img src="" id="sidebarProfilePic" class="sidebar-profile-img" alt="Profile"/>
+      <div class="sidebar-user-info">
+        <div id="sidebar-username">Loading...</div>
+        <div id="sidebar-user-id">Student ID: ...</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
+      <a href="#"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>QB (Marathi)</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="theme-switch-wrapper">
+        <span class="theme-switch-label">Dark Mode</span>
+        <label class="theme-switch"><input type="checkbox" id="theme-checkbox" /><span class="slider"></span></label>
+      </div>
+      <button class="logout-button" onclick="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <header class="top-bar">
+    <button class="menu-toggle" onclick="toggleSidebar()"><span class="menu-icon">☰</span></button>
+    <h1 class="title">Marathi QB</h1>
+    <a href="myprofile.html" class="profile-link"><img src="" id="profilePic" class="profile-img" alt="Profile"/></a>
+  </header>
+
+  <main class="container" id="main-content-wrapper">
+    </main>
+
+<script>
+    const SUPABASE_URL = 'https://eikriuddsuguybvvyzjl.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpa3JpdWRkc3VndXlidnZ5empsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgxMjIxNTAsImV4cCI6MjA3MzY5ODE1MH0.HNh2gGO8nWzAjxh5Oa3cs_8WKaq9mq9TyLCvPOkcr2c';
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // --- UI & UTILITY FUNCTIONS ---
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+    
+    function toggleTheme() {
+        const root = document.documentElement;
+        const newTheme = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        root.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    }
+
+    function applySavedTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('theme-checkbox').checked = savedTheme === 'dark';
+    }
+
+    async function logout() {
+      await client.auth.signOut();
+      window.location.href = "login.html";
+    }
+
+    // --- SECURITY & PERMISSION FUNCTIONS ---
+    function lockContentSection() {
+        const contentWrapper = document.getElementById('main-content-wrapper');
+        contentWrapper.innerHTML = ''; // Clear existing content
+        contentWrapper.classList.add('locked');
+        const overlay = document.createElement('div');
+        overlay.className = 'lock-overlay';
+        overlay.innerHTML = `<div class="lock-overlay-content">🔒 Unauthorized Access</div>`;
+        contentWrapper.appendChild(overlay);
+    }
+
+    document.addEventListener('copy', (event) => {
+        event.preventDefault();
+        event.clipboardData.setData('text/plain', 'Goli beta masti nahi');
+    });
+
+    // --- DATA FETCHING & RENDERING ---
+    async function fetchAndSetCurrentUser(session) {
+      // Assuming a 'qb_permission' column exists in your 'users' table
+      const { data, error } = await client.from('users').select('id, img, name, qb_permission').eq('auth_id', session.user.id).single();
+      if (error || !data) {
+        console.error('Error fetching user profile:', error);
+        return null;
+      }
+      
+      const picUrl = data.img || 'https://t4.ftcdn.net/jpg/05/89/93/27/360_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg';
+      document.getElementById('profilePic').src = picUrl;
+      document.getElementById('sidebarProfilePic').src = picUrl;
+      document.getElementById('sidebar-username').innerText = data.name || 'Student';
+      document.getElementById('sidebar-user-id').innerText = `Student ID: ${data.id || 'N/A'}`;
+      
+      return data; // Return user data including permissions
+    }
+    
+    function renderAllQuestions(container) {
+        const allQuestions = [
+            {
+                q: "प्रश्न १: अनुदिनी (ब्लॉग) लेखनाची उद्दिष्टे लिहा.",
+                a: `<h3>प्रस्तावना (Introduction)</h3><p>अनुदिनी, ज्याला इंग्रजीमध्ये 'ब्लॉग' (Blog) असेही म्हणतात, हे इंटरनेटवर आपले विचार, अनुभव आणि माहिती लोकांपर्यंत पोहोचवण्याचे एक प्रभावी माध्यम आहे. हे एक प्रकारचे ऑनलाइन डायरी किंवा लेख लिहिण्याचे व्यासपीठ आहे. अनुदिनी लेखनाची अनेक उद्दिष्टे आहेत, जी खालीलप्रमाणे:</p><h3>अनुदिनी लेखनाची उद्दिष्टे (Objectives of Blog Writing)</h3><ol><li><p><strong>वैचारिक आणि वैयक्तिक अभिव्यक्ती</strong></p><p>ब्लॉग हे आपले वैयक्तिक विचार, मते, भावना आणि अनुभव लोकांसमोर मांडण्याचे एक उत्तम साधन आहे. आपण कोणत्याही सामाजिक, राजकीय किंवा शैक्षणिक विषयावर आपले मत लिहू शकतो.</p><p class="translation">A blog is an excellent tool to present your personal thoughts, opinions, feelings, and experiences to the public. You can write your views on any social, political, or educational topic.</p></li><li><p><strong>विचारांसाठी व्यासपीठ मिळवणे</strong></p><p>अनेकदा वृत्तपत्र किंवा टीव्हीसारख्या पारंपरिक माध्यमांमध्ये प्रत्येकाला आपले विचार मांडण्याची संधी मिळत नाही. ब्लॉग आपल्याला स्वतःचे व्यासपीठ (platform) उपलब्ध करून देतो, जिथे आपण आपले विचार लोकांपर्यंत पोहोचवू शकतो.</p><p class="translation">Often, not everyone gets an opportunity to express their views in traditional media like newspapers or TV. A blog provides you with your own platform where you can make your ideas reach the people.</p></li><li><p><strong>सामाजिक जागरूकता निर्माण करणे</strong></p><p>समाजातील महत्त्वाच्या समस्यांवर लोकांचे लक्ष वेधण्यासाठी आणि त्यांच्यात जागरूकता निर्माण करण्यासाठी ब्लॉगचा प्रभावीपणे वापर करता येतो. उदाहरणार्थ, पर्यावरण संरक्षण, स्वच्छता मोहीम यांसारख्या विषयांवर लिहून लोकांचे मत तयार करता येते.</p><p class="translation">A blog can be effectively used to draw people's attention towards important social issues and create awareness among them. For instance, one can write on topics like environmental protection or cleanliness campaigns to shape public opinion.</p></li><li><p><strong>ज्ञान आणि माहितीचे आदान-प्रदान</strong></p><p>ब्लॉगच्या माध्यमातून लेखक आपल्या वाचनातून, अनुभवातून किंवा अभ्यासातून मिळवलेली माहिती आणि ज्ञान इतरांपर्यंत पोहोचवतो. यामुळे वाचकांच्या ज्ञानातही भर पडते.</p><p class="translation">Through a blog, a writer shares information and knowledge gained from their reading, experiences, or studies. This also helps in increasing the knowledge of the readers.</p></li><li><p><strong>व्यावसायिक विकास</strong></p><p>एखाद्या विशिष्ट विषयातील तज्ज्ञ व्यक्ती ब्लॉग लिहून आपले ज्ञान लोकांपर्यंत पोहोचवू शकते. यामुळे त्या क्षेत्रातील लोकांमध्ये त्यांची ओळख निर्माण होते आणि त्यांच्या व्यावसायिक विकासाला मदत मिळते.</p><p class="translation">An expert in a particular field can write a blog to share their knowledge with people. This helps in building their identity among people in that field and aids their professional development.</p></li><li><p><strong>आर्थिक कमाईचे साधन</strong></p><p>आजकाल अनेक लोक ब्लॉग लेखनाला व्यवसायाचे साधन म्हणून वापरतात. लोकप्रिय ब्लॉगवर जाहिराती (advertisements) किंवा इतर मार्गांनी पैसे कमावता येतात.</p><p class="translation">Nowadays, many people use blog writing as a profession. One can earn money through popular blogs by placing advertisements or through other means.</p></li><li><p><strong>वैयक्तिक अनुभवांची नोंद</strong></p><p>काहीजण ब्लॉगचा वापर आपली वैयक्तिक डायरी म्हणून करतात. ते आपल्या दैनंदिन जीवनातील घटना, प्रवास किंवा खास अनुभव यात नोंदवून ठेवतात.</p><p class="translation">Some people use a blog as their personal diary. They record daily life events, travel stories, or special experiences in it.</p></li></ol>`
+            },
+            {
+                q: "प्रश्न २: अनुदिनी (ब्लॉग) लेखनाचे प्रकार स्पष्ट करा.",
+                a: `<h3>प्रस्तावना (Introduction)</h3><p>अनुदिनी (ब्लॉग) हे कोणत्याही विषयावर लिहिले जाऊ शकते. त्याच्या विषय आणि लेखनशैलीनुसार ब्लॉगचे वेगवेगळे प्रकार पडतात. प्रत्येक प्रकारच्या ब्लॉगचा उद्देश आणि वाचकवर्ग वेगळा असतो. ब्लॉग लेखनाचे काही प्रमुख प्रकार खालीलप्रमाणे आहेत:</p><h3>अनुदिनी लेखनाचे प्रकार (Types of Blog Writing)</h3><ol><li><p><strong>वैयक्तिक अनुदिनी</strong></p><p>हा ब्लॉगचा सर्वात प्रसिद्ध प्रकार आहे. यात लेखक आपल्या वैयक्तिक जीवनातील अनुभव, विचार, भावना किंवा दैनंदिन घडामोडींबद्दल लिहितो. हे एका ऑनलाइन डायरीसारखे असते.</p><p class="translation">This is the most famous type of blog. The writer writes about their personal life experiences, thoughts, feelings, or daily events. It is like an online diary.</p></li><li><p><strong>माहितीपर / शैक्षणिक अनुदिनी</strong></p><p>या ब्लॉगचा उद्देश वाचकांना माहिती किंवा मार्गदर्शन देणे हा असतो. यामध्ये करिअर, स्पर्धा परीक्षा, अभ्यासक्रम किंवा एखाद्या नवीन कौशल्याबद्दल माहिती दिली जाते.</p><p class="translation">The purpose of this blog is to provide information or guidance to the readers. It contains information about careers, competitive exams, academic syllabus, or a new skill.</p></li></ol><h3>निष्कर्ष (Conclusion)</h3><p>वरील प्रकारांवरून लक्षात येते की, ब्लॉग लेखन हे एक व्यापक क्षेत्र असून, लेखक आपल्या आवडीनुसार आणि कौशल्यानुसार कोणत्याही विषयावर ब्लॉग लिहू शकतो.</p>`
+            }
+            // Add all 20 questions here in the same object format {q: "...", a: "..."}
+        ];
+        
+        container.innerHTML = allQuestions.map(item => `
+            <article class="note-card">
+                <h2 class="note-title">${item.q}</h2>
+                <div class="note-body">${item.a}</div>
+            </article>
+        `).join('');
+    }
+
+    // --- APP INITIALIZATION ---
+    async function initializeApp(session) {
+        const currentUser = await fetchAndSetCurrentUser(session);
+        if (!currentUser) {
+            alert("Could not load your profile. Please log in again.");
+            logout();
+            return;
+        }
+
+        // Check permission
+        if (currentUser.qb_permission === 'no') {
+            lockContentSection();
+        } else {
+            const mainContent = document.getElementById('main-content-wrapper');
+            renderAllQuestions(mainContent); // Render content if authorized
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        applySavedTheme();
+        document.getElementById('theme-checkbox').addEventListener('change', toggleTheme);
+        
+        client.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+                if (session) {
+                    initializeApp(session);
+                } else {
+                    window.location.href = "login.html";
+                }
+            } else if (event === 'SIGNED_OUT') {
+                window.location.href = "login.html";
+            }
+        });
+    });
+</script>
+</body>
+</html>
