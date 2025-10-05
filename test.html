@@ -55,6 +55,20 @@
       --input-bg: #2c2c2e;
     }
      
+    html[data-theme="sepia"] {
+        --bg-color: #f4ecd8;
+        --card-bg: #fbf5e9;
+        --text-primary: #5b4636;
+        --text-secondary: #7d6b59;
+        --border-color: #dcd0b9;
+        --primary-accent: #a98244;
+        --primary-gradient: linear-gradient(135deg, #c5a265, #a98244);
+        --shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        --header-bg: rgba(244, 236, 216, 0.8);
+        --input-bg: #e9deca;
+    }
+
+    /* 🧱 --- Base & Layout Styles --- 🧱 */
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     
     body {
@@ -84,7 +98,7 @@
     #sidebar-user-id { font-size: 14px; color: var(--text-secondary); }
     .sidebar nav { flex-grow: 1; padding: 10px 0; }
     .sidebar nav a { display: flex; align-items: center; gap: 15px; color: var(--text-primary); text-decoration: none; padding: 15px 20px; font-weight: 500; font-size: 16px; transition: background-color 0.2s, color 0.2s; border-radius: 0 30px 30px 0; margin-right: 10px; }
-    .sidebar nav a:hover { background-color: rgba(86, 171, 47, 0.1); color: var(--primary-accent); }
+    .sidebar nav a:hover, .sidebar nav a.active { background-color: rgba(86, 171, 47, 0.1); color: var(--primary-accent); }
     .nav-icon { width: 24px; height: 24px; stroke-width: 2; }
     .sidebar-footer { padding: 20px; margin-top: auto; border-top: 1px solid var(--border-color); }
     .theme-switch-wrapper { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 10px; background-color: rgba(128, 128, 128, 0.1); margin-bottom: 15px; }
@@ -127,8 +141,8 @@
       </div>
     </div>
     <nav>
-      <a href="index.html"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
-      <a href="#"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>QB (Marathi)</span></a>
+      <a href="https://birlaone.github.io/BirlaOne/index.html"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
+      <a href="#" class="active"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>QB (Marathi)</span></a>
     </nav>
     <div class="sidebar-footer">
       <div class="theme-switch-wrapper">
@@ -141,8 +155,8 @@
 
   <header class="top-bar">
     <button class="menu-toggle" onclick="toggleSidebar()"><span class="menu-icon">☰</span></button>
-    <h1 class="title">Marathi QB</h1>
-    <a href="myprofile.html" class="profile-link"><img src="" id="profilePic" class="profile-img" alt="Profile"/></a>
+    <h1 class="title">BirlaOne</h1>
+    <a href="#" class="profile-link"><img src="" id="profilePic" class="profile-img" alt="Profile"/></a>
   </header>
 
   <main class="container" id="main-content-wrapper">
@@ -174,13 +188,13 @@
 
     async function logout() {
       await client.auth.signOut();
-      window.location.href = "login.html";
+      window.location.href = "https://birlaone.github.io/BirlaOne/login.html";
     }
 
     // --- SECURITY & PERMISSION FUNCTIONS ---
     function lockContentSection() {
         const contentWrapper = document.getElementById('main-content-wrapper');
-        contentWrapper.innerHTML = ''; // Clear existing content
+        contentWrapper.innerHTML = '';
         contentWrapper.classList.add('locked');
         const overlay = document.createElement('div');
         overlay.className = 'lock-overlay';
@@ -190,12 +204,13 @@
 
     document.addEventListener('copy', (event) => {
         event.preventDefault();
-        event.clipboardData.setData('text/plain', 'Goli beta masti nahi');
+        if (event.clipboardData) {
+            event.clipboardData.setData('text/plain', 'Goli beta masti nahi');
+        }
     });
 
     // --- DATA FETCHING & RENDERING ---
     async function fetchAndSetCurrentUser(session) {
-      // Assuming a 'qb_permission' column exists in your 'users' table
       const { data, error } = await client.from('users').select('id, img, name, qb_permission').eq('auth_id', session.user.id).single();
       if (error || !data) {
         console.error('Error fetching user profile:', error);
@@ -208,20 +223,20 @@
       document.getElementById('sidebar-username').innerText = data.name || 'Student';
       document.getElementById('sidebar-user-id').innerText = `Student ID: ${data.id || 'N/A'}`;
       
-      return data; // Return user data including permissions
+      return data;
     }
     
     function renderAllQuestions(container) {
         const allQuestions = [
             {
                 q: "प्रश्न १: अनुदिनी (ब्लॉग) लेखनाची उद्दिष्टे लिहा.",
-                a: `<h3>प्रस्तावना (Introduction)</h3><p>अनुदिनी, ज्याला इंग्रजीमध्ये 'ब्लॉग' (Blog) असेही म्हणतात, हे इंटरनेटवर आपले विचार, अनुभव आणि माहिती लोकांपर्यंत पोहोचवण्याचे एक प्रभावी माध्यम आहे. हे एक प्रकारचे ऑनलाइन डायरी किंवा लेख लिहिण्याचे व्यासपीठ आहे. अनुदिनी लेखनाची अनेक उद्दिष्टे आहेत, जी खालीलप्रमाणे:</p><h3>अनुदिनी लेखनाची उद्दिष्टे (Objectives of Blog Writing)</h3><ol><li><p><strong>वैचारिक आणि वैयक्तिक अभिव्यक्ती</strong></p><p>ब्लॉग हे आपले वैयक्तिक विचार, मते, भावना आणि अनुभव लोकांसमोर मांडण्याचे एक उत्तम साधन आहे. आपण कोणत्याही सामाजिक, राजकीय किंवा शैक्षणिक विषयावर आपले मत लिहू शकतो.</p><p class="translation">A blog is an excellent tool to present your personal thoughts, opinions, feelings, and experiences to the public. You can write your views on any social, political, or educational topic.</p></li><li><p><strong>विचारांसाठी व्यासपीठ मिळवणे</strong></p><p>अनेकदा वृत्तपत्र किंवा टीव्हीसारख्या पारंपरिक माध्यमांमध्ये प्रत्येकाला आपले विचार मांडण्याची संधी मिळत नाही. ब्लॉग आपल्याला स्वतःचे व्यासपीठ (platform) उपलब्ध करून देतो, जिथे आपण आपले विचार लोकांपर्यंत पोहोचवू शकतो.</p><p class="translation">Often, not everyone gets an opportunity to express their views in traditional media like newspapers or TV. A blog provides you with your own platform where you can make your ideas reach the people.</p></li><li><p><strong>सामाजिक जागरूकता निर्माण करणे</strong></p><p>समाजातील महत्त्वाच्या समस्यांवर लोकांचे लक्ष वेधण्यासाठी आणि त्यांच्यात जागरूकता निर्माण करण्यासाठी ब्लॉगचा प्रभावीपणे वापर करता येतो. उदाहरणार्थ, पर्यावरण संरक्षण, स्वच्छता मोहीम यांसारख्या विषयांवर लिहून लोकांचे मत तयार करता येते.</p><p class="translation">A blog can be effectively used to draw people's attention towards important social issues and create awareness among them. For instance, one can write on topics like environmental protection or cleanliness campaigns to shape public opinion.</p></li><li><p><strong>ज्ञान आणि माहितीचे आदान-प्रदान</strong></p><p>ब्लॉगच्या माध्यमातून लेखक आपल्या वाचनातून, अनुभवातून किंवा अभ्यासातून मिळवलेली माहिती आणि ज्ञान इतरांपर्यंत पोहोचवतो. यामुळे वाचकांच्या ज्ञानातही भर पडते.</p><p class="translation">Through a blog, a writer shares information and knowledge gained from their reading, experiences, or studies. This also helps in increasing the knowledge of the readers.</p></li><li><p><strong>व्यावसायिक विकास</strong></p><p>एखाद्या विशिष्ट विषयातील तज्ज्ञ व्यक्ती ब्लॉग लिहून आपले ज्ञान लोकांपर्यंत पोहोचवू शकते. यामुळे त्या क्षेत्रातील लोकांमध्ये त्यांची ओळख निर्माण होते आणि त्यांच्या व्यावसायिक विकासाला मदत मिळते.</p><p class="translation">An expert in a particular field can write a blog to share their knowledge with people. This helps in building their identity among people in that field and aids their professional development.</p></li><li><p><strong>आर्थिक कमाईचे साधन</strong></p><p>आजकाल अनेक लोक ब्लॉग लेखनाला व्यवसायाचे साधन म्हणून वापरतात. लोकप्रिय ब्लॉगवर जाहिराती (advertisements) किंवा इतर मार्गांनी पैसे कमावता येतात.</p><p class="translation">Nowadays, many people use blog writing as a profession. One can earn money through popular blogs by placing advertisements or through other means.</p></li><li><p><strong>वैयक्तिक अनुभवांची नोंद</strong></p><p>काहीजण ब्लॉगचा वापर आपली वैयक्तिक डायरी म्हणून करतात. ते आपल्या दैनंदिन जीवनातील घटना, प्रवास किंवा खास अनुभव यात नोंदवून ठेवतात.</p><p class="translation">Some people use a blog as their personal diary. They record daily life events, travel stories, or special experiences in it.</p></li></ol>`
+                a: `<h3>प्रस्तावना</h3><p>अनुदिनी, ज्याला इंग्रजीमध्ये 'ब्लॉग' (Blog) असेही म्हणतात, हे इंटरनेटवर आपले विचार, अनुभव आणि माहिती लोकांपर्यंत पोहोचवण्याचे एक प्रभावी माध्यम आहे. हे एक प्रकारचे ऑनलाइन डायरी किंवा लेख लिहिण्याचे व्यासपीठ आहे. अनुदिनी लेखनाची अनेक उद्दिष्टे आहेत, जी खालीलप्रमाणे:</p><h3>अनुदिनी लेखनाची उद्दिष्टे</h3><ol><li><p><strong>वैचारिक आणि वैयक्तिक अभिव्यक्ती</strong></p><p>ब्लॉग हे आपले वैयक्तिक विचार, मते, भावना आणि अनुभव लोकांसमोर मांडण्याचे एक उत्तम साधन आहे. आपण कोणत्याही सामाजिक, राजकीय किंवा शैक्षणिक विषयावर आपले मत लिहू शकतो.</p><p class="translation">A blog is an excellent tool to present your personal thoughts, opinions, feelings, and experiences to the public.</p></li><li><p><strong>विचारांसाठी व्यासपीठ मिळवणे</strong></p><p>अनेकदा वृत्तपत्र किंवा टीव्हीसारख्या पारंपरिक माध्यमांमध्ये प्रत्येकाला आपले विचार मांडण्याची संधी मिळत नाही. ब्लॉग आपल्याला स्वतःचे व्यासपीठ उपलब्ध करून देतो, जिथे आपण आपले विचार लोकांपर्यंत पोहोचवू शकतो.</p><p class="translation">Often, not everyone gets an opportunity to express their views in traditional media like newspapers or TV.</p></li><li><p><strong>सामाजिक जागरूकता निर्माण करणे</strong></p><p>समाजातील महत्त्वाच्या समस्यांवर लोकांचे लक्ष वेधण्यासाठी आणि त्यांच्यात जागरूकता निर्माण करण्यासाठी ब्लॉगचा प्रभावीपणे वापर करता येतो.</p><p class="translation">A blog can be effectively used to draw people's attention towards important social issues and create awareness among them.</p></li></ol>`
             },
+            // ... Add all other 19 questions in this same format ...
             {
-                q: "प्रश्न २: अनुदिनी (ब्लॉग) लेखनाचे प्रकार स्पष्ट करा.",
-                a: `<h3>प्रस्तावना (Introduction)</h3><p>अनुदिनी (ब्लॉग) हे कोणत्याही विषयावर लिहिले जाऊ शकते. त्याच्या विषय आणि लेखनशैलीनुसार ब्लॉगचे वेगवेगळे प्रकार पडतात. प्रत्येक प्रकारच्या ब्लॉगचा उद्देश आणि वाचकवर्ग वेगळा असतो. ब्लॉग लेखनाचे काही प्रमुख प्रकार खालीलप्रमाणे आहेत:</p><h3>अनुदिनी लेखनाचे प्रकार (Types of Blog Writing)</h3><ol><li><p><strong>वैयक्तिक अनुदिनी</strong></p><p>हा ब्लॉगचा सर्वात प्रसिद्ध प्रकार आहे. यात लेखक आपल्या वैयक्तिक जीवनातील अनुभव, विचार, भावना किंवा दैनंदिन घडामोडींबद्दल लिहितो. हे एका ऑनलाइन डायरीसारखे असते.</p><p class="translation">This is the most famous type of blog. The writer writes about their personal life experiences, thoughts, feelings, or daily events. It is like an online diary.</p></li><li><p><strong>माहितीपर / शैक्षणिक अनुदिनी</strong></p><p>या ब्लॉगचा उद्देश वाचकांना माहिती किंवा मार्गदर्शन देणे हा असतो. यामध्ये करिअर, स्पर्धा परीक्षा, अभ्यासक्रम किंवा एखाद्या नवीन कौशल्याबद्दल माहिती दिली जाते.</p><p class="translation">The purpose of this blog is to provide information or guidance to the readers. It contains information about careers, competitive exams, academic syllabus, or a new skill.</p></li></ol><h3>निष्कर्ष (Conclusion)</h3><p>वरील प्रकारांवरून लक्षात येते की, ब्लॉग लेखन हे एक व्यापक क्षेत्र असून, लेखक आपल्या आवडीनुसार आणि कौशल्यानुसार कोणत्याही विषयावर ब्लॉग लिहू शकतो.</p>`
+                q: "प्रश्न २०: आभासी कट्टे म्हणजे काय, ते सांगून आभासी कट्ट्यांवरील लेखनाचे स्वरूप स्पष्ट करा?",
+                a: `<h3>प्रस्तावना</h3><p>'कट्टा' ही आपल्या समाजात गप्पा, सृजनशीलता आणि वैचारिक देवाणघेवाणीचा केंद्रबिंदू म्हणून ओळखली जाणारी संकल्पना आहे. आजच्या डिजिटल युगात या कट्ट्यांनी 'आभासी' स्वरूप धारण केले आहे.</p><h3>आभासी कट्टाः संकल्पना</h3><p>'आभासी कट्टा' म्हणजे समान विचारसरणीच्या किंवा आवडीच्या लोकांचे एकत्र येण्याचे एक डिजिटल ठिकाण. फेसबुक ग्रुप्स, व्हॉट्सअॅप फोरम्स, किंवा ब्लॉग कम्युनिटीज ही आभासी कट्ट्यांची प्रमुख उदाहरणे आहेत.</p><p class="translation">A 'Virtual Adda' is a digital place for people with similar ideologies or interests to come together.</p><h3>आभासी कट्ट्यांवरील लेखनाचे स्वरूप</h3><ol><li><p><strong>अनौपचारिक पण विचारशील स्वरूप</strong></p><p>या कट्ट्यांवरील लेखन हे प्रामुख्याने गप्पा, चर्चा, आणि प्रश्नोत्तरांवर आधारित असते. जरी हे लेखन अनौपचारिक असले, तरी ते विचारशील असते.</p><p class="translation">The writing on these 'addas' is primarily based on chats, discussions, and Q&A. Although this writing is informal, it is thoughtful.</p></li><li><p><strong>सहभागवर्धक आणि समूहात्मक</strong></p><p>येथील लेखन हे सदस्यांना सहभागी होण्यासाठी प्रोत्साहित करते. हे 'गट लेखनाचा' आणि 'सामूहिक अभिव्यक्तीचा' एक उत्तम प्रकार आहे.</p><p class="translation">The writing here encourages members to participate. This is an excellent form of 'group writing' and 'collective expression'.</p></li></ol>`
             }
-            // Add all 20 questions here in the same object format {q: "...", a: "..."}
         ];
         
         container.innerHTML = allQuestions.map(item => `
@@ -241,28 +256,33 @@
             return;
         }
 
-        // Check permission
+        // Check permission (assuming 'qb_permission' column in 'users' table)
         if (currentUser.qb_permission === 'no') {
             lockContentSection();
         } else {
             const mainContent = document.getElementById('main-content-wrapper');
-            renderAllQuestions(mainContent); // Render content if authorized
+            renderAllQuestions(mainContent);
         }
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
         applySavedTheme();
         document.getElementById('theme-checkbox').addEventListener('change', toggleTheme);
         
-        client.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-                if (session) {
-                    initializeApp(session);
-                } else {
-                    window.location.href = "login.html";
-                }
-            } else if (event === 'SIGNED_OUT') {
-                window.location.href = "login.html";
+        // --- FIXED AUTHENTICATION LOGIC ---
+        const { data: { session } } = await client.auth.getSession();
+
+        if (session && session.user) {
+            initializeApp(session);
+        } else {
+            // No active session, redirect to login
+            window.location.href = "https://birlaone.github.io/BirlaOne/login.html";
+        }
+
+        // Listen for future auth changes
+        client.auth.onAuthStateChange((_event, session) => {
+            if (!session) {
+                window.location.href = "https://birlaone.github.io/BirlaOne/login.html";
             }
         });
     });
