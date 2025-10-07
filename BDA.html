@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>Big Data QB - BirlaOne</title>
+  <link rel="icon" type="image/png" href="https://i.ibb.co/N6QNPW56/logo-1-modified.png" />
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+
+  <style>
+    :root {
+      --primary-accent: #11998e;
+      --primary-gradient: linear-gradient(90deg, #11998e, #38ef7d);
+      --danger-color: #e53935;
+      --font-sans: 'Inter', sans-serif;
+      --font-serif: 'Lora', serif;
+      --border-radius: 14px;
+      --transition-speed: 0.3s;
+    }
+    
+    html[data-theme="light"] {
+      --bg-color: #f7f7f9;
+      --card-bg: #ffffff;
+      --card-bg-rgb: 255, 255, 255;
+      --text-primary: #1c1c1e;
+      --text-secondary: #636366;
+      --border-color: #e5e5ea;
+      --shadow: 0 6px 25px rgba(0, 0, 0, 0.07);
+      --header-bg: rgba(255, 255, 255, 0.8);
+      --input-bg: #f0f0f0;
+    }
+
+    html[data-theme="dark"] {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --card-bg-rgb: 30, 30, 30;
+      --text-primary: #f2f2f7;
+      --text-secondary: #98989f;
+      --border-color: #38383a;
+      --shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+      --header-bg: rgba(28, 28, 30, 0.75);
+      --input-bg: #2c2c2e;
+    }
+      
+    html[data-theme="sepia"] {
+        --bg-color: #f4ecd8;
+        --card-bg: #fbf5e9;
+        --text-primary: #5b4636;
+        --text-secondary: #7d6b59;
+        --border-color: #dcd0b9;
+        --primary-accent: #a98244;
+        --primary-gradient: linear-gradient(135deg, #c5a265, #a98244);
+        --shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        --header-bg: rgba(244, 236, 216, 0.8);
+        --input-bg: #e9deca;
+    }
+
+    /* Base & Layout Styles */
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      font-family: var(--font-serif);
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    }
+
+    /* Header & Sidebar */
+    .top-bar { font-family: var(--font-sans); display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--header-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-color); }
+    .top-bar .title { font-family: 'Pacifico', cursive; font-size: 26px; font-weight: 400; color: var(--text-primary); }
+    .menu-toggle { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
+    .menu-icon { color: var(--text-primary); font-size: 24px; }
+    .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 199; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+    .sidebar-overlay.active { opacity: 1; visibility: visible; }
+    .sidebar { position: fixed; top: 0; left: 0; width: 280px; height: 100%; background: var(--card-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); box-shadow: 2px 0 20px rgba(0,0,0,0.2); transform: translateX(-100%); transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94); z-index: 200; display: flex; flex-direction: column; font-family: var(--font-sans); }
+    .sidebar.active { transform: translateX(0); }
+    .sidebar-profile-card { display: flex; align-items: center; gap: 15px; padding: 20px; border-bottom: 1px solid var(--border-color); }
+    .sidebar-profile-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--primary-accent); object-fit: cover; flex-shrink: 0; }
+    .sidebar-user-info { overflow: hidden; }
+    #sidebar-username { font-weight: 600; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #sidebar-user-id { font-size: 14px; color: var(--text-secondary); }
+    .sidebar nav { flex-grow: 1; padding: 10px 0; }
+    .sidebar nav a { display: flex; align-items: center; gap: 15px; color: var(--text-primary); text-decoration: none; padding: 15px 20px; font-weight: 500; font-size: 16px; transition: background-color 0.2s, color 0.2s; border-radius: 0 30px 30px 0; margin-right: 10px; }
+    .sidebar nav a:hover, .sidebar nav a.active { background-color: rgba(17, 153, 142, 0.1); color: var(--primary-accent); }
+    .nav-icon { width: 24px; height: 24px; stroke-width: 2; }
+    .sidebar-footer { padding: 20px; margin-top: auto; border-top: 1px solid var(--border-color); }
+    .logout-button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--danger-color); color: white; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+    
+    .theme-selector select {
+      background-color: var(--input-bg);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      -webkit-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 28px;
+      transition: all var(--transition-speed) ease;
+    }
+    
+    .theme-selector select:focus {
+        outline: 2px solid var(--primary-accent);
+        outline-offset: 2px;
+    }
+
+    /* Content Styles */
+    .container { padding: 16px; max-width: 800px; margin: 0 auto; position: relative; }
+    .unit-title {
+        font-family: var(--font-sans);
+        font-size: 28px;
+        font-weight: 700;
+        margin-top: 30px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 4px solid var(--primary-accent);
+        color: var(--primary-accent);
+    }
+    .note-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 24px; overflow: hidden; transition: all var(--transition-speed) ease; }
+    .note-title { font-family: var(--font-sans); font-size: 22px; font-weight: 700; padding: 18px 22px; background: var(--primary-gradient); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    .note-body { padding: 12px 22px 22px 22px; }
+    .note-body h3 { font-family: var(--font-sans); font-size: 1.2rem; font-weight: 700; border-bottom: 2px solid var(--primary-accent); padding-bottom: 6px; margin-top: 24px; margin-bottom: 12px; }
+    .note-body p, .note-body li { margin-bottom: 16px; text-align: left; line-height: 1.8; font-size: 17px; }
+    .note-body strong { font-family: var(--font-sans); font-weight: 700; color: var(--primary-accent);}
+    .note-body ul, .note-body ol { padding-left: 25px; }
+
+    /* Permission Lock Styles */
+    #main-content-wrapper.locked > *:not(.lock-overlay) { filter: blur(8px); -webkit-filter: blur(8px); pointer-events: none; }
+    .lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2; }
+    .lock-overlay-content { background: rgba(var(--card-bg-rgb), 0.7); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); padding: 20px 30px; border-radius: 12px; box-shadow: var(--shadow); font-weight: 600; font-size: 16px; border: 1px solid var(--border-color); font-family: var(--font-sans); }
+  </style>
+</head>
+<body>
+  
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-profile-card">
+      <img src="" id="sidebarProfilePic" class="sidebar-profile-img" alt="Profile"/>
+      <div class="sidebar-user-info">
+        <div id="sidebar-username">Loading...</div>
+        <div id="sidebar-user-id">Student ID: ...</div>
+      </div>
+    </div>
+    <nav>
+      <a href="https://birlaone.github.io/BirlaOne/index.html"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
+      <a href="#"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>QB (Marathi)</span></a>
+      <a href="#"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="14.31" y1="8" x2="20.05" y2="17.94"></line><line x1="9.69" y1="8" x2="21.17" y2="8"></line><line x1="7.38" y1="12" x2="13.12" y2="2.06"></line><line x1="9.69" y1="16" x2="3.95" y2="6.06"></line><line x1="14.31" y1="16" x2="2.83" y2="16"></line><line x1="16.62" y1="12" x2="10.88" y2="21.94"></line></svg><span>QB (Sports)</span></a>
+      <a href="#"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg><span>QB (Service Sector)</span></a>
+      <a href="#" class="active"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg><span>QB (Big Data)</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-button" onclick="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <header class="top-bar">
+    <button class="menu-toggle" onclick="toggleSidebar()"><span class="menu-icon">☰</span></button>
+    <h1 class="title">BirlaOne</h1>
+    <div class="theme-selector">
+        <select id="themeSelect" onchange="changeTheme(this.value)" aria-label="Select theme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="sepia">Sepia</option>
+        </select>
+    </div>
+  </header>
+
+  <main class="container" id="main-content-wrapper">
+      </main>
+
+<script>
+    const SUPABASE_URL = 'https://eikriuddsuguybvvyzjl.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpa3JpdWRkc3VndXlidnZ5empsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgxMjIxNTAsImV4cCI6MjA3MzY5ODE1MH0.HNh2gGO8nWzAjxh5Oa3cs_8WKaq9mq9TyLCvPOkcr2c';
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // UI & UTILITY FUNCTIONS
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+    
+    function changeTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+    }
+
+    async function logout() {
+      await client.auth.signOut();
+      window.location.href = "https://birlaone.github.io/BirlaOne/login.html";
+    }
+
+    // SECURITY & PERMISSION FUNCTIONS
+    function lockContentSection() {
+        const contentWrapper = document.getElementById('main-content-wrapper');
+        contentWrapper.innerHTML = '';
+        contentWrapper.classList.add('locked');
+        const overlay = document.createElement('div');
+        overlay.className = 'lock-overlay';
+        overlay.innerHTML = `<div class="lock-overlay-content">🔒 Unauthorized Access</div>`;
+        contentWrapper.appendChild(overlay);
+    }
+
+    // DATA FETCHING & RENDERING
+    async function fetchAndSetCurrentUser(session) {
+      const { data, error } = await client.from('users').select('id, img, name').eq('auth_id', session.user.id).single();
+      
+      if (error || !data) {
+        console.error('Error fetching user profile:', error);
+        return null;
+      }
+      
+      const picUrl = data.img || 'https://t4.ftcdn.net/jpg/05/89/93/27/360_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg';
+      document.getElementById('sidebarProfilePic').src = picUrl;
+      document.getElementById('sidebar-username').innerText = data.name || 'Student';
+      document.getElementById('sidebar-user-id').innerText = `Student ID: ${data.id || 'N/A'}`;
+      
+      return data;
+    }
+    
+    function renderBigDataQB(container) {
+        const qbData = [
+            { 
+                unit: 1, 
+                questions: [
+                    {
+                        title: "Q.1. Explain Big Data Analytics with its Advantages and Disadvantages.",
+                        answer: `
+                            <p>Big Data Analytics refers to the process of examining large, complex, and varied data sets to uncover hidden patterns, correlations, market trends, and other useful business insights. This data is too big or too fast-moving for traditional data-processing tools to handle. Companies use Big Data Analytics to make smarter, faster, and more effective decisions by analyzing structured, semi-structured, and unstructured data.</p>
+                            <h3>Advantages:</h3>
+                            <ul>
+                                <li><strong>Cost Reduction:</strong> Tools like Hadoop and Spark help in reducing data storage and processing costs by using distributed systems.</li>
+                                <li><strong>Faster Processing:</strong> Real-time data analysis allows companies to respond quickly to opportunities or threats.</li>
+                                <li><strong>Customer Satisfaction:</strong> By analyzing customer behavior and preferences, companies can offer more personalized services and improve customer experience.</li>
+                                <li><strong>Competitive Advantage:</strong> Access to deep insights helps companies stay ahead in the market by understanding trends and customer needs better than competitors.</li>
+                            </ul>
+                            <h3>Disadvantages:</h3>
+                            <ul>
+                                <li><strong>Complexity:</strong> Handling and analyzing massive and diverse data (like images, videos, texts) can be highly complex and technically challenging.</li>
+                                <li><strong>Privacy Issues:</strong> Big Data often includes sensitive personal information, which raises serious concerns around data privacy and protection.</li>
+                                <li><strong>High Tool Cost:</strong> Although open-source tools exist, setting up and maintaining Big Data platforms can be expensive for smaller businesses.</li>
+                                <li><strong>Skilled Workforce:</strong> Organizations need data scientists, analysts, and IT professionals who have specialized knowledge, and such talent is not always easy to find.</li>
+                                <li><strong>Data Quality:</strong> If the input data is inaccurate, incomplete, or outdated, it can lead to wrong analysis and poor decisions.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: "Q.3. Explain the Five V's Characteristics of Big Data Analytics with Examples.",
+                        answer: `
+                            <ul>
+                                <li><strong>Volume:</strong> Refers to the huge amount of data generated. Example: Facebook stores petabytes of user data daily.</li>
+                                <li><strong>Velocity:</strong> Refers to the high speed at which data is generated and processed. Example: Twitter handles millions of tweets per second.</li>
+                                <li><strong>Variety:</strong> Refers to the different types of data, both structured and unstructured. Example: Data can be in the form of text, video, audio, and images.</li>
+                                <li><strong>Veracity:</strong> Refers to the trustworthiness and quality of the data. Example: Fake news or inaccurate sensor data can affect the analysis.</li>
+                                <li><strong>Value:</strong> Refers to the useful and actionable insights that can be extracted from the data. Example: Customer data is used to improve services and create personalized experiences.</li>
+                            </ul>
+                        `
+                    }
+                ]
+            },
+            {
+                unit: 2,
+                questions: [
+                    {
+                        title: "Q.1. Explain the different types of Data in Big Data.",
+                        answer: `
+                            <p>Based on its structure and format, Big Data is categorized into the following types:</p>
+                            <ol>
+                                <li><strong>Structured Data:</strong> Organized and stored in a fixed format, typically in rows and columns (tables). It's easy to search and process using SQL. Example: Customer data in relational databases like MySQL.</li>
+                                <li><strong>Unstructured Data:</strong> Data that doesn't follow a predefined format, making it difficult to search and analyze. Example: Images, videos, emails, and social media posts.</li>
+                                <li><strong>Semi-Structured Data:</strong> Partially organized with tags or markers that help define the structure, but it doesn't fit neatly into traditional databases. Example: XML, JSON, and NoSQL databases.</li>
+                                <li><strong>Meta Data:</strong> Data that provides information about other data. It describes the properties of files or data entries. Example: The file size, creation date, and author of a document.</li>
+                                <li><strong>Real-Time Data:</strong> Data that is generated instantly and processed in real-time to provide immediate insights. It is used in systems requiring an immediate response. Example: Live sensor feeds from IoT devices or stock market updates.</li>
+                            </ol>
+                        `
+                    },
+                    {
+                        title: "Q.2. Explain the various types of Data Collection Methods with example.",
+                        answer: `
+                            <p>Data collection is the process of gathering data from different sources. Common methods include:</p>
+                            <ol>
+                                <li><strong>Surveys:</strong> Collecting data from people using questionnaires, which can be online or offline. Example: Using Google Forms to collect student opinions on a new course.</li>
+                                <li><strong>Sensors:</strong> Devices that automatically collect real-time environmental or operational data. Example: Temperature sensors in a smart home or GPS sensors in a vehicle.</li>
+                                <li><strong>Transaction Logs:</strong> Records of actions, events, or business transactions that occur over time. Example: An e-commerce website storing a customer's complete purchase history.</li>
+                                <li><strong>Web Scraping:</strong> The automated process of extracting large amounts of data from websites. Example: Scraping product prices and reviews from Flipkart or Amazon for competitive analysis.</li>
+                                <li><strong>APIs (Application Programming Interfaces):</strong> Allows different software applications to communicate and fetch data programmatically. Example: Using the Twitter API to gather tweets containing a specific hashtag for sentiment analysis.</li>
+                            </ol>
+                        `
+                    }
+                ]
+            },
+            {
+                unit: 3,
+                questions: [
+                     {
+                        title: "Q.1. Describe the Types of Data Analytics with Example.",
+                        answer: `
+                            <p>There are four main types of data analytics, each providing a different level of insight:</p>
+                            <ol>
+                                <li><strong>Descriptive Analytics:</strong> This type explains what has already happened by summarizing historical data. It is the simplest form of analytics. Example: A retail company's dashboard showing that total sales increased by 20% in the last quarter.</li>
+                                <li><strong>Diagnostic Analytics:</strong> This type focuses on understanding why something happened. It involves drilling down into the data to find the root cause of an event. Example: If sales dropped in March, diagnostic analytics might reveal that it was caused by a decline in website traffic from a key marketing channel.</li>
+                                <li><strong>Predictive Analytics:</strong> This type uses historical data, statistical algorithms, and machine learning to predict future outcomes. Example: Predicting that a customer is likely to churn (cancel their subscription) next month based on their recent usage patterns.</li>
+                                <li><strong>Prescriptive Analytics:</strong> This type provides recommendations for future actions based on predictions. It answers the question, "What should be done?" Example: Suggesting that a company offer a 10% discount to specific customers who are identified as being at high risk of churning.</li>
+                            </ol>
+                        `
+                    },
+                    {
+                        title: "Q.2. State Different Basic Statistical Techniques for Data Analytics.",
+                        answer: `
+                            <p>Statistical techniques are fundamental for analyzing and interpreting data. Common techniques include:</p>
+                            <ol>
+                                <li><strong>Mean, Median, Mode:</strong> These are measures of central tendency. The mean is the average value, the median is the middle value in a dataset, and the mode is the most frequently occurring value. Example: Finding the average monthly revenue for a business.</li>
+                                <li><strong>Standard Deviation and Variance:</strong> These measure the spread or variability in a dataset. A high standard deviation indicates that the data points are spread out over a wider range of values. Example: Measuring how much employee salaries vary from the company average.</li>
+                                <li><strong>Correlation:</strong> This measures the statistical relationship between two variables. It helps understand if and how a change in one variable affects the other. Example: Studying the relationship between advertising spending and sales revenue.</li>
+                                <li><strong>Regression Analysis:</strong> This is used to model the relationship between a dependent variable and one or more independent variables. It is widely used for prediction. Example: Predicting a student's final exam score based on the number of hours they studied.</li>
+                                <li><strong>Hypothesis Testing:</strong> This technique is used to test an assumption or theory about a population parameter. It helps in making decisions based on statistical evidence. Example: A company using a T-test to determine if a new website design leads to a significant increase in user engagement.</li>
+                            </ol>
+                        `
+                    },
+                    {
+                        title: "Q.3. Explain the Basic Machine Learning Concepts with Example.",
+                        answer: `
+                            <p>Machine Learning (ML) is a branch of Artificial Intelligence (AI) that enables systems to learn from data and make predictions without being explicitly programmed. The main types are:</p>
+                            <ol>
+                                <li><strong>Supervised Learning:</strong> The model is trained on labeled data, meaning both the input and the correct output are known. It learns to map inputs to outputs. Example: A spam filter trained on a dataset of emails that are already labeled as "spam" or "not spam".</li>
+                                <li><strong>Unsupervised Learning:</strong> The model is trained on unlabeled data and tries to find hidden patterns or structures on its own. Example: Grouping customers into different segments based on their purchasing behavior, without any prior knowledge of the groups.</li>
+                                <li><strong>Reinforcement Learning:</strong> The system (or "agent") learns by interacting with an environment. It receives feedback in the form of rewards or penalties for its actions and learns the best strategy over time. Example: A self-driving car learning to make better steering adjustments based on road conditions and past outcomes.</li>
+                            </ol>
+                        `
+                    }
+                ]
+            },
+            {
+                unit: 4,
+                questions: [
+                    {
+                        title: "Q.3. Discuss the importance of encryption, anonymization, and access control in Big Data security.",
+                        answer: `
+                            <p>Ensuring the security of vast amounts of sensitive information in Big Data is critical. Three major components for this are:</p>
+                            <ol>
+                                <li><strong>Encryption:</strong> This is the process of converting data into an unreadable format using algorithms. Only authorized users with the correct decryption key can access it.
+                                    <ul>
+                                        <li><strong>Importance:</strong> It ensures data confidentiality, protects data "at rest" (in storage) and "in transit" (over networks), helps meet regulatory compliance (like GDPR), and makes stolen data useless in case of a breach.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Anonymization:</strong> This involves modifying or removing personally identifiable information (PII) from datasets so that individuals cannot be identified.
+                                    <ul>
+                                        <li><strong>Importance:</strong> It protects individual privacy during analytics, is required by data protection laws for research, allows for safe data sharing with third parties, and reduces the risk of targeted attacks.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Access Control:</strong> This refers to mechanisms that restrict who can view or use resources.
+                                    <ul>
+                                        <li><strong>Importance:</strong> It prevents unauthorized access, allows for Role-Based Access Control (RBAC) where users only get permissions needed for their job, creates audit trails to track data access, and mitigates internal threats from employees.</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        `
+                    },
+                    {
+                        title: "Q.5. How is cloud computing contributing to the scalability and future of Big Data technologies?",
+                        answer: `
+                            <p>Cloud computing plays a foundational role in enabling the scalability, flexibility, and growth of Big Data technologies. Its key contributions include:</p>
+                            <ol>
+                                <li><strong>Scalability:</strong> Cloud platforms (like AWS, Google Cloud, Azure) allow organizations to easily scale their storage and computing resources up or down on-demand, which is essential for handling fluctuating Big Data workloads.</li>
+                                <li><strong>Cost Efficiency:</strong> The pay-as-you-go model eliminates the need for large upfront investments in on-premise hardware, lowering the entry barrier for smaller businesses to leverage Big Data tools.</li>
+                                <li><strong>High Availability and Reliability:</strong> Cloud providers offer distributed storage and automatic failover mechanisms, ensuring data is always accessible and protected from hardware failures.</li>
+                                <li><strong>Access to Advanced Tools:</strong> Cloud platforms provide managed services and integrations with leading Big Data frameworks (like Hadoop and Spark) and AI/ML tools, simplifying the technology stack.</li>
+                                <li><strong>Global Collaboration:</strong> Cloud-based tools allow teams from different geographical locations to access and collaborate on the same datasets, fostering global innovation.</li>
+                                <li><strong>Security and Compliance:</strong> Cloud providers offer robust, built-in security frameworks and compliance certifications (e.g., GDPR, HIPAA), enhancing trust in storing and analyzing sensitive data.</li>
+                            </ol>
+                        `
+                    }
+                ]
+            },
+            {
+                unit: 5,
+                questions: [
+                    {
+                        title: "Q.1. How do businesses use Big Data to improve targeted advertising and customer engagement?",
+                        answer: `
+                            <p>Businesses leverage Big Data to gain deep insights into consumer behavior, which allows for highly effective advertising and engagement strategies:</p>
+                            <ul>
+                                <li><strong>Customer Segmentation:</strong> Big Data helps group customers based on demographics, online behavior, interests, and purchase history. This allows companies to create personalized marketing campaigns for each segment.</li>
+                                <li><strong>Behavioral Analytics:</strong> By tracking website visits, social media interactions, and app usage, companies understand a customer's interests in real-time. For example, a customer browsing fitness gear might receive ads for sportswear.</li>
+                                <li><strong>Predictive Targeting:</strong> Algorithms analyze historical data to predict what a customer might need next. For example, after a customer buys a new phone, they might be shown ads for phone cases.</li>
+                                <li><strong>Real-Time Advertising:</strong> Programmatic advertising uses Big Data to display the right ad to the right user at the right moment, increasing the chances of engagement and conversion.</li>
+                                <li><strong>Customer Feedback Analysis:</strong> Data from reviews, comments, and surveys is mined to understand customer satisfaction and pain points, helping businesses improve their products and services.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: "Q.3. Describe how healthcare institutions use predictive analytics for patient care and disease detection.",
+                        answer: `
+                            <p>Predictive analytics in healthcare uses historical and real-time data to improve patient outcomes and detect health issues early:</p>
+                            <ul>
+                                <li><strong>Early Disease Detection:</strong> By analyzing medical records, genetic data, and lifestyle information, predictive models can forecast a patient's risk for diseases like diabetes, cancer, or heart conditions long before symptoms appear.</li>
+                                <li><strong>Personalized Treatment Plans:</strong> Big Data helps doctors design customized treatment plans based on a patient's unique genetic makeup, medical history, and how similar patients have responded to different therapies.</li>
+                                <li><strong>Hospital Resource Management:</strong> Predictive tools can forecast patient admission rates, helping hospitals efficiently allocate resources like ICU beds, staff schedules, and medical supplies.</li>
+                                <li><strong>Preventive Care:</strong> Data from wearable devices (like heart rate and sleep patterns) is analyzed in real-time to alert patients and doctors of potential health issues before they become critical.</li>
+                                <li><strong>Epidemic Prediction:</strong> Analyzing population health data and environmental factors can help public health officials predict the spread of infectious diseases and plan interventions.</li>
+                            </ul>
+                        `
+                    }
+                ]
+            },
+            {
+                unit: 6,
+                questions: [
+                    {
+                        title: "Q.1. How is Artificial Intelligence (AI) integrated into Big Data Analytics, and what benefits does it provide?",
+                        answer: `
+                            <p>AI is integrated into Big Data Analytics through several key technologies:</p>
+                            <ol>
+                                <li><strong>Machine Learning (ML) Algorithms:</strong> AI uses ML models to automatically identify patterns, trends, and correlations in massive datasets, improving predictions over time.</li>
+                                <li><strong>Natural Language Processing (NLP):</strong> NLP allows systems to analyze unstructured text data from sources like social media posts and emails, enabling sentiment analysis and trend forecasting.</li>
+                                <li><strong>Automated Data Processing:</strong> AI automates tasks like data cleaning, transformation, and classification, reducing manual effort and enabling faster analysis.</li>
+                                <li><strong>Predictive and Prescriptive Analytics:</strong> AI models forecast future trends (predictive) and recommend actions (prescriptive) based on data insights, such as suggesting inventory strategies for retailers.</li>
+                                <li><strong>Computer Vision:</strong> AI interprets visual data like X-rays or quality control images, extracting insights from images and videos.</li>
+                                <li><strong>Real-time Analytics:</strong> AI enables the processing of streaming data in real-time for applications like fraud detection or traffic monitoring.</li>
+                            </ol>
+                            <h3>Benefits of Integrating AI with Big Data:</h3>
+                            <ul>
+                                <li><strong>Faster and Smarter Decision-Making:</strong> AI quickly extracts meaningful patterns, enabling more informed decisions.</li>
+                                <li><strong>Improved Accuracy:</strong> AI models offer high accuracy in predictions and anomaly detection.</li>
+                                <li><strong>Cost Efficiency:</strong> Automation of tasks and early issue detection help reduce operational costs.</li>
+                                <li><strong>Personalization:</strong> AI enables hyper-personalized services in e-commerce, entertainment, and banking.</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: "Q.4. List and explain three career paths available in the Big Data field and their respective roles.",
+                        answer: `
+                            <ol>
+                                <li><strong>Data Scientist:</strong>
+                                    <ul>
+                                        <li><strong>Role Overview:</strong> A Data Scientist analyzes complex datasets to uncover insights that inform business decisions. They use a combination of statistics, machine learning, and programming to solve data-driven problems.</li>
+                                        <li><strong>Key Responsibilities:</strong> Collecting and cleaning data, developing machine learning models, performing statistical analysis, and presenting insights to stakeholders.</li>
+                                        <li><strong>Skills Required:</strong> Strong programming (Python, R, SQL), knowledge of statistics and machine learning, and familiarity with Big Data tools like Hadoop and Spark.</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Big Data Engineer (or Data Engineer):</strong>
+                                    <ul>
+                                        <li><strong>Role Overview:</strong> A Big Data Engineer designs, builds, and maintains the infrastructure that allows organizations to process and store massive amounts of data efficiently.</li>
+                                        <li><strong>Key Responsibilities:</strong> Building data pipelines, designing data warehouses or data lakes, ensuring data quality, and automating data ingestion processes.</li>
+                                        <li><strong>Skills Required:</strong> Proficiency in programming (Java, Scala, Python), experience with distributed computing frameworks, and knowledge of databases (SQL and NoSQL).</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Data Analyst:</strong>
+                                    <ul>
+                                        <li><strong>Role Overview:</strong> A Data Analyst interprets data to help organizations make informed decisions. They focus on generating reports, dashboards, and visualizations to highlight business trends.</li>
+                                        <li><strong>Key Responsibilities:</strong> Querying databases, creating dashboards, identifying patterns, and collaborating with departments like marketing and finance.</li>
+                                        <li><strong>Skills Required:</strong> Strong analytical skills, proficiency in tools like Excel, SQL, Power BI, or Tableau, and good communication skills.</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        `
+                    },
+                    {
+                        title: "Q.5. How is ethical AI important for responsible data usage in modern data-driven industries?",
+                        answer: `
+                            <p>Ethical AI is crucial for ensuring responsible data usage by focusing on fairness, transparency, accountability, and privacy. Its importance is highlighted in several areas:</p>
+                            <ol>
+                                <li><strong>Fairness and Non-Discrimination:</strong> AI models trained on biased historical data can perpetuate or amplify discrimination in areas like hiring or lending. Ethical AI ensures that data-driven decisions do not unfairly disadvantage any group.</li>
+                                <li><strong>Transparency and Explainability:</strong> Many AI models operate as "black boxes." Ethical AI promotes explainable systems so that stakeholders can understand and trust the outcomes, which is crucial for justifying decisions like a loan application denial.</li>
+                                <li><strong>Privacy Protection:</strong> Modern AI systems analyze vast amounts of sensitive personal data. Ethical AI mandates strict data governance policies, including data minimization, anonymization, and user consent to protect individual privacy.</li>
+                                <li><strong>Accountability and Responsibility:</strong> Ethical AI practices ensure that organizations are held accountable for the actions of their AI systems. This includes having mechanisms to address errors, appeal decisions, and correct harm caused by faulty predictions.</li>
+                                <li><strong>Security and Robustness:</strong> Ethical AI ensures that systems are secure from attacks and tampering. It emphasizes rigorous testing to ensure safe and reliable performance under various conditions.</li>
+                            </ol>
+                        `
+                    }
+                ]
+            }
+        ];
+
+        let html = '';
+        qbData.forEach(unitData => {
+            html += `<h2 class="unit-title">Unit ${unitData.unit}</h2>`;
+            unitData.questions.forEach(q => {
+                html += `
+                    <article class="note-card">
+                        <h2 class="note-title">${q.title}</h2>
+                        <div class="note-body">${q.answer}</div>
+                    </article>
+                `;
+            });
+        });
+        container.innerHTML = html;
+    }
+
+    // APP INITIALIZATION
+    async function initializeApp(session) {
+        const currentUser = await fetchAndSetCurrentUser(session);
+        if (!currentUser) {
+          alert("Could not load your profile. Please log in again.");
+          logout();
+          return;
+        }
+
+        const mainContent = document.getElementById('main-content-wrapper');
+        renderBigDataQB(mainContent);
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeSelect').value = savedTheme;
+        
+        const { data: { session } } = await client.auth.getSession();
+
+        if (session && session.user) {
+            initializeApp(session);
+        } else {
+            window.location.href = "https://birlaone.github.io/BirlaOne/login.html";
+        }
+
+        client.auth.onAuthStateChange((_event, session) => {
+            if (!session) {
+                window.location.href = "https://birlaone.github.io/BirlaOne/login.html";
+            }
+        });
+    });
+</script>
+</body>
+</html>
