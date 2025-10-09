@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>Mutual Fund QB - BirlaOne</title>
+  <link rel="icon" type="image/png" href="https://i.ibb.co/N6QNPW56/logo-1-modified.png" />
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+
+  <style>
+    :root {
+      --primary-accent: #f89b29;
+      --primary-gradient: linear-gradient(90deg, #f89b29, #ff5f6d);
+      --danger-color: #e53935;
+      --font-sans: 'Inter', sans-serif;
+      --font-serif: 'Lora', serif;
+      --border-radius: 14px;
+      --transition-speed: 0.3s;
+    }
+    
+    html[data-theme="light"] {
+      --bg-color: #f7f7f9;
+      --card-bg: #ffffff;
+      --text-primary: #1c1c1e;
+      --text-secondary: #636366;
+      --border-color: #e5e5ea;
+      --shadow: 0 6px 25px rgba(0, 0, 0, 0.07);
+      --header-bg: rgba(255, 255, 255, 0.8);
+      --input-bg: #f0f0f0;
+      --table-header-bg: #f2f2f2;
+    }
+
+    html[data-theme="dark"] {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --text-primary: #f2f2f7;
+      --text-secondary: #98989f;
+      --border-color: #38383a;
+      --shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+      --header-bg: rgba(28, 28, 30, 0.75);
+      --input-bg: #2c2c2e;
+      --table-header-bg: #2c2c2e;
+    }
+      
+    html[data-theme="sepia"] {
+        --bg-color: #f4ecd8;
+        --card-bg: #fbf5e9;
+        --text-primary: #5b4636;
+        --text-secondary: #7d6b59;
+        --border-color: #dcd0b9;
+        --primary-accent: #a98244;
+        --primary-gradient: linear-gradient(135deg, #c5a265, #a98244);
+        --shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        --header-bg: rgba(244, 236, 216, 0.8);
+        --input-bg: #e9deca;
+        --table-header-bg: #e9deca;
+    }
+
+    /* Base & Layout Styles */
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      font-family: var(--font-serif);
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    }
+
+    /* Header & Sidebar */
+    .top-bar { font-family: var(--font-sans); display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--header-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-color); }
+    .top-bar .title { font-family: 'Pacifico', cursive; font-size: 26px; font-weight: 400; color: var(--text-primary); }
+    .menu-toggle { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
+    .menu-icon { color: var(--text-primary); font-size: 24px; }
+    .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 199; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+    .sidebar-overlay.active { opacity: 1; visibility: visible; }
+    .sidebar { position: fixed; top: 0; left: 0; width: 280px; height: 100%; background: var(--card-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); box-shadow: 2px 0 20px rgba(0,0,0,0.2); transform: translateX(-100%); transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94); z-index: 200; display: flex; flex-direction: column; font-family: var(--font-sans); }
+    .sidebar.active { transform: translateX(0); }
+    .sidebar-profile-card { display: flex; align-items: center; gap: 15px; padding: 20px; border-bottom: 1px solid var(--border-color); }
+    .sidebar-profile-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--primary-accent); object-fit: cover; flex-shrink: 0; }
+    .sidebar-user-info { overflow: hidden; }
+    #sidebar-username { font-weight: 600; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #sidebar-user-id { font-size: 14px; color: var(--text-secondary); }
+    .sidebar nav { flex-grow: 1; padding: 10px 0; }
+    .sidebar nav a { display: flex; align-items: center; gap: 15px; color: var(--text-primary); text-decoration: none; padding: 15px 20px; font-weight: 500; font-size: 16px; transition: background-color 0.2s, color 0.2s; border-radius: 0 30px 30px 0; margin-right: 10px; }
+    .sidebar nav a:hover, .sidebar nav a.active { background-color: rgba(248, 155, 41, 0.1); color: var(--primary-accent); }
+    .nav-icon { width: 24px; height: 24px; stroke-width: 2; }
+    .sidebar-footer { padding: 20px; margin-top: auto; border-top: 1px solid var(--border-color); }
+    .logout-button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--danger-color); color: white; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+    
+    .theme-selector select {
+      background-color: var(--input-bg);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      -webkit-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 28px;
+      transition: all var(--transition-speed) ease;
+    }
+    
+    .theme-selector select:focus {
+        outline: 2px solid var(--primary-accent);
+        outline-offset: 2px;
+    }
+
+    /* Content Styles */
+    .container { padding: 16px; max-width: 800px; margin: 0 auto; position: relative; }
+    .note-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 24px; overflow: hidden; transition: all var(--transition-speed) ease; }
+    .note-title { font-family: var(--font-sans); font-size: 22px; font-weight: 700; padding: 18px 22px; background: var(--primary-gradient); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    .note-body { padding: 12px 22px 22px 22px; }
+    .note-body h3 { font-family: var(--font-sans); font-size: 1.2rem; font-weight: 700; border-bottom: 2px solid var(--primary-accent); padding-bottom: 6px; margin-top: 24px; margin-bottom: 12px; }
+    .note-body p, .note-body li { margin-bottom: 16px; text-align: left; line-height: 1.8; font-size: 17px; }
+    .note-body strong { font-family: var(--font-sans); font-weight: 700; color: var(--primary-accent);}
+    .note-body ul, .note-body ol { padding-left: 25px; }
+    
+    .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .styled-table { width: 100%; border-collapse: collapse; margin: 25px 0; font-family: var(--font-sans); min-width: 600px; }
+    .styled-table th, .styled-table td { padding: 12px 15px; border: 1px solid var(--border-color); text-align: left; }
+    .styled-table thead tr { background-color: var(--table-header-bg); font-weight: bold; color: var(--text-primary); }
+    .styled-table tbody tr:nth-of-type(even) { background-color: rgba(0,0,0,0.02); }
+
+    /* Permission Lock Styles */
+    #main-content-wrapper.locked > *:not(.lock-overlay) { filter: blur(8px); -webkit-filter: blur(8px); pointer-events: none; }
+    .lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2; }
+    .lock-overlay-content { background: rgba(var(--card-bg-rgb), 0.7); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); padding: 20px 30px; border-radius: 12px; box-shadow: var(--shadow); font-weight: 600; font-size: 16px; border: 1px solid var(--border-color); font-family: var(--font-sans); }
+  </style>
+</head>
+<body>
+  
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-profile-card">
+      <img src="" id="sidebarProfilePic" class="sidebar-profile-img" alt="Profile"/>
+      <div class="sidebar-user-info">
+        <div id="sidebar-username">Loading...</div>
+        <div id="sidebar-user-id">Student ID: ...</div>
+      </div>
+    </div>
+    <nav>
+      <a href="https://birlaone.github.io/BirlaOne/index.html"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
+      <a href="#"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>QB (Marathi)</span></a>
+      <a href="#" class="active"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg><span>QB (Mutual Fund)</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-button" onclick="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <header class="top-bar">
+    <button class="menu-toggle" onclick="toggleSidebar()"><span class="menu-icon">☰</span></button>
+    <h1 class="title">BirlaOne</h1>
+    <div class="theme-selector">
+        <select id="themeSelect" onchange="changeTheme(this.value)" aria-label="Select theme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="sepia">Sepia</option>
+        </select>
+    </div>
+  </header>
+
+  <main class="container" id="main-content-wrapper">
+      </main>
+
+<script>
+    const SUPABASE_URL = 'https://eikriuddsuguybvvyzjl.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpa3JpdWRkc3VndXlidnZ5empsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgxMjIxNTAsImV4cCI6MjA3MzY5ODE1MH0.HNh2gGO8nWzAjxh5Oa3cs_8WKaq9mq9TyLCvPOkcr2c';
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // UI & UTILITY FUNCTIONS
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+    
+    function changeTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+    }
+
+    async function logout() {
+      await client.auth.signOut();
+      window.location.href = "https://birlaone.github.io/BirlaOne/login.html";
+    }
+
+    // SECURITY & PERMISSION FUNCTIONS
+    function lockContentSection() {
+        const contentWrapper = document.getElementById('main-content-wrapper');
+        contentWrapper.innerHTML = '';
+        contentWrapper.classList.add('locked');
+        const overlay = document.createElement('div');
+        overlay.className = 'lock-overlay';
+        overlay.innerHTML = `<div class="lock-overlay-content">🔒 Unauthorized Access</div>`;
+        contentWrapper.appendChild(overlay);
+    }
+
+    // DATA FETCHING & RENDERING
+    async function fetchAndSetCurrentUser(session) {
+      const { data, error } = await client.from('users').select('id, img, name').eq('auth_id', session.user.id).single();
+      
+      if (error || !data) {
+        console.error('Error fetching user profile:', error);
+        return null;
+      }
+      
+      const picUrl = data.img || 'https://t4.ftcdn.net/jpg/05/89/93/27/360_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg';
+      document.getElementById('sidebarProfilePic').src = picUrl;
+      document.getElementById('sidebar-username').innerText = data.name || 'Student';
+      document.getElementById('sidebar-user-id').innerText = `Student ID: ${data.id || 'N/A'}`;
+      
+      return data;
+    }
+    
+    function renderMutualFundQB(container) {
+        const qbData = [
+            {
+                title: "Q.1. Distinguish Between Savings and Investments",
+                content: `
+                    <div class="table-wrapper">
+                        <table class="styled-table">
+                            <thead>
+                                <tr><th>Points</th><th>Savings</th><th>Investments</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Meaning</strong></td><td>Savings is the part of income kept aside for future needs without risk.</td><td>Investment means using savings to earn income by putting money in assets.</td></tr>
+                                <tr><td><strong>Purpose</strong></td><td>The main purpose of saving is safety and emergency needs.</td><td>The main purpose of investment is wealth creation and growth.</td></tr>
+                                <tr><td><strong>Risk</strong></td><td>Savings involves little or no risk.</td><td>Investments involve varying degrees of risk depending on the asset.</td></tr>
+                                <tr><td><strong>Return</strong></td><td>Returns from savings are fixed and low.</td><td>Investments may give higher returns but involve chances of loss.</td></tr>
+                                <tr><td><strong>Liquidity</strong></td><td>Savings are highly liquid and easily available.</td><td>Investments are less liquid and may take time to convert into cash.</td></tr>
+                                <tr><td><strong>Time Horizon</strong></td><td>Savings are generally short-term in nature.</td><td>Investments are usually for the long term.</td></tr>
+                                <tr><td><strong>Instruments</strong></td><td>Savings instruments include savings account, recurring deposits, piggy bank.</td><td>Investment instruments include shares, bonds, mutual funds, real estate, gold.</td></tr>
+                                <tr><td><strong>Effect</strong></td><td>Savings keep money idle and do not directly promote growth.</td><td>Investments channel money productively and help economic growth.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `
+            },
+            {
+                title: "Q.2. Explain meaning and importance of savings?",
+                content: `
+                    <h3>Meaning of Savings</h3>
+                    <p>Savings means the portion of income that is not spent on consumption but kept aside for future needs. It is usually kept in safe and liquid forms such as cash, bank deposits, or recurring deposits. Savings provide financial security and help individuals meet emergencies or future goals.</p>
+                    <h3>Importance of Savings</h3>
+                    <ol>
+                        <li><strong>Financial Security:</strong> Savings provide a cushion in times of emergencies like illness, accidents, or job loss. E.g., money in a savings account can be used for medical treatment.</li>
+                        <li><strong>Future Needs:</strong> Savings help in meeting planned expenses like children's education, marriage, or purchasing a house. E.g., parents save monthly for children's higher studies.</li>
+                        <li><strong>Capital Formation:</strong> When savings are invested, they contribute to capital formation and economic growth. E.g., bank deposits are used by banks to give loans for business.</li>
+                        <li><strong>Improves Standard of Living:</strong> Regular savings allow people to spend on comforts and luxuries in the future. E.g., saving today helps in buying a car later.</li>
+                        <li><strong>Retirement Security:</strong> Savings ensure income and independence during old age when regular earnings stop. E.g., pension funds and retirement savings schemes.</li>
+                        <li><strong>Encourages Investment:</strong> Savings are the foundation for investments which generate higher returns. E.g., saving in a bank and later investing in shares or mutual funds.</li>
+                        <li><strong>Reduces Dependence on Credit:</strong> With savings, individuals need not depend on borrowing for urgent needs. E.g., using savings for medical bills instead of loans.</li>
+                    </ol>
+                `
+            },
+            {
+                title: "Q.3. Explain meaning and importance of Investments?",
+                content: `
+                    <h3>Meaning of Investment</h3>
+                    <p>Investment refers to the process of using savings to acquire assets or instruments with the expectation of earning income or profit in the future. It involves committing money to avenues such as shares, bonds, mutual funds, gold, or real estate. Unlike savings, investments usually carry some risk but provide opportunities for higher returns and wealth creation.</p>
+                    <h3>Importance of Investments</h3>
+                    <ol>
+                        <li><strong>Wealth Creation:</strong> Investments help to multiply money over time and build long-term wealth. E.g., investing in equity mutual funds can grow money faster than bank deposits.</li>
+                        <li><strong>Future Financial Security:</strong> Investments provide financial stability for future needs like children's education, marriage, or retirement. E.g., investing in Public Provident Fund (PPF) for retirement.</li>
+                        <li><strong>Higher Returns:</strong> Compared to savings, investments offer higher returns depending on the risk taken. E.g., stock market or real estate investments earn better returns than a savings account.</li>
+                        <li><strong>Capital Formation:</strong> Investments channel funds into productive sectors, which helps in industrial and economic growth. E.g., investments in companies help them expand operations.</li>
+                        <li><strong>Beating Inflation:</strong> Investments protect money from losing value by generating returns higher than inflation. E.g., gold and equity investments act as inflation hedges.</li>
+                        <li><strong>Source of Income:</strong> Certain investments provide regular income in the form of dividends, interest, or rent. E.g., bonds give interest, real estate gives rental income.</li>
+                        <li><strong>Tax Benefits:</strong> Many investment options provide tax deductions and exemptions under income tax laws. E.g., investments in ELSS mutual funds under Section 80C.</li>
+                    </ol>
+                `
+            },
+            {
+                title: "Q.4. Explain different asset classes and their features",
+                content: `
+                    <p>An asset class is a group of financial instruments that have similar characteristics and are governed by the same rules. Investors combine different asset classes to diversify risk.</p>
+                    <h3>1. Equity (Shares/Stocks)</h3>
+                    <ul><li>Represents ownership in a company.</li><li>High return potential through dividends and capital appreciation.</li><li>High risk due to market fluctuations.</li><li>Highly liquid - can be traded on stock exchanges.</li><li>Suitable for long-term wealth creation.</li></ul>
+                    <h3>2. Fixed Income (Bonds/Debentures)</h3>
+                    <ul><li>Provides a fixed rate of interest.</li><li>Lower risk compared to equities.</li><li>Provides regular income in the form of coupon payments.</li><li>Suitable for conservative investors.</li></ul>
+                    <h3>3. Cash & Cash Equivalents</h3>
+                    <ul><li>Highly liquid and easily available.</li><li>Very low risk, provides security of capital.</li><li>Returns are very low.</li><li>Best for emergency funds and short-term needs.</li></ul>
+                    <h3>4. Real Estate</h3>
+                    <ul><li>Tangible and physical asset.</li><li>Provides regular rental income and potential for long-term capital appreciation.</li><li>Requires large investment and has low liquidity.</li><li>Involves registration, stamp duty, and maintenance costs.</li></ul>
+                    <h3>5. Commodities</h3>
+                    <ul><li>Physical goods like gold, silver, oil, etc.</li><li>Acts as a hedge against inflation.</li><li>Prices fluctuate due to demand-supply factors.</li><li>High risk of price volatility.</li></ul>
+                    <h3>6. Mutual Funds</h3>
+                    <ul><li>A pool of money collected from many investors, managed by professional fund managers.</li><li>Diversified across equities, bonds, etc., which spreads the risk.</li><li>Can be bought in lump sum or through SIP (Systematic Investment Plan).</li><li>Liquid units can be redeemed anytime.</li></ul>
+                `
+            },
+            {
+                title: "Q.5. Explain different types of Risks?",
+                content: `
+                    <p>Risk refers to the possibility of loss or uncertainty of returns on an investment. Investment risks include:</p>
+                    <ol>
+                        <li><strong>Inflation Risk:</strong> The risk that the value of money reduces over time due to rising prices, causing returns to lose real value. Example: An FD gives a 5% return, but if inflation is 6%, the investor suffers a real loss.</li>
+                        <li><strong>Liquidity Risk:</strong> The risk of not being able to quickly convert an investment into cash without losing value. Example: Selling a plot of land urgently may force the seller to accept a much lower price.</li>
+                        <li><strong>Credit Risk:</strong> The risk that the borrower (e.g., a company that issued bonds) fails to make timely payments of interest or principal. Example: An investor loses money if the company defaults on its debentures.</li>
+                        <li><strong>Interest Rate Risk:</strong> The risk that changes in interest rates will reduce the value of fixed-income investments like bonds. Example: If interest rates rise, existing bonds with lower interest rates become less valuable.</li>
+                        <li><strong>Market Risk:</strong> The risk of losses due to overall market fluctuations that affect all investments. Example: A stock portfolio loses value due to a fall in the Sensex/Nifty.</li>
+                        <li><strong>Price Risk:</strong> The risk of an investment's value declining due to adverse changes in its specific price, closely related to volatility. Example: The price of gold falling suddenly reduces the value of a gold investment.</li>
+                    </ol>
+                `
+            },
+            {
+                title: "Q.6. Explain Legal Structure of Mutual Funds in India",
+                content: `
+                    <p>Mutual Funds in India have a three-tier, trust-based legal structure regulated by the Securities and Exchange Board of India (SEBI). This structure is designed to ensure investor protection, transparency, and accountability.</p>
+                    <h3>Key Entities in the Structure:</h3>
+                    <ol>
+                        <li><strong>Sponsor:</strong> Acts as the promoter who establishes the Mutual Fund Trust. The sponsor must have a good financial track record and reputation as per SEBI rules.</li>
+                        <li><strong>Trustee:</strong> The Mutual Fund is registered as a Trust, and the Trustees act as custodians of the investors' interests. Their role is supervisory, ensuring the AMC follows regulations.</li>
+                        <li><strong>Asset Management Company (AMC):</strong> The AMC is a company that manages the fund's corpus, makes investment decisions, and handles day-to-day operations. It charges a management fee for its services.</li>
+                        <li><strong>Custodian:</strong> A SEBI-registered entity responsible for the safekeeping of the securities and assets owned by the mutual fund schemes.</li>
+                        <li><strong>Registrar and Transfer Agents (RTAs):</strong> These agents maintain investor records, process transactions (purchase/redemption), and handle other investor services.</li>
+                    </ol>
+                    <h3>Salient Features of the Legal Structure:</h3>
+                    <ul>
+                        <li>All mutual funds are set up as trusts.</li>
+                        <li>Compulsory registration with SEBI is required to operate.</li>
+                        <li>The three-tier system (Sponsor, Trustees, AMC) forms the backbone.</li>
+                        <li>A separate Custodian ensures the safety and prevents misuse of securities.</li>
+                        <li>Strict compliance norms, disclosures, and audits ensure transparency.</li>
+                    </ul>
+                `
+            },
+            {
+                title: "Q.7. Explain Types of Mutual Funds",
+                content: `
+                    <p>Mutual Funds can be classified on the basis of structure, investment objective, and asset class to suit different investor needs.</p>
+                    <h3>A. On the Basis of Structure</h3>
+                    <ul>
+                        <li><strong>Open-Ended Funds:</strong> Allow investors to buy and sell units at any time at the Net Asset Value (NAV). They offer high liquidity.</li>
+                        <li><strong>Close-Ended Funds:</strong> Have a fixed maturity period. Investors can buy units only during the Initial Public Offer (IPO) and can trade them on stock exchanges afterward.</li>
+                        <li><strong>Interval Funds:</strong> A mix of the above, allowing investors to buy or sell units only during specific, pre-decided intervals.</li>
+                    </ul>
+                    <h3>B. On the Basis of Investment Objective</h3>
+                    <ul>
+                        <li><strong>Growth Funds:</strong> Aim for long-term capital appreciation by investing mainly in equities. Suitable for investors with a high-risk appetite.</li>
+                        <li><strong>Income Funds:</strong> Aim to provide regular income by investing in debt instruments like bonds and debentures. Suitable for conservative investors.</li>
+                        <li><strong>Balanced or Hybrid Funds:</strong> Invest in a mix of equity and debt to balance growth and income with moderate risk.</li>
+                    </ul>
+                    <h3>C. On the Basis of Asset Class</h3>
+                    <ul>
+                        <li><strong>Equity Funds:</strong> Invest mainly in stocks. They offer high returns but involve high risk. (e.g., Large Cap, Mid Cap, Small Cap Funds).</li>
+                        <li><strong>Debt Funds:</strong> Invest in fixed-income securities like bonds. They offer stable returns with lower risk.</li>
+                        <li><strong>Index Funds:</strong> Track a stock market index like Nifty or Sensex and offer returns similar to the index performance.</li>
+                        <li><strong>Sectoral Funds:</strong> Invest in a specific sector or industry (e.g., banking, IT). They carry higher risk due to a lack of diversification.</li>
+                        <li><strong>ELSS (Equity Linked Savings Scheme):</strong> Equity funds that provide tax benefits under Section 80C and have a 3-year lock-in period.</li>
+                    </ul>
+                `
+            },
+             {
+                title: "Q.8. Explain Key Constituents of Mutual Funds their role and functions?",
+                content: `
+                    <p>The mutual fund structure consists of several key constituents, each performing specific roles to ensure smooth and transparent management.</p>
+                    <ol>
+                        <li><strong>Sponsor:</strong> The promoter who sets up the mutual fund trust, contributes initial capital, and appoints the Trustees and AMC. (e.g., SBI, HDFC).</li>
+                        <li><strong>Trustees:</strong> Guardians of investors' interests. They supervise the AMC to ensure it complies with SEBI regulations and acts in the best interest of unitholders.</li>
+                        <li><strong>Asset Management Company (AMC):</strong> The professional management company that handles day-to-day fund management, conducts research, and makes all investment (buy/sell) decisions. (e.g., HDFC AMC).</li>
+                        <li><strong>Custodian:</strong> An independent entity that holds the securities and assets of the fund for safekeeping. They also handle the settlement of trades. (e.g., HDFC Bank, Citibank).</li>
+                        <li><strong>Registrar and Transfer Agent (RTA):</strong> Service providers who handle investor records, process transactions (purchases, redemptions), and manage investor services. (e.g., CAMS, KFintech).</li>
+                        <li><strong>Distributors / Agents:</strong> Intermediaries who promote and sell mutual fund schemes to investors and provide investment advice.</li>
+                        <li><strong>Investors / Unit Holders:</strong> The owners of the mutual fund scheme who provide the capital and receive returns in the form of dividends or capital appreciation.</li>
+                    </ol>
+                `
+            }
+        ];
+
+        let html = '';
+        qbData.forEach(item => {
+            html += `
+                <article class="note-card">
+                    <h2 class="note-title">${item.title}</h2>
+                    <div class="note-body">${item.content}</div>
+                </article>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    // APP INITIALIZATION
+    async function initializeApp(session) {
+        const currentUser = await fetchAndSetCurrentUser(session);
+        if (!currentUser) {
+          alert("Could not load your profile. Please log in again.");
+          logout();
+          return;
+        }
+
+        const mainContent = document.getElementById('main-content-wrapper');
+        renderMutualFundQB(mainContent);
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeSelect').value = savedTheme;
+        
+        const { data: { session } } = await client.auth.getSession();
+
+        if (session && session.user) {
+            initializeApp(session);
+        } else {
+            window.location.href = "https://birlaone.github.io/BirlaOne/login.html";
+        }
+
+        client.auth.onAuthStateChange((_event, session) => {
+            if (!session) {
+                window.location.href = "https://birlaone.github.io/BirlaOne/login.html";
+            }
+        });
+    });
+</script>
+</body>
+</html>
