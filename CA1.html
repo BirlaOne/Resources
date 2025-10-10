@@ -231,8 +231,7 @@
                             Product B: 1,250 units × 2 hours/unit = 2,500 hours<br>
                             Total Labour Hours = 500 + 2,500 = 3,000 hours</p>
                             <p><strong>Step 2: Calculate Overhead Rate per Labour Hour</strong><br>
-                            $${'\\text{Overhead Rate} = \\frac{\\text{Total Overhead Cost}}{\\text{Total Direct Labour Hours}}'}$$
-                            $${'= \\frac{₹2,61,780}{3,000 \\text{ hours}} = ₹87.26 \\text{ per hour}'}$$</p>
+                            $${'\\begin{align} \\text{Overhead Rate} &= \\frac{\\text{Total Overhead Cost}}{\\text{Total Direct Labour Hours}} \\\\ &= \\frac{₹2,61,780}{3,000 \\text{ hours}} \\\\ &= ₹87.26 \\text{ per hour} \\end{align}'}$$</p>
                             <p><strong>Step 3: Allocate Overhead and Calculate Per Unit Cost</strong><br>
                             <strong>Product A:</strong> 500 hours × ₹87.26 = ₹43,630. Overhead per unit = ₹43,630 / 500 units = <strong>₹87.26</strong><br>
                             <strong>Product B:</strong> 2,500 hours × ₹87.26 = ₹2,18,150. Overhead per unit = ₹2,18,150 / 1,250 units = <strong>₹174.52</strong></p>
@@ -240,9 +239,9 @@
                             <h3>b) Activity-Based Costing (ABC) Approach</h3>
                             <p>Under ABC, overhead is allocated using multiple rates based on specific activities (cost drivers).</p>
                             <p><strong>Step 1: Calculate Cost Driver Rates</strong><br>
-                            Machine Setups: ₹27,140 / (20 + 26) setups = ₹27,140 / 46 = <strong>₹590 per setup</strong><br>
-                            Maintenance: ₹1,83,040 / (1,620 + 2,540) sq. ft. = ₹1,83,040 / 4,160 = <strong>₹44 per sq. ft.</strong><br>
-                            Inspections: ₹51,600 / (56 + 288) inspections = ₹51,600 / 344 = <strong>₹150 per inspection</strong></p>
+                            Machine Setups: ₹27,140 / 46 setups = <strong>₹590 per setup</strong><br>
+                            Maintenance: ₹1,83,040 / 4,160 sq. ft. = <strong>₹44 per sq. ft.</strong><br>
+                            Inspections: ₹51,600 / 344 inspections = <strong>₹150 per inspection</strong></p>
                             <p><strong>Step 2: Allocate Overhead and Calculate Per Unit Cost</strong></p>
                             <div class="table-wrapper"><table class="styled-table">
                                 <thead><tr><th>Activity</th><th>Product A Calculation</th><th>Product A Cost</th><th>Product B Calculation</th><th>Product B Cost</th></tr></thead>
@@ -261,7 +260,7 @@
                         title: "Q.2) Calculate overheads absorbed using activity-based costing.",
                         content: `
                             <p><strong>Step 1: Calculate Total Activity for Each Cost Driver</strong><br>
-                            Total Machine Hours: (1,000 units × 6 hrs) + (2,000 units × 1.5 hrs) = 6,000 + 3,000 = 9,000 hours<br>
+                            Total Machine Hours: (1,000 units × 6 hrs) + (2,000 units × 1.5 hrs) = 9,000 hours<br>
                             Total Setups: 15 + 50 = 65 setups<br>
                             Total Orders: 18 + 70 = 88 orders</p>
                             <p><strong>Step 2: Calculate Cost Driver Rates</strong><br>
@@ -272,7 +271,7 @@
                             <div class="table-wrapper"><table class="styled-table">
                                 <thead><tr><th>Activity</th><th>Product A Calculation</th><th>Product A Cost</th><th>Product B Calculation</th><th>Product B Cost</th></tr></thead>
                                 <tbody>
-                                    <tr><td>Machine Activity</td><td>(1,000 × 6) × ₹33.33</td><td>₹1,99,980</td><td>(2,000 × 1.5) × ₹33.33</td><td>₹99,990</td></tr>
+                                    <tr><td>Machine Activity</td><td>6,000 × ₹33.33</td><td>₹1,99,980</td><td>3,000 × ₹33.33</td><td>₹99,990</td></tr>
                                     <tr><td>Set-ups</td><td>15 × ₹461.54</td><td>₹6,923</td><td>50 × ₹461.54</td><td>₹23,077</td></tr>
                                     <tr><td>Orders</td><td>18 × ₹397.73</td><td>₹7,159</td><td>70 × ₹397.73</td><td>₹27,841</td></tr>
                                     <tr class="final-row"><td><strong>Total Overheads Absorbed</strong></td><td></td><td><strong>₹2,14,062</strong></td><td></td><td><strong>₹1,50,908</strong></td></tr>
@@ -310,12 +309,7 @@
                         title: "Q.10) Calculate Reorder Level, Maximum Level, Minimum Level, and Average Stock Level.",
                         content: `
                             <p><strong>Given Data:</strong><br>
-                            Maximum Usage: 600 units/month<br>
-                            Minimum Usage: 400 units/month<br>
-                            Normal Usage: 450 units/month<br>
-                            Maximum Reorder Period: 6 months<br>
-                            Minimum Reorder Period: 2 months<br>
-                            Reorder Quantity (ROQ): 1,500 units</p>
+                            Maximum Usage: 600 units/month, Minimum Usage: 400 units/month, Normal Usage: 450 units/month, Max. Reorder Period: 6 months, Min. Reorder Period: 2 months, Reorder Quantity (ROQ): 1,500 units</p>
                             
                             <p><strong>a) Reorder Level (ROL)</strong><br>
                             $${'\\text{ROL} = \\text{Max. Usage} \\times \\text{Max. Reorder Period}'}$$
@@ -323,16 +317,16 @@
                             
                             <p><strong>b) Maximum Level</strong><br>
                             $${'\\text{Max. Level} = \\text{ROL} + \\text{ROQ} - (\\text{Min. Usage} \\times \\text{Min. Reorder Period})'}$$
-                            $${'= 3,600 + 1,500 - (400 \\times 2) = 5,100 - 800 = 4,300 \\text{ units}'}$$</p>
+                            $${'= 3,600 + 1,500 - (400 \\times 2) = 4,300 \\text{ units}'}$$</p>
                             
                             <p><strong>c) Minimum Level</strong><br>
-                            Average Reorder Period = (Max Period + Min Period) / 2 = (6 + 2) / 2 = 4 months<br>
+                            Average Reorder Period = (6 + 2) / 2 = 4 months<br>
                             $${'\\text{Min. Level} = \\text{ROL} - (\\text{Normal Usage} \\times \\text{Avg. Reorder Period})'}$$
-                            $${'= 3,600 - (450 \\times 4) = 3,600 - 1,800 = 1,800 \\text{ units}'}$$</p>
+                            $${'= 3,600 - (450 \\times 4) = 1,800 \\text{ units}'}$$</p>
                             
                             <p><strong>d) Average Stock Level</strong><br>
                             $${'\\text{Avg. Stock Level} = \\text{Min. Level} + \\frac{1}{2} \\times \\text{ROQ}'}$$
-                            $${'= 1,800 + \\frac{1}{2} \\times 1,500 = 1,800 + 750 = 2,550 \\text{ units}'}$$</p>
+                            $${'= 1,800 + \\frac{1}{2} \\times 1,500 = 2,550 \\text{ units}'}$$</p>
                         `
                     },
                     {
@@ -340,21 +334,15 @@
                         content: `
                             <p><strong>Given Data:</strong><br>
                             Annual Consumption (A): 15,000 Kg<br>
-                            Cost of Placing an Order (O): ₹48<br>
-                            Cost of Raw Material: ₹2 per Kg<br>
-                            Storage/Carrying Cost (C): 8% of average inventory = 8% of ₹2 = ₹0.16 per unit</p>
+                            Ordering Cost (O): ₹48 per order<br>
+                            Carrying Cost (C): 8% of ₹2 = ₹0.16 per unit per year</p>
                             
                             <p><strong>Step 1: Calculate Economic Order Quantity (EOQ)</strong><br>
-                            The EOQ formula is:
-                            $${'EOQ = \\sqrt{\\frac{2 \\times A \\times O}{C}}'}$$
-                            $${'= \\sqrt{\\frac{2 \\times 15,000 \\times 48}{0.16}}'}$$
-                            $${'= \\sqrt{\\frac{14,40,000}{0.16}} = \\sqrt{90,00,000} = 3,000 \\text{ Kg}'}$$
-                            So, the <strong>Economic Order Quantity is 3,000 Kg</strong>.</p>
+                            $${'\\begin{align} EOQ &= \\sqrt{\\frac{2 \\times A \\times O}{C}} \\\\ &= \\sqrt{\\frac{2 \\times 15,000 \\times 48}{0.16}} \\\\ &= \\sqrt{90,00,000} \\\\ &= 3,000 \\text{ Kg} \\end{align}'}$$
+                            The <strong>Economic Order Quantity is 3,000 Kg</strong>.</p>
                             
                             <p><strong>Step 2: Calculate the Number of Orders to be Placed</strong><br>
-                            $${'\\text{Number of Orders} = \\frac{\\text{Annual Consumption}}{EOQ}'}$$
-                            $${'= \\frac{15,000 \\text{ Kg}}{3,000 \\text{ Kg}} = 5 \\text{ orders}'}$$
-                            So, <strong>5 orders</strong> should be placed in the year.</p>
+                            $${'\\text{Number of Orders} = \\frac{\\text{Annual Consumption}}{EOQ} = \\frac{15,000}{3,000} = 5 \\text{ orders}'}$$</p>
                         `
                     }
                 ]
@@ -366,61 +354,39 @@
                         title: "Q.13) Work out the earnings of a worker under various wage systems.",
                         content: `
                             <p><strong>Basic Calculations:</strong><br>
-                            Standard Time per piece: 20 minutes<br>
-                            Standard Output per hour: 60 min / 20 min = 3 pieces<br>
-                            Standard Output for 48 hours: 48 hours × 3 pieces/hr = 144 pieces<br>
-                            Actual Output: 150 pieces (This is above standard)<br>
-                            Time Allowed for Actual Output (Standard Time): 150 pieces × 20 min/piece = 3,000 minutes = 50 hours<br>
-                            Time Taken: 48 hours<br>
-                            Time Saved: 50 hours - 48 hours = 2 hours</p>
+                            Standard Time: 50 hours, Time Taken: 48 hours, Time Saved: 2 hours, Rate: ₹3.75/hr, Actual Output: 150 pieces, Standard Output: 144 pieces.</p>
 
                             <p><strong>1. Straight Piece Rate System</strong><br>
-                            $${'\\text{Earnings} = \\text{Actual Output} \\times \\text{Rate per Piece}'}$$
-                            $${'= 150 \\times ₹1.50 = ₹225'}$$</p>
+                            $${'\\text{Earnings} = 150 \\text{ pieces} \\times ₹1.50/\\text{piece} = ₹225'}$$</p>
                             
-                            <p><strong>2. Differential Piece Rate System</strong><br>
-                            Since actual output (150) is above standard (144), the rate is 120% of the normal piece rate.<br>
-                            New Rate = 120\\% of ₹1.50 = ₹1.80 per piece<br>
-                            $${'\\text{Earnings} = 150 \\times ₹1.80 = ₹270'}$$</p>
+                            <p><strong>2. Differential Piece Rate System</strong> (120% rate as output is above standard)<br>
+                            $${'\\text{Earnings} = 150 \\text{ pieces} \\times (₹1.50 \\times 1.20) = ₹270'}$$</p>
                             
                             <p><strong>3. Halsey Premium System (50% Bonus)</strong><br>
-                            $${'\\text{Earnings} = (\\text{Time Taken} \\times \\text{Rate}) + (50\\% \\times \\text{Time Saved} \\times \\text{Rate})'}$$
-                            $${'= (48 \\text{ hrs} \\times ₹3.75) + (50\\% \\times 2 \\text{ hrs} \\times ₹3.75)'}$$
-                            $${'= ₹180 + ₹3.75 = ₹183.75'}$$</p>
+                            $${'\\begin{align} \\text{Earnings} &= (\\text{Time Taken} \\times \\text{Rate}) + (50\\% \\times \\text{Time Saved} \\times \\text{Rate}) \\\\ &= (48 \\times 3.75) + (0.50 \\times 2 \\times 3.75) \\\\ &= ₹180 + ₹3.75 = ₹183.75 \\end{align}'}$$</p>
                             
                             <p><strong>4. Rowan System</strong><br>
-                            $${'\\text{Earnings} = (\\text{Time Taken} \\times \\text{Rate}) + \\left( \\frac{\\text{Time Saved}}{\\text{Standard Time}} \\times \\text{Time Taken} \\times \\text{Rate} \\right)'}$$
-                            $${'= (48 \\times 3.75) + \\left( \\frac{2}{50} \\times 48 \\times 3.75 \\right)'}$$
-                            $${'= ₹180 + (0.04 \\times 180) = ₹180 + ₹7.20 = ₹187.20'}$$</p>
+                            $${'\\begin{align} \\text{Earnings} &= (\\text{Time Taken} \\times \\text{Rate}) + \\left( \\frac{\\text{Time Saved}}{\\text{Standard Time}} \\times \\text{Time Taken} \\times \\text{Rate} \\right) \\\\ &= (48 \\times 3.75) + \\left( \\frac{2}{50} \\times 48 \\times 3.75 \\right) \\\\ &= ₹180 + ₹7.20 = ₹187.20 \\end{align}'}$$</p>
                         `
                     },
                      {
                         title: "Q.15) Calculate Labour Turnover Rate and Labour Flux Rate.",
                         content: `
                             <p><strong>Given Data:</strong><br>
-                            Workers at beginning: 7,600<br>
-                            Workers at end: 8,400<br>
-                            Workers left: 80<br>
-                            Workers discharged: 320<br>
-                            Total Separations = 80 + 320 = 400<br>
-                            Total Recruited: 1,500<br>
-                            Replacements (recruited due to exits): 300</p>
+                            Separations: 400 (80 left + 320 discharged), Replacements: 300</p>
                             
                             <p><strong>Step 1: Calculate Average Number of Workers</strong><br>
-                            $${'\\text{Average Workers} = \\frac{\\text{Beginning} + \\text{End}}{2} = \\frac{7,600 + 8,400}{2} = 8,000'}$$</p>
+                            $${'\\text{Average Workers} = \\frac{7,600 + 8,400}{2} = 8,000'}$$</p>
                             
                             <p><strong>Step 2: Calculate Labour Turnover Rates</strong></p>
                             <p><strong>Separation Method:</strong><br>
-                            $${'\\text{Rate} = \\frac{\\text{No. of Separations}}{\\text{Avg. No. of Workers}} \\times 100'}$$
-                            $${'= \\frac{400}{8,000} \\times 100 = 5\\%'}$$</p>
+                            $${'\\text{Rate} = \\frac{400}{8,000} \\times 100 = 5\\%'}$$</p>
                             
                             <p><strong>Replacement Method:</strong><br>
-                            $${'\\text{Rate} = \\frac{\\text{No. of Replacements}}{\\text{Avg. No. of Workers}} \\times 100'}$$
-                            $${'= \\frac{300}{8,000} \\times 100 = 3.75\\%'}$$</p>
+                            $${'\\text{Rate} = \\frac{300}{8,000} \\times 100 = 3.75\\%'}$$</p>
                             
                             <p><strong>Flux Method (Labour Flux Rate):</strong><br>
-                            $${'\\text{Rate} = \\frac{\\text{Separations} + \\text{Replacements}}{\\text{Avg. No. of Workers}} \\times 100'}$$
-                            $${'= \\frac{400 + 300}{8,000} \\times 100 = 8.75\\%'}$$</p>
+                            $${'\\text{Rate} = \\frac{400 + 300}{8,000} \\times 100 = 8.75\\%'}$$</p>
                         `
                     }
                 ]
@@ -453,29 +419,20 @@
                     {
                         title: "Q.21) Work out overhead application rates using different methods.",
                         content: `
-                            <p><strong>Given Data:</strong><br>
-                            Factory Overheads: ₹62,000<br>
-                            Direct Labour Cost: ₹1,00,000<br>
-                            Direct Labour Hours: 1,55,000 hours<br>
-                            Machine Hours: 50,000 hours<br>
-                            Direct Material Cost: ₹2,00,000</p>
+                             <p><strong>Given Data:</strong> Factory Overheads: ₹62,000, Direct Labour Cost: ₹1,00,000, Direct Labour Hours: 1,55,000, Machine Hours: 50,000, Direct Material Cost: ₹2,00,000</p>
 
                             <p><strong>a) Direct Labour Hour Rate</strong><br>
-                            $${'\\text{Rate} = \\frac{\\text{Factory Overheads}}{\\text{Direct Labour Hours}}'}$$
-                            $${'= \\frac{₹62,000}{1,55,000 \\text{ hrs}} = ₹0.40 \\text{ per direct labour hour}'}$$</p>
+                            $${'\\text{Rate} = \\frac{₹62,000}{1,55,000 \\text{ hrs}} = ₹0.40 \\text{ per direct labour hour}'}$$</p>
                             
-                            <p><strong>b) Direct Labour Cost in %</strong><br>
-                            $${'\\text{Rate} = \\frac{\\text{Factory Overheads}}{\\text{Direct Labour Cost}} \\times 100'}$$
-                            $${'= \\frac{₹62,000}{₹1,00,000} \\times 100 = 62\\% \\text{ of Direct Labour Cost}'}$$</p>
+                            <p><strong>b) Direct Labour Cost Rate</strong><br>
+                            $${'\\text{Rate} = \\frac{₹62,000}{₹1,00,000} \\times 100 = 62\\% \\text{ of Direct Labour Cost}'}$$</p>
                             
                             <p><strong>c) Machine Hour Rate</strong><br>
-                            $${'\\text{Rate} = \\frac{\\text{Factory Overheads}}{\\text{Machine Hours}}'}$$
-                            $${'= \\frac{₹62,000}{50,000 \\text{ hrs}} = ₹1.24 \\text{ per machine hour}'}$$</p>
+                            $${'\\text{Rate} = \\frac{₹62,000}{50,000 \\text{ hrs}} = ₹1.24 \\text{ per machine hour}'}$$</p>
                             
-                            <p><strong>d) Prime Cost in %</strong><br>
-                            Prime Cost = Direct Material Cost + Direct Labour Cost = ₹2,00,000 + ₹1,00,000 = ₹3,00,000<br>
-                            $${'\\text{Rate} = \\frac{\\text{Factory Overheads}}{\\text{Prime Cost}} \\times 100'}$$
-                            $${'= \\frac{₹62,000}{₹3,00,000} \\times 100 = 20.67\\% \\text{ of Prime Cost}'}$$</p>
+                            <p><strong>d) Prime Cost Rate</strong><br>
+                            Prime Cost = ₹2,00,000 (Material) + ₹1,00,000 (Labour) = ₹3,00,000<br>
+                            $${'\\text{Rate} = \\frac{₹62,000}{₹3,00,000} \\times 100 = 20.67\\% \\text{ of Prime Cost}'}$$</p>
                         `
                     }
                 ]
