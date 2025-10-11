@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="ocean">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
@@ -11,20 +11,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   
   <script>
     (function() {
-      const savedTheme = localStorage.getItem('theme') || 'light';
+      const savedTheme = localStorage.getItem('theme') || 'ocean';
       document.documentElement.setAttribute('data-theme', savedTheme);
     })();
   </script>
 
   <style>
     :root {
-      --primary-accent: #C2185B;
-      --primary-gradient: linear-gradient(90deg, #D32F2F, #C2185B);
+      --primary-accent: #20c997; /* Default Accent */
+      --primary-gradient: linear-gradient(90deg, #20c997, #17a2b8); /* Default Gradient */
       --danger-color: #e53935;
       --font-sans: 'Inter', sans-serif;
       --font-serif: 'Lora', serif;
@@ -35,6 +34,7 @@
     html[data-theme="light"] {
       --bg-color: #f7f7f9;
       --card-bg: #ffffff;
+      --card-bg-rgb: 255, 255, 255;
       --text-primary: #1c1c1e;
       --text-secondary: #636366;
       --border-color: #e5e5ea;
@@ -42,11 +42,14 @@
       --header-bg: rgba(255, 255, 255, 0.8);
       --input-bg: #f0f0f0;
       --table-header-bg: #f2f2f2;
+      --primary-accent: #f89b29;
+      --primary-gradient: linear-gradient(90deg, #f89b29, #ff5f6d);
     }
 
     html[data-theme="dark"] {
       --bg-color: #121212;
       --card-bg: #1e1e1e;
+      --card-bg-rgb: 30, 30, 30;
       --text-primary: #f2f2f7;
       --text-secondary: #98989f;
       --border-color: #38383a;
@@ -54,20 +57,23 @@
       --header-bg: rgba(28, 28, 30, 0.75);
       --input-bg: #2c2c2e;
       --table-header-bg: #2c2c2e;
+      --primary-accent: #f89b29;
+      --primary-gradient: linear-gradient(90deg, #f89b29, #ff5f6d);
     }
-      
-    html[data-theme="sepia"] {
-        --bg-color: #f4ecd8;
-        --card-bg: #fbf5e9;
-        --text-primary: #5b4636;
-        --text-secondary: #7d6b59;
-        --border-color: #dcd0b9;
-        --primary-accent: #a98244;
-        --primary-gradient: linear-gradient(135deg, #c5a265, #a98244);
-        --shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
-        --header-bg: rgba(244, 236, 216, 0.8);
-        --input-bg: #e9deca;
-        --table-header-bg: #e9deca;
+    
+    html[data-theme="ocean"] {
+      --bg-color: #f0f8ff;
+      --card-bg: #ffffff;
+      --card-bg-rgb: 255, 255, 255;
+      --text-primary: #0a2540;
+      --text-secondary: #4a6b8a;
+      --border-color: #d8e2ec;
+      --primary-accent: #20c997;
+      --primary-gradient: linear-gradient(90deg, #20c997, #17a2b8);
+      --shadow: 0 6px 25px rgba(10, 37, 64, 0.07);
+      --header-bg: rgba(240, 248, 255, 0.8);
+      --input-bg: #e6f0f7;
+      --table-header-bg: #e6f0f7;
     }
 
     /* Base & Layout Styles */
@@ -96,7 +102,7 @@
     #sidebar-user-id { font-size: 14px; color: var(--text-secondary); }
     .sidebar nav { flex-grow: 1; padding: 10px 0; }
     .sidebar nav a { display: flex; align-items: center; gap: 15px; color: var(--text-primary); text-decoration: none; padding: 15px 20px; font-weight: 500; font-size: 16px; transition: background-color 0.2s, color 0.2s; border-radius: 0 30px 30px 0; margin-right: 10px; }
-    .sidebar nav a:hover, .sidebar nav a.active { background-color: rgba(194, 24, 91, 0.1); color: var(--primary-accent); }
+    .sidebar nav a:hover, .sidebar nav a.active { background-color: rgba(32, 201, 151, 0.1); color: var(--primary-accent); }
     .nav-icon { width: 24px; height: 24px; stroke-width: 2; }
     .sidebar-footer { padding: 20px; margin-top: auto; border-top: 1px solid var(--border-color); }
     .logout-button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--danger-color); color: white; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
@@ -124,22 +130,24 @@
 
     /* Content Styles */
     .container { padding: 16px; max-width: 800px; margin: 0 auto; position: relative; }
-    .topic-title { font-family: var(--font-sans); font-size: 28px; font-weight: 700; margin-top: 30px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 4px solid var(--primary-accent); color: var(--primary-accent); }
     .note-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 24px; overflow: hidden; transition: all var(--transition-speed) ease; }
     .note-title { font-family: var(--font-sans); font-size: 22px; font-weight: 700; padding: 18px 22px; background: var(--primary-gradient); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
     .note-body { padding: 12px 22px 22px 22px; }
-    .note-body h3 { font-family: var(--font-sans); font-size: 1.2rem; font-weight: 700; border-bottom: 2px solid var(--primary-accent); padding-bottom: 6px; margin-top: 24px; margin-bottom: 12px; }
+    .note-body h3 { font-family: var(--font-sans); font-size: 1.3rem; font-weight: 700; color: var(--text-primary); margin-top: 24px; margin-bottom: 12px; }
+    .note-body h4 { font-family: var(--font-sans); font-size: 1.1rem; font-weight: 600; color: var(--primary-accent); border-bottom: 2px solid var(--primary-accent); padding-bottom: 6px; margin-top: 20px; margin-bottom: 12px; }
     .note-body p, .note-body li { margin-bottom: 16px; text-align: left; line-height: 1.8; font-size: 17px; }
     .note-body strong { font-family: var(--font-sans); font-weight: 700; color: var(--primary-accent);}
     .note-body ul, .note-body ol { padding-left: 25px; }
-
-    .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1.5em 0; }
-    .styled-table { width: 100%; border-collapse: collapse; font-family: var(--font-sans); min-width: 600px; }
-    .styled-table th, .styled-table td { padding: 12px 15px; border: 1px solid var(--border-color); text-align: left; }
+    
+    .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border-color); border-radius: 10px; margin: 25px 0; }
+    .styled-table { width: 100%; border-collapse: collapse; font-family: var(--font-sans); min-width: 500px; }
+    .styled-table th, .styled-table td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); text-align: left; }
+    .styled-table td { background-color: var(--card-bg); }
     .styled-table thead tr { background-color: var(--table-header-bg); font-weight: bold; color: var(--text-primary); }
-    .styled-table tbody tr:nth-of-type(even) { background-color: rgba(0,0,0,0.02); }
-    .styled-table td:first-child { font-weight: 500; }
-    .styled-table .final-row { font-weight: bold; background-color: rgba(194, 24, 91, 0.05); }
+    .styled-table tbody tr:last-child th,
+    .styled-table tbody tr:last-child td { border-bottom: none; }
+    .styled-table tbody tr:nth-of-type(even) td { background-color: var(--bg-color); }
+    .formula-box { background-color: var(--input-bg); padding: 15px; border-left: 4px solid var(--primary-accent); margin: 20px 0; border-radius: 4px; color: var(--text-secondary); font-style: italic; }
 
     /* Permission Lock Styles */
     #main-content-wrapper.locked > *:not(.lock-overlay) { filter: blur(8px); -webkit-filter: blur(8px); pointer-events: none; }
@@ -160,8 +168,7 @@
     </div>
     <nav>
       <a href="https://birlaone.github.io/BirlaOne/index.html"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
-      <a href="#"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>QB (Marathi)</span></a>
-      <a href="#" class="active"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="10" x2="8" y2="10"></line><line x1="16" y1="14" x2="8" y2="14"></line><line x1="16" y1="18" x2="8" y2="18"></line></svg><span>QB (Cost Accounting)</span></a>
+      <a href="#" class="active"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>QB (Cost Accounting)</span></a>
     </nav>
     <div class="sidebar-footer">
       <button class="logout-button" onclick="logout()">Logout</button>
@@ -173,9 +180,9 @@
     <h1 class="title">BirlaOne</h1>
     <div class="theme-selector">
         <select id="themeSelect" onchange="changeTheme(this.value)" aria-label="Select theme">
+          <option value="ocean">Ocean</option>
           <option value="light">Light</option>
           <option value="dark">Dark</option>
-          <option value="sepia">Sepia</option>
         </select>
     </div>
   </header>
@@ -188,6 +195,7 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpa3JpdWRkc3VndXlidnZ5empsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgxMjIxNTAsImV4cCI6MjA3MzY5ODE1MH0.HNh2gGO8nWzAjxh5Oa3cs_8WKaq9mq9TyLCvPOkcr2c';
     const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
+    // UI & UTILITY FUNCTIONS
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('active');
       document.getElementById('sidebarOverlay').classList.toggle('active');
@@ -203,216 +211,295 @@
       window.location.href = "https://birlaone.github.io/BirlaOne/login.html";
     }
 
+    // SECURITY & PERMISSION FUNCTIONS
+    function lockContentSection() {
+        const contentWrapper = document.getElementById('main-content-wrapper');
+        contentWrapper.innerHTML = '';
+        contentWrapper.classList.add('locked');
+        const overlay = document.createElement('div');
+        overlay.className = 'lock-overlay';
+        overlay.innerHTML = `<div class="lock-overlay-content">🔒 Unauthorized Access</div>`;
+        contentWrapper.appendChild(overlay);
+    }
+
+    // DATA FETCHING & RENDERING
     async function fetchAndSetCurrentUser(session) {
       const { data, error } = await client.from('users').select('id, img, name').eq('auth_id', session.user.id).single();
+      
       if (error || !data) {
         console.error('Error fetching user profile:', error);
         return null;
       }
+      
       const picUrl = data.img || 'https://t4.ftcdn.net/jpg/05/89/93/27/360_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg';
       document.getElementById('sidebarProfilePic').src = picUrl;
       document.getElementById('sidebar-username').innerText = data.name || 'Student';
       document.getElementById('sidebar-user-id').innerText = `Student ID: ${data.id || 'N/A'}`;
+      
       return data;
     }
     
     function renderCostAccountingQB(container) {
         const qbData = [
+            // Module 1: ABC Costing
             {
-                topic: "ABC Costing",
-                questions: [
-                    {
-                        title: "Q.1) Determine overhead per unit under Traditional and ABC approach.",
-                        content: `
-                            <h3>a) Traditional Approach</h3>
-                            <p><strong>Step 1: Calculate Total Direct Labour Hours</strong><br>
-                            Product A: 500 units × 1 hour/unit = 500 hours<br>
-                            Product B: 1,250 units × 2 hours/unit = 2,500 hours<br>
-                            Total Labour Hours = 3,000 hours</p>
-                            <p><strong>Step 2: Calculate Overhead Rate per Labour Hour</strong><br>
-                            $${'\\text{Overhead Rate} = \\frac{\\text{Total Overhead Cost}}{\\text{Total Direct Labour Hours}} = \\frac{₹2,61,780}{3,000 \\text{ hours}} = ₹87.26 \\text{ per hour}'}$$</p>
-                            <p><strong>Step 3: Allocate Overhead and Calculate Per Unit Cost</strong><br>
-                            <strong>Product A:</strong> 500 hrs × ₹87.26 = ₹43,630. Per unit = <strong>₹87.26</strong><br>
-                            <strong>Product B:</strong> 2,500 hrs × ₹87.26 = ₹2,18,150. Per unit = <strong>₹174.52</strong></p>
-                            
-                            <h3>b) Activity-Based Costing (ABC) Approach</h3>
-                             <p><strong>Step 1: Calculate Cost Driver Rates</strong><br>
-                            Machine Setups: ₹27,140 / 46 setups = <strong>₹590 per setup</strong><br>
-                            Maintenance: ₹1,83,040 / 4,160 sq. ft. = <strong>₹44 per sq. ft.</strong><br>
-                            Inspections: ₹51,600 / 344 inspections = <strong>₹150 per inspection</strong></p>
-                            <p><strong>Step 2: Allocate Overhead and Calculate Per Unit Cost</strong></p>
-                            <div class="table-wrapper"><table class="styled-table">
-                                <thead><tr><th>Activity</th><th>Product A Cost</th><th>Product B Cost</th></tr></thead>
-                                <tbody>
-                                    <tr><td>Machine Setups</td><td>₹11,800</td><td>₹15,340</td></tr>
-                                    <tr><td>Maintenance</td><td>₹71,280</td><td>₹1,11,760</td></tr>
-                                    <tr><td>Inspections</td><td>₹8,400</td><td>₹43,200</td></tr>
-                                    <tr class="final-row"><td><strong>Total Overhead</strong></td><td><strong>₹91,480</strong></td><td><strong>₹1,70,300</strong></td></tr>
-                                </tbody>
-                            </table></div>
-                            <p><strong>Overhead per unit (Product A):</strong> ₹91,480 / 500 units = <strong>₹182.96</strong><br>
-                            <strong>Overhead per unit (Product B):</strong> ₹1,70,300 / 1,250 units = <strong>₹136.24</strong></p>
-                        `
-                    },
-                    {
-                        title: "Q.2) Calculate overheads absorbed using activity-based costing.",
-                        content: `
-                           <p><strong>Step 1: Calculate Cost Driver Rates</strong><br>
-                            Machine Activity Rate: ₹3,00,000 / 9,000 hours = <strong>₹33.33 per machine hour</strong><br>
-                            Set-up Rate: ₹30,000 / 65 setups = <strong>₹461.54 per setup</strong><br>
-                            Order Rate: ₹35,000 / 88 orders = <strong>₹397.73 per order</strong></p>
-                            <p><strong>Step 2: Allocate Overheads to Each Product</strong></p>
-                            <div class="table-wrapper"><table class="styled-table">
-                                <thead><tr><th>Activity</th><th>Product A Cost</th><th>Product B Cost</th></tr></thead>
-                                <tbody>
-                                    <tr><td>Machine Activity</td><td>₹1,99,980</td><td>₹99,990</td></tr>
-                                    <tr><td>Set-ups</td><td>₹6,923</td><td>₹23,077</td></tr>
-                                    <tr><td>Orders</td><td>₹7,159</td><td>₹27,841</td></tr>
-                                    <tr class="final-row"><td><strong>Total Overheads</strong></td><td><strong>₹2,14,062</strong></td><td><strong>₹1,50,908</strong></td></tr>
-                                </tbody>
-                            </table></div>
-                        `
-                    }
-                ]
+                module: "Module 1: ABC Costing",
+                title: "Q.1) Traditional vs. ABC Allocation",
+                content: `
+                    <h3>Question</h3>
+                    <p>A company produces two products, A and B, and estimates that its overhead costs will be Rs. 2,61,780. Overhead has traditionally been allocated on the basis of direct labour hours. Estimated data follow:</p>
+                    <div class="table-wrapper"><table class="styled-table">
+                        <thead><tr><th>Particulars</th><th>Product A</th><th>Product B</th></tr></thead>
+                        <tbody>
+                            <tr><td>Estimated volume</td><td>500 units</td><td>1,250 units</td></tr>
+                            <tr><td>Direct labour hours per unit</td><td>1</td><td>2</td></tr>
+                        </tbody>
+                    </table></div>
+                    <div class="table-wrapper"><table class="styled-table">
+                        <thead><tr><th>Activity Centres</th><th>Estimated Cost (Rs.)</th><th>Est. Activity (Prod. A)</th><th>Est. Activity (Prod. B)</th></tr></thead>
+                        <tbody>
+                            <tr><td>Machine setups</td><td>27,140</td><td>20</td><td>26</td></tr>
+                            <tr><td>Maintenance (sq. ft.)</td><td>1,83,040</td><td>1,620</td><td>2,540</td></tr>
+                            <tr><td>Inspections</td><td>51,600</td><td>56</td><td>288</td></tr>
+                            <tr><td><strong>Total</strong></td><td><strong>2,61,780</strong></td><td></td><td></td></tr>
+                        </tbody>
+                    </table></div>
+                    <p>a) Determine the overhead allocated per unit to each product under the traditional approach.<br>b) Determine the overhead allocated per unit to each product under ABC.</p>
+                    <h3>Solution</h3>
+                    <h4>a) Traditional Approach (based on Direct Labour Hours)</h4>
+                    <p><strong>Step 1: Calculate Total Direct Labour Hours</strong><br>
+                    Product A: 500 units × 1 hour/unit = 500 hours<br>
+                    Product B: 1,250 units × 2 hours/unit = 2,500 hours<br>
+                    <strong>Total Hours: 500 + 2,500 = 3,000 hours</strong></p>
+                    <p><strong>Step 2: Calculate Traditional Overhead Rate</strong></p>
+                    <div class="formula-box">Overhead Rate = \\( \\frac{\\text{Total Overhead Cost}}{\\text{Total Direct Labour Hours}} \\)</div>
+                    <p>Rate = \\( \\frac{261780}{3000} \\) = <strong>₹87.26 per hour</strong></p>
+                    <p><strong>Step 3: Allocate Overhead to Each Product</strong><br>
+                    Product A: 1 hour/unit × ₹87.26/hour = <strong>₹87.26 per unit</strong><br>
+                    Product B: 2 hours/unit × ₹87.26/hour = <strong>₹174.52 per unit</strong></p>
+                    <h4>b) Activity-Based Costing (ABC) Approach</h4>
+                    <p><strong>Step 1: Calculate Activity Rates for each Cost Pool</strong></p>
+                    <div class="formula-box">Activity Rate = \\( \\frac{\\text{Estimated Cost}}{\\text{Estimated Activity}} \\)</div>
+                    <ul>
+                        <li>Machine Setups: \\( \\frac{27140}{20 + 26} \\) = <strong>₹590 per setup</strong></li>
+                        <li>Maintenance: \\( \\frac{183040}{1620 + 2540} \\) = <strong>₹44 per sq. ft.</strong></li>
+                        <li>Inspections: \\( \\frac{51600}{56 + 288} \\) = <strong>₹150 per inspection</strong></li>
+                    </ul>
+                    <p><strong>Step 2: Allocate Overhead Costs to Products</strong></p>
+                    <div class="table-wrapper"><table class="styled-table">
+                        <thead><tr><th>Activity</th><th>Product A Cost (₹)</th><th>Product B Cost (₹)</th></tr></thead>
+                        <tbody>
+                            <tr><td>Setups</td><td>20 setups × ₹590 = 11,800</td><td>26 setups × ₹590 = 15,340</td></tr>
+                            <tr><td>Maintenance</td><td>1,620 sq.ft. × ₹44 = 71,280</td><td>2,540 sq.ft. × ₹44 = 1,11,760</td></tr>
+                            <tr><td>Inspections</td><td>56 insp. × ₹150 = 8,400</td><td>288 insp. × ₹150 = 43,200</td></tr>
+                            <tr><td><strong>Total Overhead</strong></td><td><strong>₹91,480</strong></td><td><strong>₹1,70,300</strong></td></tr>
+                        </tbody>
+                    </table></div>
+                    <p><strong>Step 3: Calculate Overhead per Unit</strong><br>
+                    Product A: \\( \\frac{91480}{500} \\) = <strong>₹182.96 per unit</strong><br>
+                    Product B: \\( \\frac{170300}{1250} \\) = <strong>₹136.24 per unit</strong></p>
+                `
             },
             {
-                topic: "Material",
-                questions: [
-                    {
-                        title: "Q.7) Prepare a Stores Ledger Account using FIFO method.",
-                        content: `
-                            <p>FIFO ("First-In, First-Out") means materials received first are issued first.</p>
-                            <div class="table-wrapper"><table class="styled-table">
-                                <thead><tr><th>Date</th><th>Particulars</th><th>Receipts (Qty@Rate=Amt)</th><th>Issues (Qty@Rate=Amt)</th><th>Balance (Qty@Rate=Amt)</th></tr></thead>
-                                <tbody>
-                                    <tr><td>Jul 1</td><td>Received</td><td>1000 @ 20 = 20000</td><td>-</td><td>1000 @ 20 = 20000</td></tr>
-                                    <tr><td>Jul 3</td><td>Received</td><td>350 @ 21 = 7350</td><td>-</td><td>1000 @ 20 = 20000<br>350 @ 21 = 7350</td></tr>
-                                    <tr><td>Jul 5</td><td>Issued</td><td>-</td><td>700 @ 20 = 14000</td><td>300 @ 20 = 6000<br>350 @ 21 = 7350</td></tr>
-                                    <tr><td>Jul 7</td><td>Issued</td><td>-</td><td>300 @ 20 = 6000<br>100 @ 21 = 2100</td><td>250 @ 21 = 5250</td></tr>
-                                    <tr><td>Jul 12</td><td>Received</td><td>550 @ 22 = 12100</td><td>-</td><td>250 @ 21 = 5250<br>550 @ 22 = 12100</td></tr>
-                                    <tr><td>Jul 16</td><td>Issued</td><td>-</td><td>250 @ 21 = 5250<br>100 @ 22 = 2200</td><td>450 @ 22 = 9900</td></tr>
-                                    <tr><td>Jul 21</td><td>Received</td><td>100 @ 23 = 2300</td><td>-</td><td>450 @ 22 = 9900<br>100 @ 23 = 2300</td></tr>
-                                    <tr><td>Jul 24</td><td>Issued</td><td>-</td><td>450 @ 22 = 9900<br>50 @ 23 = 1150</td><td>50 @ 23 = 1150</td></tr>
-                                    <tr><td>Jul 27</td><td>Received</td><td>200 @ 20 = 4000</td><td>-</td><td>50 @ 23 = 1150<br>200 @ 20 = 4000</td></tr>
-                                    <tr class="final-row"><td>Jul 31</td><td>Issued</td><td>-</td><td>50 @ 23 = 1150<br>130 @ 20 = 2600</td><td><strong>70 @ 20 = 1400</strong></td></tr>
-                                </tbody>
-                            </table></div>
-                        `
-                    },
-                    {
-                        title: "Q.10) Calculate various stock levels.",
-                        content: `
-                             <p><strong>a) Reorder Level (ROL)</strong><br>
-                            $${'\\text{ROL} = \\text{Max. Usage} \\times \\text{Max. Reorder Period} = 600 \\times 6 = 3,600 \\text{ units}'}$$</p>
-                            <p><strong>b) Maximum Level</strong><br>
-                            $${'\\text{Max. Level} = \\text{ROL} + \\text{ROQ} - (\\text{Min. Usage} \\times \\text{Min. Period}) = 3,600 + 1,500 - (400 \\times 2) = 4,300 \\text{ units}'}$$</p>
-                            <p><strong>c) Minimum Level</strong><br>
-                            $${'\\text{Min. Level} = \\text{ROL} - (\\text{Normal Usage} \\times \\text{Avg. Period}) = 3,600 - (450 \\times 4) = 1,800 \\text{ units}'}$$</p>
-                            <p><strong>d) Average Stock Level</strong><br>
-                            $${'\\text{Avg. Stock Level} = \\text{Min. Level} + \\frac{1}{2} \\times \\text{ROQ} = 1,800 + \\frac{1}{2} \\times 1,500 = 2,550 \\text{ units}'}$$</p>
-                        `
-                    },
-                    {
-                        title: "Q.11) Ascertain the Economic Order Quantity (EOQ) and number of orders.",
-                        content: `
-                            <p><strong>Step 1: Calculate Economic Order Quantity (EOQ)</strong><br>
-                            $${'EOQ = \\sqrt{\\frac{2 \\times \\text{Annual Consumption} \\times \\text{Ordering Cost}}{\\text{Carrying Cost per unit}}}'}$$
-                            $${'EOQ = \\sqrt{\\frac{2 \\times 15,000 \\times 48}{0.16}} = 3,000 \\text{ Kg}'}$$</p>
-                            <p><strong>Step 2: Calculate Number of Orders</strong><br>
-                            $${'\\text{Number of Orders} = \\frac{\\text{Annual Consumption}}{EOQ} = \\frac{15,000}{3,000} = 5 \\text{ orders}'}$$</p>
-                        `
-                    }
-                ]
+                title: "Q.2) Overhead Absorption using ABC",
+                content: `
+                    <h3>Question</h3>
+                    <p>A company manufactures two products A and B using common facilities. The following cost data for a month is presented to you:</p>
+                    <div class="table-wrapper"><table class="styled-table">
+                        <thead><tr><th>Particulars</th><th>A</th><th>B</th></tr></thead>
+                        <tbody>
+                            <tr><td>Units produced</td><td>1,000</td><td>2,000</td></tr>
+                            <tr><td>Direct Labour hours per unit</td><td>2</td><td>3</td></tr>
+                            <tr><td>Machine Hours per unit</td><td>6</td><td>1.5</td></tr>
+                            <tr><td>Set up of Machines</td><td>15</td><td>50</td></tr>
+                            <tr><td>Orders</td><td>18</td><td>70</td></tr>
+                        </tbody>
+                    </table></div>
+                    <div class="table-wrapper"><table class="styled-table">
+                        <tbody>
+                            <tr><td>Machine activity expenses</td><td>₹3,00,000</td></tr>
+                            <tr><td>Set-up relating expenses</td><td>₹30,000</td></tr>
+                            <tr><td>Expenses relating to orders</td><td>₹35,000</td></tr>
+                        </tbody>
+                    </table></div>
+                    <p>Calculate the overheads absorbed using activity-based costing approach.</p>
+                    <h3>Solution</h3>
+                    <p><strong>Step 1: Calculate Total Activity for Each Cost Driver</strong></p>
+                    <ul>
+                        <li>Total Machine Hours: (1,000 units × 6 hrs) + (2,000 units × 1.5 hrs) = <strong>9,000 MH</strong></li>
+                        <li>Total Setups: 15 + 50 = <strong>65 setups</strong></li>
+                        <li>Total Orders: 18 + 70 = <strong>88 orders</strong></li>
+                    </ul>
+                    <p><strong>Step 2: Calculate Activity Rates</strong></p>
+                    <ul>
+                        <li>Machine Activity Rate: \\( \\frac{300000}{9000} \\) = <strong>₹33.33 per MH</strong></li>
+                        <li>Setup Rate: \\( \\frac{30000}{65} \\) = <strong>₹461.54 per setup</strong></li>
+                        <li>Order Rate: \\( \\frac{35000}{88} \\) = <strong>₹397.73 per order</strong></li>
+                    </ul>
+                    <p><strong>Step 3: Allocate Overhead Costs to Products</strong></p>
+                    <h4>Overhead Absorbed by Product A</h4>
+                    <ul>
+                        <li>Machine Activity: 6,000 MH × ₹33.33 = ₹1,99,980</li>
+                        <li>Setup Expenses: 15 setups × ₹461.54 = ₹6,923.10</li>
+                        <li>Order Expenses: 18 orders × ₹397.73 = ₹7,159.14</li>
+                        <li><strong>Total for A: ₹2,14,062.24</strong></li>
+                    </ul>
+                    <h4>Overhead Absorbed by Product B</h4>
+                    <ul>
+                        <li>Machine Activity: 3,000 MH × ₹33.33 = ₹99,990</li>
+                        <li>Setup Expenses: 50 setups × ₹461.54 = ₹23,077</li>
+                        <li>Order Expenses: 70 orders × ₹397.73 = ₹27,841.10</li>
+                        <li><strong>Total for B: ₹1,50,908.10</strong></li>
+                    </ul>
+                `
+            },
+            // ... More questions to be added here following the same structure ...
+            {
+                module: "Module 4: Overheads",
+                title: "Q.23) Overhead Absorption Rates",
+                content: `
+                    <h3>Question</h3>
+                    <p>The following information is extracted from the budget of ABC Ltd. for 2025. You are required to workout overhead application rates by using the following methods: a) Direct Labour Hour Rate, b) Direct Labour Cost in %, c) Machine Hour Rate, d) Prime Cost in %.</p>
+                    <div class="table-wrapper"><table class="styled-table">
+                        <tbody>
+                            <tr><td>Factory overheads</td><td>₹1,24,000</td></tr>
+                            <tr><td>Direct labour cost</td><td>₹2,00,000</td></tr>
+                            <tr><td>Direct labour hours</td><td>3,10,000</td></tr>
+                            <tr><td>Machine hours</td><td>1,00,000</td></tr>
+                            <tr><td>Direct material cost</td><td>₹4,00,000</td></tr>
+                        </tbody>
+                    </table></div>
+                    <h3>Solution</h3>
+                    <p>First, calculate Prime Cost = Direct Material Cost + Direct Labour Cost<br>
+                    Prime Cost = ₹4,00,000 + ₹2,00,000 = ₹6,00,000.</p>
+                    <h4>Overhead Absorption Rates:</h4>
+                    <ol>
+                        <li><strong>Direct Labour Hour Rate:</strong> \\( \\frac{124000}{310000} \\) = <strong>₹0.40 per DLH</strong></li>
+                        <li><strong>Direct Labour Cost %:</strong> \\( (\\frac{124000}{200000}) \\times 100 \\) = <strong>62%</strong></li>
+                        <li><strong>Machine Hour Rate:</strong> \\( \\frac{124000}{100000} \\) = <strong>₹1.24 per MH</strong></li>
+                        <li><strong>Prime Cost %:</strong> \\( (\\frac{124000}{600000}) \\times 100 \\) = <strong>20.67%</strong></li>
+                    </ol>
+                `
+            }
+        ];
+
+        // This is a condensed version. The full version would have all 23 questions.
+        // Let's create the full data structure now.
+        const fullQbData = [
+            // Module 1
+            {
+                module: "Module 1: ABC Costing",
+                title: "Q.1) Traditional vs. ABC Allocation",
+                content: `
+                    <h3>Question</h3><p>A company produces two products, A and B, and estimates that its overhead costs will be Rs. 2,61,780. Overhead has traditionally been allocated on the basis of direct labour hours. Estimated data follow:</p><div class="table-wrapper"><table class="styled-table"><thead><tr><th>Particulars</th><th>Product A</th><th>Product B</th></tr></thead><tbody><tr><td>Estimated volume</td><td>500 units</td><td>1,250 units</td></tr><tr><td>Direct labour hours per unit</td><td>1</td><td>2</td></tr></tbody></table></div><div class="table-wrapper"><table class="styled-table"><thead><tr><th>Activity Centres</th><th>Estimated Cost (Rs.)</th><th>Est. Activity (Prod. A)</th><th>Est. Activity (Prod. B)</th></tr></thead><tbody><tr><td>Machine setups</td><td>27,140</td><td>20</td><td>26</td></tr><tr><td>Maintenance (sq. ft.)</td><td>1,83,040</td><td>1,620</td><td>2,540</td></tr><tr><td>Inspections</td><td>51,600</td><td>56</td><td>288</td></tr><tr><td><strong>Total</strong></td><td><strong>2,61,780</strong></td><td></td><td></td></tr></tbody></table></div><p>a) Determine the overhead allocated per unit to each product under the traditional approach.<br>b) Determine the overhead allocated per unit to each product under ABC.</p>
+                    <h3>Solution</h3><h4>a) Traditional Approach (based on Direct Labour Hours)</h4><p><strong>Step 1: Calculate Total Direct Labour Hours</strong><br>Product A: 500 units × 1 hour/unit = 500 hours<br>Product B: 1,250 units × 2 hours/unit = 2,500 hours<br><strong>Total Hours: 500 + 2,500 = 3,000 hours</strong></p><p><strong>Step 2: Calculate Traditional Overhead Rate</strong></p><div class="formula-box">Overhead Rate = \\( \\frac{\\text{Total Overhead Cost}}{\\text{Total Direct Labour Hours}} \\)</div><p>Rate = \\( \\frac{261780}{3000} \\) = <strong>₹87.26 per hour</strong></p><p><strong>Step 3: Allocate Overhead to Each Product</strong><br>Product A: 1 hour/unit × ₹87.26/hour = <strong>₹87.26 per unit</strong><br>Product B: 2 hours/unit × ₹87.26/hour = <strong>₹174.52 per unit</strong></p><h4>b) Activity-Based Costing (ABC) Approach</h4><p><strong>Step 1: Calculate Activity Rates for each Cost Pool</strong></p><div class="formula-box">Activity Rate = \\( \\frac{\\text{Estimated Cost}}{\\text{Estimated Activity}} \\)</div><ul><li>Machine Setups: \\( \\frac{27140}{20 + 26} \\) = <strong>₹590 per setup</strong></li><li>Maintenance: \\( \\frac{183040}{1620 + 2540} \\) = <strong>₹44 per sq. ft.</strong></li><li>Inspections: \\( \\frac{51600}{56 + 288} \\) = <strong>₹150 per inspection</strong></li></ul><p><strong>Step 2: Allocate Overhead Costs to Products</strong></p><div class="table-wrapper"><table class="styled-table"><thead><tr><th>Activity</th><th>Product A Cost (₹)</th><th>Product B Cost (₹)</th></tr></thead><tbody><tr><td>Setups</td><td>20 setups × ₹590 = 11,800</td><td>26 setups × ₹590 = 15,340</td></tr><tr><td>Maintenance</td><td>1,620 sq.ft. × ₹44 = 71,280</td><td>2,540 sq.ft. × ₹44 = 1,11,760</td></tr><tr><td>Inspections</td><td>56 insp. × ₹150 = 8,400</td><td>288 insp. × ₹150 = 43,200</td></tr><tr><td><strong>Total Overhead</strong></td><td><strong>₹91,480</strong></td><td><strong>₹1,70,300</strong></td></tr></tbody></table></div><p><strong>Step 3: Calculate Overhead per Unit</strong><br>Product A: \\( \\frac{91480}{500} \\) = <strong>₹182.96 per unit</strong><br>Product B: \\( \\frac{170300}{1250} \\) = <strong>₹136.24 per unit</strong></p>`
             },
             {
-                topic: "Labour",
-                questions: [
-                    {
-                        title: "Q.13) Work out worker earnings under various wage systems.",
-                        content: `
-                            <p><strong>1. Straight Piece Rate System</strong><br>
-                            $${'\\text{Earnings} = 150 \\text{ pieces} \\times ₹1.50 = ₹225'}$$</p>
-                            <p><strong>2. Differential Piece Rate System</strong> (120% rate applies)<br>
-                            $${'\\text{Earnings} = 150 \\text{ pieces} \\times (₹1.50 \\times 1.20) = ₹270'}$$</p>
-                            <p><strong>3. Halsey Premium System (50% Bonus)</strong><br>
-                            $${'\\text{Earnings} = (48 \\text{ hrs} \\times ₹3.75) + (50\\% \\times 2 \\text{ hrs} \\times ₹3.75) = ₹183.75'}$$</p>
-                            <p><strong>4. Rowan System</strong><br>
-                            $${'\\text{Earnings} = (48 \\times 3.75) + \\left( \\frac{2 \\text{ hrs saved}}{50 \\text{ hrs std.}} \\times 48 \\times 3.75 \\right) = ₹187.20'}$$</p>
-                        `
-                    },
-                     {
-                        title: "Q.15) Calculate Labour Turnover Rates.",
-                        content: `
-                            <p><strong>Step 1: Calculate Average Number of Workers</strong><br>
-                            $${'\\text{Average Workers} = \\frac{7,600 + 8,400}{2} = 8,000'}$$</p>
-                            <p><strong>Step 2: Calculate Rates</strong></p>
-                            <p><strong>Separation Rate:</strong> (Based on 400 separations)<br>
-                            $${'\\text{Rate} = \\frac{400}{8,000} \\times 100 = 5\\%'}$$</p>
-                            <p><strong>Replacement Rate:</strong> (Based on 300 replacements)<br>
-                            $${'\\text{Rate} = \\frac{300}{8,000} \\times 100 = 3.75\\%'}$$</p>
-                            <p><strong>Flux Rate:</strong><br>
-                            $${'\\text{Rate} = \\frac{400 + 300}{8,000} \\times 100 = 8.75\\%'}$$</p>
-                        `
-                    }
-                ]
+                title: "Q.2) Overhead Absorption using ABC",
+                content: `<h3>Question</h3><p>A company manufactures two products A and B using common facilities. The following cost data for a month is presented to you:</p><div class="table-wrapper"><table class="styled-table"><thead><tr><th>Particulars</th><th>A</th><th>B</th></tr></thead><tbody><tr><td>Units produced</td><td>1,000</td><td>2,000</td></tr><tr><td>Direct Labour hours per unit</td><td>2</td><td>3</td></tr><tr><td>Machine Hours per unit</td><td>6</td><td>1.5</td></tr><tr><td>Set up of Machines</td><td>15</td><td>50</td></tr><tr><td>Orders</td><td>18</td><td>70</td></tr></tbody></table></div><div class="table-wrapper"><table class="styled-table"><tbody><tr><td>Machine activity expenses</td><td>₹3,00,000</td></tr><tr><td>Set-up relating expenses</td><td>₹30,000</td></tr><tr><td>Expenses relating to orders</td><td>₹35,000</td></tr></tbody></table></div><p>Calculate the overheads absorbed using activity-based costing approach.</p><h3>Solution</h3><p><strong>Step 1: Calculate Total Activity for Each Cost Driver</strong></p><ul><li>Total Machine Hours: (1,000 units × 6 hrs) + (2,000 units × 1.5 hrs) = <strong>9,000 MH</strong></li><li>Total Setups: 15 + 50 = <strong>65 setups</strong></li><li>Total Orders: 18 + 70 = <strong>88 orders</strong></li></ul><p><strong>Step 2: Calculate Activity Rates</strong></p><ul><li>Machine Activity Rate: \\( \\frac{300000}{9000} \\) = <strong>₹33.33 per MH</strong></li><li>Setup Rate: \\( \\frac{30000}{65} \\) = <strong>₹461.54 per setup</strong></li><li>Order Rate: \\( \\frac{35000}{88} \\) = <strong>₹397.73 per order</strong></li></ul><p><strong>Step 3: Allocate Overhead Costs to Products</strong></p><h4>Overhead Absorbed by Product A</h4><ul><li>Machine Activity: 6,000 MH × ₹33.33 = ₹1,99,980</li><li>Setup Expenses: 15 setups × ₹461.54 = ₹6,923.10</li><li>Order Expenses: 18 orders × ₹397.73 = ₹7,159.14</li><li><strong>Total for A: ₹2,14,062.24</strong></li></ul><h4>Overhead Absorbed by Product B</h4><ul><li>Machine Activity: 3,000 MH × ₹33.33 = ₹99,990</li><li>Setup Expenses: 50 setups × ₹461.54 = ₹23,077</li><li>Order Expenses: 70 orders × ₹397.73 = ₹27,841.10</li><li><strong>Total for B: ₹1,50,908.10</strong></li></ul>`
+            },
+             {
+                title: "Q.3) Traditional vs. ABC for Dept. B",
+                content: `<h3>Question</h3><p>Burger Company has six departments and has allocated manufacturing overhead using one cost pool based on direct labour hours. The accounting staff has provided the following estimates:</p><div class="table-wrapper"><table class="styled-table"><thead><tr><th>Particulars</th><th>Cost (Rs.)</th><th>Allocation Base</th><th>Activity</th></tr></thead><tbody><tr><td>Setups</td><td>16,500</td><td>Number of setups</td><td>250 setups</td></tr><tr><td>Quality Control</td><td>24,000</td><td>Number of inspections</td><td>400 inspections</td></tr><tr><td>Fabrication</td><td>36,000</td><td>Production runs</td><td>3,600 runs</td></tr><tr><td>Direct labour</td><td>90,000</td><td>Direct labour hours</td><td>4,500 labour hours</td></tr></tbody></table></div><p>Management is assessing if ABC should be used, and has determined that Department B used the following: 24 setups, 60 inspections, 900 production runs, and 900 direct labour hours during the year.</p><p>A. Using traditional allocation, how much overhead cost is allocated to Dept. B?<br>B. Using ABC, how much overhead cost is allocated to Dept. B?<br>C. Which items are cost drivers?<br>D. Which items are cost objects?</p><h3>Solution</h3><h4>A. Traditional Allocation to Dept. B</h4><p><strong>Step 1: Total Overhead Cost</strong> = ₹16,500 + ₹24,000 + ₹36,000 + ₹90,000 = ₹1,66,500</p><p><strong>Step 2: Traditional Overhead Rate</strong> = \\( \\frac{166500}{4500} \\) = <strong>₹37 per DLH</strong></p><p><strong>Step 3: Allocated Cost to Dept. B</strong> = 900 DLH × ₹37/DLH = <strong>₹33,300</strong></p><h4>B. ABC Allocation to Dept. B</h4><p><strong>Step 1: Calculate Activity Rates</strong></p><ul><li>Setups Rate: \\( \\frac{16500}{250} \\) = <strong>₹66 per setup</strong></li><li>Quality Control Rate: \\( \\frac{24000}{400} \\) = <strong>₹60 per inspection</strong></li><li>Fabrication Rate: \\( \\frac{36000}{3600} \\) = <strong>₹10 per run</strong></li><li>Direct Labour Rate: \\( \\frac{90000}{4500} \\) = <strong>₹20 per DLH</strong></li></ul><p><strong>Step 2: Allocate Costs to Dept. B</strong></p><ul><li>Setups: 24 setups × ₹66 = ₹1,584</li><li>Quality Control: 60 inspections × ₹60 = ₹3,600</li><li>Fabrication: 900 runs × ₹10 = ₹9,000</li><li>Direct Labour: 900 DLH × ₹20 = ₹18,000</li><li><strong>Total Allocated Cost (ABC): ₹32,184</strong></li></ul><h4>C. Cost Drivers</h4><p>The cost drivers are: <strong>Number of setups, Number of inspections, Production runs, and Direct labour hours</strong>.</p><h4>D. Cost Objects</h4><p>The cost object is <strong>Department B</strong>.</p>`
             },
             {
-                topic: "Overhead",
-                questions: [
-                    {
-                        title: "Q.18) Prepare a primary overhead distribution summary.",
-                        content: `
-                             <div class="table-wrapper"><table class="styled-table">
-                                <thead>
-                                    <tr><th>Particulars</th><th>Basis</th><th>Total (₹)</th><th>Dept A</th><th>Dept B</th><th>Dept C</th><th>Dept D</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td>Rent</td><td>Floor Space</td><td>2,000</td><td>750</td><td>550</td><td>450</td><td>250</td></tr>
-                                    <tr><td>Maintenance</td><td>Cost of Machinery</td><td>1,200</td><td>480</td><td>360</td><td>240</td><td>120</td></tr>
-                                    <tr><td>Depreciation</td><td>Cost of Machinery</td><td>900</td><td>360</td><td>270</td><td>180</td><td>90</td></tr>
-                                    <tr><td>Lighting</td><td>Floor Space</td><td>200</td><td>75</td><td>55</td><td>45</td><td>25</td></tr>
-                                    <tr><td>Insurance (Stock)</td><td>Stock of Goods</td><td>1,000</td><td>500</td><td>300</td><td>200</td><td>-</td></tr>
-                                    <tr><td>Employer's P.F.</td><td>Direct Wages</td><td>300</td><td>120</td><td>90</td><td>60</td><td>30</td></tr>
-                                    <tr><td>Energy</td><td>Cost of Machinery</td><td>1,800</td><td>720</td><td>540</td><td>360</td><td>180</td></tr>
-                                    <tr><td>Supervision</td><td>No. of Workers</td><td>3,000</td><td>960</td><td>1,440</td><td>360</td><td>240</td></tr>
-                                    <tr class="final-row"><td><strong>Total</strong></td><td></td><td><strong>10,400</strong></td><td><strong>3,965</strong></td><td><strong>3,605</strong></td><td><strong>1,895</strong></td><td><strong>935</strong></td></tr>
-                                </tbody>
-                            </table></div>
-                        `
-                    },
-                    {
-                        title: "Q.21) Work out overhead application rates.",
-                        content: `
-                            <p><strong>a) Direct Labour Hour Rate</strong><br>
-                            $${'\\text{Rate} = \\frac{₹62,000}{1,55,000 \\text{ hrs}} = ₹0.40 \\text{ per DLH}'}$$</p>
-                            <p><strong>b) Direct Labour Cost Rate</strong><br>
-                            $${'\\text{Rate} = \\frac{₹62,000}{₹1,00,000} \\times 100 = 62\\% \\text{ of DLC}'}$$</p>
-                            <p><strong>c) Machine Hour Rate</strong><br>
-                            $${'\\text{Rate} = \\frac{₹62,000}{50,000 \\text{ hrs}} = ₹1.24 \\text{ per MHR}'}$$</p>
-                            <p><strong>d) Prime Cost Rate</strong><br>
-                            Prime Cost = ₹2,00,000 + ₹1,00,000 = ₹3,00,000<br>
-                            $${'\\text{Rate} = \\frac{₹62,000}{₹3,00,000} \\times 100 = 20.67\\% \\text{ of Prime Cost}'}$$</p>
-                        `
-                    }
-                ]
+                title: "Q.4 & Q.6) ABC Allocation to Products A & B",
+                content: `<h3>Question</h3><p>Vyas Company produces two products. Overhead is allocated based on activities. Estimated data follow:</p><div class="table-wrapper"><table class="styled-table"><thead><tr><th>Department</th><th>Allocation Base</th><th>Product A</th><th>Product B</th><th>Overhead Costs</th></tr></thead><tbody><tr><td>1</td><td>Machine Hours</td><td>1,000</td><td>1,500</td><td>₹4,00,000</td></tr><tr><td>2</td><td>Purchase Orders</td><td>100</td><td>300</td><td>₹1,00,000</td></tr><tr><td>3</td><td>Labour Hours</td><td>200</td><td>300</td><td>₹5,00,000</td></tr></tbody></table></div><p>Using ABC, how much would be allocated to Product B (Q.4) and Product A (Q.6)?</p><h3>Solution</h3><p><strong>Step 1: Calculate the Overhead Rate for Each Activity</strong></p><ul><li>Dept 1 (Machine Hours): \\( \\frac{400000}{1000 + 1500} \\) = <strong>₹160 per MH</strong></li><li>Dept 2 (Purchase Orders): \\( \\frac{100000}{100 + 300} \\) = <strong>₹250 per Order</strong></li><li>Dept 3 (Labour Hours): \\( \\frac{500000}{200 + 300} \\) = <strong>₹1,000 per LH</strong></li></ul><h4>Allocation to Product B (Q.4)</h4><ul><li>Dept 1: 1,500 MH × ₹160/MH = ₹2,40,000</li><li>Dept 2: 300 Orders × ₹250/Order = ₹75,000</li><li>Dept 3: 300 LH × ₹1,000/LH = ₹3,00,000</li><li><strong>Total for Product B: ₹6,15,000</strong></li></ul><h4>Allocation to Product A (Q.6)</h4><ul><li>Dept 1: 1,000 MH × ₹160/MH = ₹1,60,000</li><li>Dept 2: 100 Orders × ₹250/Order = ₹25,000</li><li>Dept 3: 200 LH × ₹1,000/LH = ₹2,00,000</li><li><strong>Total for Product A: ₹3,85,000</strong></li></ul>`
+            },
+             {
+                title: "Q.5) ABC Allocation to Job 1234",
+                content: `<h3>Question</h3><p>Use the following data:</p><div class="table-wrapper"><table class="styled-table"><tbody><tr><td><strong>Estimated data:</strong></td><td></td></tr><tr><td>Machine setups</td><td>₹4,00,000</td></tr><tr><td>No. of set ups</td><td>500</td></tr><tr><td>Inspections</td><td>₹24,000</td></tr><tr><td>No. of inspections</td><td>1,200</td></tr><tr><td><strong>Actual data on Job 1234:</strong></td><td></td></tr><tr><td>No. of inspections</td><td>10</td></tr><tr><td>No. of setups</td><td>2</td></tr></tbody></table></div><p>A. Using ABC, determine the amount of setup cost allocated to job 1234.<br>B. Using ABC, determine the amount of inspection cost allocated to job 1234.</p><h3>Solution</h3><h4>A. Setup Cost Allocation</h4><p><strong>Step 1: Setup Rate</strong> = \\( \\frac{400000}{500} \\) = <strong>₹800 per setup</strong></p><p><strong>Step 2: Allocated Cost</strong> = 2 setups × ₹800/setup = <strong>₹1,600</strong></p><h4>B. Inspection Cost Allocation</h4><p><strong>Step 1: Inspection Rate</strong> = \\( \\frac{24000}{1200} \\) = <strong>₹20 per inspection</strong></p><p><strong>Step 2: Allocated Cost</strong> = 10 inspections × ₹20/inspection = <strong>₹200</strong></p>`
+            },
+            // Module 2
+            {
+                module: "Module 2: Material Cost",
+                title: "Q.7) Stores Ledger (FIFO Method)",
+                content: `<h3>Question</h3><p>Prepare a store Ledger Account from the following transaction assuming that issues of stores have been made on the principles of First In First Out.</p><div class="table-wrapper"><table class="styled-table"><thead><tr><th>July 2025</th><th>Particulars</th></tr></thead><tbody><tr><td>1</td><td>Received 1000 units at Rs. 20 per unit</td></tr><tr><td>3</td><td>Received 350 units at Rs. 21 per unit</td></tr><tr><td>5</td><td>Issued 700 units</td></tr><tr><td>7</td><td>Issued 400 units</td></tr><tr><td>12</td><td>Received 550 units at Rs. 22 per unit</td></tr><tr><td>16</td><td>Issued 350 units</td></tr><tr><td>21</td><td>Received 100 units at Rs. 23 per unit</td></tr><tr><td>24</td><td>Issued 500 units</td></tr><tr><td>27</td><td>Received 200 units at Rs. 20 per unit</td></tr><tr><td>31</td><td>Issued 180 units</td></tr></tbody></table></div><h3>Solution</h3><h4>Stores Ledger Account (FIFO Method)</h4><div class="table-wrapper"><table class="styled-table"><thead><tr><th rowspan="2">Date</th><th colspan="3">Receipts</th><th colspan="3">Issues</th><th colspan="3">Balance</th></tr><tr><th>Qty</th><th>Rate (₹)</th><th>Amount (₹)</th><th>Qty</th><th>Rate (₹)</th><th>Amount (₹)</th><th>Qty</th><th>Rate (₹)</th><th>Amount (₹)</th></tr></thead><tbody><tr><td>July 1</td><td>1,000</td><td>20.00</td><td>20,000</td><td>-</td><td>-</td><td>-</td><td>1,000</td><td>20.00</td><td>20,000</td></tr><tr><td>July 3</td><td>350</td><td>21.00</td><td>7,350</td><td>-</td><td>-</td><td>-</td><td>1,000<br>350</td><td>20.00<br>21.00</td><td>20,000<br>7,350</td></tr><tr><td>July 5</td><td>-</td><td>-</td><td>-</td><td>700</td><td>20.00</td><td>14,000</td><td>300<br>350</td><td>20.00<br>21.00</td><td>6,000<br>7,350</td></tr><tr><td>July 7</td><td>-</td><td>-</td><td>-</td><td>300<br>100</td><td>20.00<br>21.00</td><td>6,000<br>2,100</td><td>250</td><td>21.00</td><td>5,250</td></tr><tr><td>July 12</td><td>550</td><td>22.00</td><td>12,100</td><td>-</td><td>-</td><td>-</td><td>250<br>550</td><td>21.00<br>22.00</td><td>5,250<br>12,100</td></tr><tr><td>July 16</td><td>-</td><td>-</td><td>-</td><td>250<br>100</td><td>21.00<br>22.00</td><td>5,250<br>2,200</td><td>450</td><td>22.00</td><td>9,900</td></tr><tr><td>July 21</td><td>100</td><td>23.00</td><td>2,300</td><td>-</td><td>-</td><td>-</td><td>450<br>100</td><td>22.00<br>23.00</td><td>9,900<br>2,300</td></tr><tr><td>July 24</td><td>-</td><td>-</td><td>-</td><td>450<br>50</td><td>22.00<br>23.00</td><td>9,900<br>1,150</td><td>50</td><td>23.00</td><td>1,150</td></tr><tr><td>July 27</td><td>200</td><td>20.00</td><td>4,000</td><td>-</td><td>-</td><td>-</td><td>50<br>200</td><td>23.00<br>20.00</td><td>1,150<br>4,000</td></tr><tr><td>July 31</td><td>-</td><td>-</td><td>-</td><td>50<br>130</td><td>23.00<br>20.00</td><td>1,150<br>2,600</td><td>70</td><td>20.00</td><td>1,400</td></tr></tbody></table></div><p><strong>Closing Stock on July 31st: 70 units @ Rs. 20 = Rs. 1,400.</strong></p>`
+            },
+            {
+                title: "Q.8) Stores Ledger (Weighted Avg)",
+                content: `<h3>Question</h3><p>The following transaction took place in respect of a material item. Prepare stores ledger account on the basis of weighted average.</p><div class="table-wrapper"><table class="styled-table"><thead><tr><th>Date</th><th>Receipt (Qty)</th><th>Rate</th><th>Issued (Qty)</th></tr></thead><tbody><tr><td>March 2</td><td>200</td><td>2.00</td><td></td></tr><tr><td>March 10</td><td>300</td><td>2.40</td><td></td></tr><tr><td>March 15</td><td></td><td></td><td>250</td></tr><tr><td>March 18</td><td>250</td><td>2.60</td><td></td></tr><tr><td>March 20</td><td></td><td></td><td>200</td></tr></tbody></table></div><h3>Solution</h3><div class="formula-box">Weighted Average Rate = \\( \\frac{\\text{Total Cost of Materials}}{\\text{Total Quantity of Materials}} \\)</div><h4>Stores Ledger Account (Weighted Average Method)</h4><div class="table-wrapper"><table class="styled-table"><thead><tr><th rowspan="2">Date</th><th colspan="3">Receipts</th><th colspan="3">Issues</th><th colspan="3">Balance</th></tr><tr><th>Qty</th><th>Rate (₹)</th><th>Amount (₹)</th><th>Qty</th><th>Rate (₹)</th><th>Amount (₹)</th><th>Qty</th><th>Rate (₹)</th><th>Amount (₹)</th></tr></thead><tbody><tr><td>Mar 2</td><td>200</td><td>2.00</td><td>400</td><td>-</td><td>-</td><td>-</td><td>200</td><td>2.00</td><td>400.00</td></tr><tr><td>Mar 10</td><td>300</td><td>2.40</td><td>720</td><td>-</td><td>-</td><td>-</td><td>500</td><td><strong>2.24</strong></td><td>1,120.00</td></tr><tr><td>Mar 15</td><td>-</td><td>-</td><td>-</td><td>250</td><td>2.24</td><td>560</td><td>250</td><td>2.24</td><td>560.00</td></tr><tr><td>Mar 18</td><td>250</td><td>2.60</td><td>650</td><td>-</td><td>-</td><td>-</td><td>500</td><td><strong>2.42</strong></td><td>1,210.00</td></tr><tr><td>Mar 20</td><td>-</td><td>-</td><td>-</td><td>200</td><td>2.42</td><td>484</td><td>300</td><td>2.42</td><td>726.00</td></tr></tbody></table></div><p><strong>Closing Stock on March 20th: 300 units @ Rs. 2.42 = Rs. 726.</strong></p>`
+            },
+            {
+                title: "Q.9) Best Order Quantity with Discounts",
+                content: `<h3>Question</h3><p>M/s Quality Product Ltd. is offered a discount on its order as follows:</p><div class="table-wrapper"><table class="styled-table"><thead><tr><th>Price Per tonne</th><th>Order (in tonnes)</th></tr></thead><tbody><tr><td>Rs. 12.00</td><td>Less than 500</td></tr><tr><td>Rs. 11.80</td><td>500 but less than 1,600</td></tr><tr><td>Rs. 11.60</td><td>1,600 but less than 4,000</td></tr><tr><td>Rs. 11.40</td><td>4,000 but less than 8,000</td></tr><tr><td>Rs. 11.20</td><td>8,000 and over</td></tr></tbody></table></div><p>The annual demand is 8,000 tonnes. Inventory carrying costs are 20% of material cost per annum. The delivery cost per order is Rs. 12. Calculate the Best quantity order.</p><h3>Solution</h3><p>We must find the order quantity that results in the lowest total annual cost.</p><div class="formula-box">Total Cost = Purchase Cost + Ordering Cost + Carrying Cost</div><p><strong>Step 1: Calculate EOQ at the lowest price (₹11.20)</strong></p><p>Carrying Cost (C) = 20% of ₹11.20 = ₹2.24.<br>\\( EOQ = \\sqrt{\\frac{2 \\times 8000 \\times 12}{2.24}} \\) ≈ <strong>293 tonnes</strong></p><p><strong>Step 2: Calculate Total Cost at EOQ and each price break.</strong></p><div class="table-wrapper"><table class="styled-table"><thead><tr><th>Order Qty (Q)</th><th>Price (P) (₹)</th><th>Purchase Cost (₹)</th><th>Ordering Cost (₹)</th><th>Carrying Cost (₹)</th><th>Total Cost (₹)</th></tr></thead><tbody><tr><td><strong>293 (EOQ)</strong></td><td>12.00</td><td>96,000</td><td>327.65</td><td>351.60</td><td>96,679.25</td></tr><tr><td><strong>500</strong></td><td>11.80</td><td>94,400</td><td>192.00</td><td>590.00</td><td>95,182.00</td></tr><tr><td><strong>1,600</strong></td><td>11.60</td><td>92,800</td><td>60.00</td><td>1,856.00</td><td><strong>94,716.00</strong></td></tr><tr><td><strong>4,000</strong></td><td>11.40</td><td>91,200</td><td>24.00</td><td>4,560.00</td><td>95,784.00</td></tr><tr><td><strong>8,000</strong></td><td>11.20</td><td>89,600</td><td>12.00</td><td>8,960.00</td><td>98,572.00</td></tr></tbody></table></div><p><strong>Conclusion:</strong> The lowest total annual cost is <strong>₹94,716</strong>. Therefore, the best quantity to order is <strong>1,600 tonnes</strong>.</p>`
+            },
+            {
+                title: "Q.10) Inventory Level Calculation",
+                content: `<h3>Question</h3><p>From M/s Perfect Computers Ltd., calculate inventory levels given:</p><ul><li>Maximum Usage in a month: 600 Nos.</li><li>Minimum usage in a month: 400 Nos.</li><li>Normal Usage in a month: 450 Nos.</li><li>Lead Time: Maximum 6 Months, Minimum 2 months</li><li>Reorder Quantity: 1,500 Nos.</li></ul><h3>Solution</h3><h4>a) Reorder Level (ROL)</h4><div class="formula-box">ROL = Maximum Usage × Maximum Lead Time</div><p>ROL = 600 units/month × 6 months = <strong>3,600 units</strong></p><h4>b) Maximum Level</h4><div class="formula-box">Max Level = ROL + Reorder Qty - (Min Usage × Min Lead Time)</div><p>Max Level = 3,600 + 1,500 - (400 × 2) = <strong>4,300 units</strong></p><h4>c) Minimum Level</h4><div class="formula-box">Min Level = ROL - (Normal Usage × Average Lead Time)</div><p>Average Lead Time = (6 + 2) / 2 = 4 months<br>Min Level = 3,600 - (450 × 4) = <strong>1,800 units</strong></p><h4>d) Average Stock Level</h4><div class="formula-box">Average Level = Minimum Level + \\( \\frac{1}{2} \\) (Reorder Quantity)</div><p>Average Level = 1,800 + \\( \\frac{1}{2} \\) (1,500) = <strong>2,550 units</strong></p>`
+            },
+            {
+                title: "Q.11) Economic Order Quantity (EOQ)",
+                content: `<h3>Question</h3><p>M/s Reliance Industries Ltd requires you to ascertain the EOQ and number of orders given:</p><ul><li>Consumption of Material per annum: 15,000 Kg</li><li>Cost of placing an order: Rs. 48</li><li>Cost of Raw Material: Rs. 2 per kg</li><li>Storage cost is 8% of average inventory</li></ul><h3>Solution</h3><p><strong>Step 1: Identify Variables</strong><br>A = 15,000 Kg, O = ₹48, C = 8% of ₹2 = ₹0.16</p><p><strong>Step 2: Calculate EOQ</strong></p><div class="formula-box">\\( EOQ = \\sqrt{\\frac{2 \\times A \\times O}{C}} \\)</div><p>\\( EOQ = \\sqrt{\\frac{2 \\times 15000 \\times 48}{0.16}} = \\sqrt{9000000} = \\textbf{3,000 Kg} \\)</p><p><strong>Step 3: Calculate Number of Orders</strong></p><div class="formula-box">Number of Orders = \\( \\frac{\\text{Annual Consumption}}{\\text{EOQ}} \\)</div><p>Number of Orders = \\( \\frac{15000}{3000} \\) = <strong>5 orders</strong></p>`
+            },
+            {
+                title: "Q.12) ABC Analysis - Average Value",
+                content: `<h3>Question</h3><p>Calculate the average value per item for a store with 8,000 items and a monthly consumption of Rs. 16,00,000, using ABC categories.</p><div class="table-wrapper"><table class="styled-table"><thead><tr><th>Category</th><th>% of total no of items</th><th>% of total value</th></tr></thead><tbody><tr><td>A</td><td>10</td><td>70</td></tr><tr><td>B</td><td>20</td><td>20</td></tr><tr><td>C</td><td>70</td><td>10</td></tr></tbody></table></div><h3>Solution</h3><p><strong>Step 1: Items and Value per Category</strong></p><div class="table-wrapper"><table class="styled-table"><thead><tr><th>Category</th><th>Items</th><th>Consumption Value (₹)</th></tr></thead><tbody><tr><td><strong>A</strong></td><td>800</td><td>11,20,000</td></tr><tr><td><strong>B</strong></td><td>1,600</td><td>3,20,000</td></tr><tr><td><strong>C</strong></td><td>5,600</td><td>1,60,000</td></tr></tbody></table></div><p><strong>Step 2: Calculate Average Value per Item</strong></p><ul><li>Category A: \\( \\frac{1120000}{800} \\) = <strong>₹1,400 per item</strong></li><li>Category B: \\( \\frac{320000}{1600} \\) = <strong>₹200 per item</strong></li><li>Category C: \\( \\frac{160000}{5600} \\) = <strong>₹28.57 per item</strong></li></ul>`
+            },
+            // Module 3
+            {
+                module: "Module 3: Labour Cost",
+                title: "Q.13) Worker Earnings Calculation",
+                content: `<h3>Question</h3><p>From the following particulars, work out earnings for the week of a worker under four systems.</p><div class="table-wrapper"><table class="styled-table"><tbody><tr><td>Number of working hours per week</td><td>48</td></tr><tr><td>Wages per hour</td><td>₹3.75</td></tr><tr><td>Rate per piece</td><td>₹1.50</td></tr><tr><td>Normal Time per piece</td><td>20 minutes</td></tr><tr><td>Normal Output per week</td><td>120 pieces</td></tr><tr><td>Actual Output for the week</td><td>150 pieces</td></tr></tbody></table></div><p>Differential Piece Rate: 80% of piece rate below standard and 120% above standard.</p><h3>Solution</h3><p><strong>Data Analysis:</strong> Time Allowed = 150 pieces × 20 min = 50 hours. Time Saved = 50 - 48 = 2 hours.</p><h4>1. Straight Piece Rate System</h4><p>Earnings = 150 pieces × ₹1.50 = <strong>₹225</strong></p><h4>2. Differential Piece Rate System</h4><p>New Rate = 120% of ₹1.50 = ₹1.80. Earnings = 150 pieces × ₹1.80 = <strong>₹270</strong></p><h4>3. Halsey Premium System (50% Bonus)</h4><div class="formula-box">Earnings = (Time Taken × Rate) + (50% × Time Saved × Rate)</div><p>Earnings = (48 × ₹3.75) + (50% × 2 × ₹3.75) = <strong>₹183.75</strong></p><h4>4. Rowan System</h4><div class="formula-box">Earnings = (Time Taken × Rate) + \\((\\frac{\\text{Time Saved}}{\\text{Time Allowed}}) \\times \\text{Time Taken} \\times \\text{Rate}\\)</div><p>Earnings = (48 × ₹3.75) + \\((\\frac{2}{50}) \\times 48 \\times 3.75\\) = <strong>₹187.20</strong></p>`
+            },
+            {
+                title: "Q.14) Worker Earnings Calculation II",
+                content: `<h3>Question</h3><p>From the following particulars work out the earnings for the week of a worker.</p><div class="table-wrapper"><table class="styled-table"><tbody><tr><td>Number of working hours per week</td><td>48</td></tr><tr><td>Wages per hour</td><td>₹7.50</td></tr><tr><td>Normal output per week</td><td>120 pieces</td></tr><tr><td>Actual output for the week</td><td>150 pieces</td></tr><tr><td>Time allowed for actual production</td><td>60 hours</td></tr></tbody></table></div><p>Differential piece rate: 80% below standard, 120% above.</p><h3>Solution</h3><p><strong>Data Analysis:</strong> Time Saved = 60 - 48 = 12 hours. Standard Rate/piece = (48 hrs × ₹7.50) / 120 pieces = ₹3.00.</p><h4>(a) Straight Piece Rate</h4><p>Earnings = 150 pieces × ₹3.00 = <strong>₹450</strong></p><h4>(b) Differential Piece Rate</h4><p>New Rate = 120% of ₹3.00 = ₹3.60. Earnings = 150 × ₹3.60 = <strong>₹540</strong></p><h4>(c) Halsey Premium System</h4><p>Earnings = (48 × ₹7.50) + (50% × 12 × ₹7.50) = <strong>₹405</strong></p><h4>(d) Rowan System</h4><p>Earnings = (48 × ₹7.50) + \\((\\frac{12}{60}) \\times 48 \\times 7.50\\) = <strong>₹432</strong></p>`
+            },
+            {
+                title: "Q.15 & Q.17) Labour Turnover Rates",
+                content: `<h3>Question</h3><p>From the following information, calculate Labour turnover rate and Labour flux rate:</p><ul><li>Q.15: Workers start: 7,600; end: 8,400.</li><li>Q.17: Workers start: 7,500; end: 8,500.</li><li>(For both) During the year, 80 workers left, 320 were discharged. 1,500 were recruited, of which 300 were replacements.</li></ul><h3>Solution</h3><p><strong>Data Analysis (applies to both questions as average is same):</strong> Separations = 80 + 320 = 400. Accessions = 1,500. Replacements = 300.</p><p><strong>Step 1: Average Number of Workers</strong> = (7600+8400)/2 OR (7500+8500)/2 = <strong>8,000 workers</strong></p><p><strong>Step 2: Calculate Turnover Rates</strong></p><ul><li><strong>Separation Rate:</strong> \\((\\frac{400}{8000}) \\times 100 = \\textbf{5%}\\)</li><li><strong>Replacement Rate:</strong> \\((\\frac{300}{8000}) \\times 100 = \\textbf{3.75%}\\)</li><li><strong>Labour Flux Rate:</strong> \\((\\frac{400 + 1500}{8000}) \\times 100 = \\textbf{23.75%}\\)</li></ul>`
+            },
+            {
+                title: "Q.16) Labour Turnover Methods",
+                content: `<h3>Question</h3><p>Find out the Labour Turnover Rate by applying: a) Flux Method, b) Replacement Method, c) Separation Method.</p><ul><li>Workers at start: 500; at end: 600.</li><li>During the month: 5 left, 20 discharged, 75 recruited. Of recruited, 10 were replacements.</li></ul><h3>Solution</h3><p><strong>Data Analysis:</strong> Separations = 5 + 20 = 25. Accessions = 75. Replacements = 10.</p><p><strong>Step 1: Average Workers</strong> = (500 + 600) / 2 = <strong>550 workers</strong></p><p><strong>Step 2: Calculate Rates</strong></p><ul><li><strong>a) Flux Method:</strong> \\((\\frac{25 + 75}{550}) \\times 100 = \\textbf{18.18%}\\)</li><li><strong>b) Replacement Method:</strong> \\((\\frac{10}{550}) \\times 100 = \\textbf{1.82%}\\)</li><li><strong>c) Separation Method:</strong> \\((\\frac{25}{550}) \\times 100 = \\textbf{4.55%}\\)</li></ul>`
+            },
+             // Module 4
+            {
+                module: "Module 4: Overheads",
+                title: "Q.18) Apportionment of Costs",
+                content: `<h3>Question</h3><p>Prepare a statement showing apportionment of costs to various departments.</p><h3>Solution</h3><h4>Primary Overhead Distribution Summary</h4><div class="table-wrapper"><table class="styled-table"><thead><tr><th>Overhead</th><th>Basis</th><th>Total (₹)</th><th>Dept A</th><th>Dept B</th><th>Dept C</th><th>Dept D</th></tr></thead><tbody><tr><td>Rent</td><td>Floor Space</td><td>2,000</td><td>750</td><td>550</td><td>450</td><td>250</td></tr><tr><td>Maintenance</td><td>Machinery Cost</td><td>1,200</td><td>480</td><td>360</td><td>240</td><td>120</td></tr><tr><td>Lighting</td><td>Floor Space</td><td>200</td><td>75</td><td>55</td><td>45</td><td>25</td></tr><tr><td>Supervision</td><td>No. of Workers</td><td>3,000</td><td>800</td><td>1,200</td><td>600</td><td>400</td></tr><tr><td>Insurance (Stock)</td><td>Stock Value</td><td>1,000</td><td>500</td><td>300</td><td>200</td><td>-</td></tr><tr><td>PF Contribution</td><td>Direct Wages</td><td>300</td><td>120</td><td>90</td><td>60</td><td>30</td></tr><tr><td>Depreciation</td><td>Machinery Cost</td><td>900</td><td>360</td><td>270</td><td>180</td><td>90</td></tr><tr><td>Energy</td><td>Machinery Cost</td><td>1,800</td><td>720</td><td>540</td><td>360</td><td>180</td></tr><tr><td><strong>TOTAL</strong></td><td></td><td><strong>10,400</strong></td><td><strong>3,805</strong></td><td><strong>3,365</strong></td><td><strong>2,135</strong></td><td><strong>1,095</strong></td></tr></tbody></table></div>`
+            },
+            {
+                title: "Q.19) Primary Overhead Distribution",
+                content: `<h3>Question</h3><p>Prepare primary overhead distribution summary on most equitable basis.</p><h3>Solution</h3><h4>Primary Overhead Distribution Summary</h4><div class="table-wrapper"><table class="styled-table"><thead><tr><th>Overhead</th><th>Basis</th><th>Total (₹)</th><th>Dept A</th><th>Dept B</th><th>Dept C</th><th>Dept D</th><th>Dept E</th></tr></thead><tbody><tr><td>Repairs</td><td>Plant Value</td><td>10,500</td><td>3,000</td><td>2,700</td><td>2,400</td><td>1,500</td><td>900</td></tr><tr><td>Rent</td><td>Area</td><td>12,500</td><td>3,500</td><td>3,000</td><td>2,750</td><td>2,250</td><td>1,000</td></tr><tr><td>Depreciation</td><td>Plant Value</td><td>7,000</td><td>2,000</td><td>1,800</td><td>1,600</td><td>1,000</td><td>600</td></tr><tr><td>Supervision</td><td>No. of Workers</td><td>28,000</td><td>10,000</td><td>8,000</td><td>4,000</td><td>4,000</td><td>2,000</td></tr><tr><td>Insurance</td><td>Stock Value</td><td>6,400</td><td>3,000</td><td>2,000</td><td>1,000</td><td>400</td><td>-</td></tr><tr><td>Emp. Insurance</td><td>Total Wages</td><td>3,000</td><td>1,000</td><td>800</td><td>500</td><td>500</td><td>200</td></tr><tr><td>Lighting</td><td>Area</td><td>9,000</td><td>2,520</td><td>2,160</td><td>1,980</td><td>1,620</td><td>720</td></tr><tr><td><strong>TOTAL</strong></td><td></td><td><strong>76,400</strong></td><td><strong>25,020</strong></td><td><strong>20,460</strong></td><td><strong>14,230</strong></td><td><strong>11,270</strong></td><td><strong>5,420</strong></td></tr></tbody></table></div>`
+            },
+            {
+                title: "Q.20) Apportion Costs to Departments",
+                content: `<h3>Question</h3><p>Apportion the costs to various departments on an equitable basis.</p><h3>Solution</h3><h4>Primary Overhead Distribution Summary</h4><div class="table-wrapper"><table class="styled-table"><thead><tr><th>Overhead</th><th>Basis</th><th>Total (₹)</th><th>Dept P</th><th>Dept N</th><th>Dept R</th><th>Dept S</th><th>Dept T</th></tr></thead><tbody><tr><td>Repairs</td><td>Plant Value</td><td>2,000</td><td>571</td><td>514</td><td>457</td><td>286</td><td>172</td></tr><tr><td>Rent</td><td>Area</td><td>2,500</td><td>700</td><td>600</td><td>550</td><td>450</td><td>200</td></tr><tr><td>Depreciation</td><td>Plant Value</td><td>1,200</td><td>343</td><td>309</td><td>274</td><td>171</td><td>103</td></tr><tr><td>Supervision</td><td>No. of Workers</td><td>4,000</td><td>1,429</td><td>1,143</td><td>571</td><td>571</td><td>286</td></tr><tr><td>Insurance</td><td>Stock Value</td><td>1,500</td><td>703</td><td>469</td><td>234</td><td>94</td><td>-</td></tr><tr><td>Emp. Insurance</td><td>Total Wages</td><td>1,200</td><td>400</td><td>320</td><td>200</td><td>200</td><td>80</td></tr><tr><td>Light</td><td>Area</td><td>360</td><td>100.8</td><td>86.4</td><td>79.2</td><td>64.8</td><td>28.8</td></tr><tr><td><strong>TOTAL</strong></td><td></td><td><strong>12,760</strong></td><td><strong>4,246.8</strong></td><td><strong>3,441.4</strong></td><td><strong>2,365.2</strong></td><td><strong>1,836.8</strong></td><td><strong>869.8</strong></td></tr></tbody></table></div>`
+            },
+            {
+                title: "Q.21 & Q.23) Overhead Absorption Rates",
+                content: `<h3>Question</h3><p>Workout overhead application rates using the following methods: a) Direct Labour Hour Rate, b) Direct Labour Cost in %, c) Machine Hour Rate, d) Prime Cost in %.</p><h4>Data for Q.21:</h4><p>Factory Overheads: ₹62,000; Direct Labour Cost: ₹1,00,000; Direct Labour Hours: 1,55,000; Machine Hours: 50,000; Direct Material Cost: ₹2,00,000.</p><h4>Data for Q.23:</h4><p>Factory Overheads: ₹1,24,000; Direct Labour Cost: ₹2,00,000; Direct Labour Hours: 3,10,000; Machine Hours: 1,00,000; Direct Material Cost: ₹4,00,000.</p><h3>Solution (for Q.21)</h3><p>Prime Cost = ₹2,00,000 + ₹1,00,000 = ₹3,00,000.</p><ul><li><strong>a) DLH Rate:</strong> \\( \\frac{62000}{155000} \\) = <strong>₹0.40 per DLH</strong></li><li><strong>b) DLC %:</strong> \\( (\\frac{62000}{100000}) \\times 100 \\) = <strong>62%</strong></li><li><strong>c) MH Rate:</strong> \\( \\frac{62000}{50000} \\) = <strong>₹1.24 per MH</strong></li><li><strong>d) Prime Cost %:</strong> \\( (\\frac{62000}{300000}) \\times 100 \\) = <strong>20.67%</strong></li></ul><h3>Solution (for Q.23)</h3><p>Prime Cost = ₹4,00,000 + ₹2,00,000 = ₹6,00,000.</p><ul><li><strong>a) DLH Rate:</strong> \\( \\frac{124000}{310000} \\) = <strong>₹0.40 per DLH</strong></li><li><strong>b) DLC %:</strong> \\( (\\frac{124000}{200000}) \\times 100 \\) = <strong>62%</strong></li><li><strong>c) MH Rate:</strong> \\( \\frac{124000}{100000} \\) = <strong>₹1.24 per MH</strong></li><li><strong>d) Prime Cost %:</strong> \\( (\\frac{124000}{600000}) \\times 100 \\) = <strong>20.67%</strong></li></ul>`
+            },
+             {
+                title: "Q.22) Overhead Charges for a Job",
+                content: `<h3>Question</h3><p>Calculate the overhead charges chargeable to the job by different methods.</p><div class="table-wrapper"><table class="styled-table"><tbody><tr><td>Materials consumed</td><td>₹54,000</td></tr><tr><td>Direct wages</td><td>₹45,000</td></tr><tr><td>Labour hours worked</td><td>36,000</td></tr><tr><td>Hours of machine operation</td><td>30,000</td></tr><tr><td>Overheads chargeable to the department</td><td>₹36,000</td></tr></tbody></table></div><h3>Solution</h3><ul><li><strong>a) Direct material cost %:</strong> \\( (\\frac{36000}{54000}) \\times 100 \\) = <strong>66.67%</strong> of material cost.</li><li><strong>b) Direct wages %:</strong> \\( (\\frac{36000}{45000}) \\times 100 \\) = <strong>80%</strong> of direct wages.</li><li><strong>c) Labour hour rate:</strong> \\( \\frac{36000}{36000} \\) = <strong>₹1.00 per labour hour</strong></li><li><strong>d) Machine hour rate:</strong> \\( \\frac{36000}{30000} \\) = <strong>₹1.20 per machine hour</strong></li></ul>`
             }
         ];
 
         let html = '';
-        qbData.forEach(topicData => {
-            html += `<h2 class="topic-title">${topicData.topic}</h2>`;
-            topicData.questions.forEach(q => {
-                html += `
-                    <article class="note-card">
-                        <h2 class="note-title">${q.title}</h2>
-                        <div class="note-body">${q.content}</div>
-                    </article>
-                `;
-            });
+        let currentModule = '';
+
+        fullQbData.forEach(item => {
+            if (item.module && item.module !== currentModule) {
+                currentModule = item.module;
+                html += `<h2 style="font-family: var(--font-sans); text-align: center; margin: 40px 0 20px; color: var(--primary-accent);">${currentModule}</h2>`;
+            }
+            html += `
+                <article class="note-card">
+                    <h2 class="note-title">${item.title}</h2>
+                    <div class="note-body">${item.content}</div>
+                </article>
+            `;
         });
         container.innerHTML = html;
+        if (window.MathJax) {
+            window.MathJax.typeset();
+        }
     }
 
+    // APP INITIALIZATION
     async function initializeApp(session) {
         const currentUser = await fetchAndSetCurrentUser(session);
         if (!currentUser) {
@@ -426,7 +513,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
-        const savedTheme = localStorage.getItem('theme') || 'light';
+        const savedTheme = localStorage.getItem('theme') || 'ocean';
         document.documentElement.setAttribute('data-theme', savedTheme);
         document.getElementById('themeSelect').value = savedTheme;
         
@@ -435,6 +522,7 @@
         if (session && session.user) {
             initializeApp(session);
         } else {
+            // If no session, redirect to login
             window.location.href = "https://birlaone.github.io/BirlaOne/login.html";
         }
 
