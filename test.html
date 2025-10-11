@@ -156,6 +156,41 @@
 html[data-theme="dark"] .math-formula {
   background: rgba(255, 255, 255, 0.05);
 }
+
+/* Responsive container tweaks */
+.container { padding: 14px; max-width: 95%; width: 95%; margin: 0 auto; box-sizing: border-box; }
+@media(min-width:900px) { .container { max-width: 900px; } }
+
+.note-body p, .note-body li { font-size: 16px; line-height: 1.7; }
+.note-body ol { padding-left: 20px; margin-bottom: 12px; }
+.note-body ul { padding-left: 20px; }
+
+/* Math formula responsive font-size */
+.math-formula {
+  background: rgba(0,0,0,0.04);
+  border-radius: 10px;
+  padding: 10px;
+  margin: 12px 0;
+  text-align: center;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  font-size: clamp(1rem, 1.15vw + 0.6rem, 1.15rem);
+  word-break: break-word;
+}
+
+/* Slightly different background for dark theme */
+html[data-theme="dark"] .math-formula { background: rgba(255,255,255,0.03); }
+
+/* Make tables more mobile-friendly */
+.table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.styled-table { min-width: 600px; width: 100%; }
+@media (max-width:640px) {
+  .styled-table { min-width: 480px; font-size: 14px; }
+  .note-title { font-size: 18px; padding: 14px; }
+}
+
+/* Step highlight */
+.step-highlight { border-left: 4px solid var(--primary-accent); padding-left: 10px; margin: 10px 0; }
 </style>
 </head>
 <body>
@@ -452,6 +487,136 @@ if (window.MathJax) { MathJax.typesetPromise(); }
             }
         });
     });
+</script>
+
+<script>
+(function(){
+  function wrapMathInHTML(root){
+    if (!root) return;
+    try {
+      let html = root.innerHTML;
+      // wrap display math $$...$$ in .math-formula (best-effort)
+      const wrapped = html.replace(/\$\$\s*([\s\S]*?)\s*\$\$/g, function(m,p1){
+        return '<div class="math-formula">$$'+p1+'$$</div>';
+      });
+      if (wrapped !== html) root.innerHTML = wrapped;
+    } catch(e){ console.error('wrapMathInHTML error', e); }
+  }
+
+  function safeTypeset(){
+    if (window.MathJax && MathJax.typesetPromise) {
+      MathJax.typesetPromise().catch(function(err){ console.error('MathJax typeset error', err); });
+    }
+  }
+
+  function enhanceAnswersOnce(){
+    const cards = document.querySelectorAll('.note-card');
+    if (!cards || cards.length === 0) return;
+    cards.forEach(card => {
+      const titleEl = card.querySelector('.note-title');
+      const body = card.querySelector('.note-body');
+      if (!titleEl || !body) return;
+      const title = (titleEl.innerText || '').trim();
+
+      // Q.11 - EOQ
+      if (title.includes('Q.11) Ascertain the Economic Order Quantity')) {
+        body.innerHTML = `<p class="step-highlight"><strong>Quick step-by-step solution</strong></p>
+        <ol>
+          <li>Write the EOQ formula: <div class="math-formula">$$EOQ = \sqrt{\frac{2 \times \text{Annual Consumption} \times \text{Ordering Cost}}{\text{Carrying Cost per unit}}}$$</div></li>
+          <li>Plug the numbers: Annual Consumption = 15,000; Ordering Cost = 48; Carrying cost/unit = 0.16.</li>
+          <li>Compute EOQ: <div class="math-formula">$$EOQ = \sqrt{\frac{2 \times 15,000 \times 48}{0.16}} = 3,000\ \text{Kg}$$</div></li>
+          <li>Number of Orders = Annual Consumption / EOQ = <strong>15,000 / 3,000 = 5 orders</strong>.</li>
+        </ol>`;
+      }
+
+      // Q.1 - Overhead Traditional & ABC
+      if (title.includes('Q.1) Determine overhead per unit under Traditional')) {
+        body.innerHTML = `<h3>Traditional Approach — Step-by-step</h3>
+        <ol>
+          <li><strong>Total direct labour hours</strong>: Product A = 500 hrs, Product B = 2,500 hrs → <strong>3,000 hrs</strong>.</li>
+          <li><strong>Overhead rate per hour</strong>: Divide total overhead by total labour hours:<div class="math-formula">$$\text{Overhead Rate} = \frac{₹2,61,780}{3,000} = ₹87.26\ \text{per hour}$$</div></li>
+          <li><strong>Allocate to products</strong>: Multiply hours used by rate. Product A: 500 × 87.26 = ₹43,630 → per unit ₹87.26. Product B: 2,500 × 87.26 = ₹2,18,150 → per unit ₹174.52.</li>
+        </ol>
+        <h3>Activity-Based Costing (ABC) — Step-by-step</h3>
+        <ol>
+          <li>Find activity rates: cost ÷ driver (e.g. Machine setups: 27,140/46 = ₹590 per setup).</li>
+          <li>Multiply each activity rate by the number used by each product and sum the allocated costs.</li>
+          <li>Divide total allocated overhead by units produced to get overhead per unit.</li>
+        </ol>`;
+      }
+
+      // Q.7 - FIFO ledger explanation (short guide above the table)
+      if (title.includes('Q.7) Prepare a Stores Ledger Account using FIFO method')) {
+        const existingTable = body.querySelector('.table-wrapper');
+        const guideHTML = `<div class="step-highlight"><strong>How to read FIFO Ledger (short):</strong><ol><li>Issue materials from the earliest received batch first.</li><li>If a batch is partially issued, update its balance before moving to next.</li></ol></div>`;
+        if (existingTable && existingTable.previousElementSibling && !existingTable.previousElementSibling.classList.contains('step-highlight')) {
+          existingTable.insertAdjacentHTML('beforebegin', guideHTML);
+        } else if (existingTable && (!existingTable.previousElementSibling)) {
+          existingTable.insertAdjacentHTML('beforebegin', guideHTML);
+        }
+      }
+
+      // Q.21 - Overhead application rates (clear steps)
+      if (title.includes('Q.21) Work out overhead application rates')) {
+        body.innerHTML = `<ol>
+          <li><strong>Direct Labour Hour Rate</strong>: Overhead ÷ Direct Labour Hours = <div class="math-formula">$$\frac{₹62,000}{155,000}=₹0.40\ \text{per DLH}$$</div></li>
+          <li><strong>Direct Labour Cost Rate</strong>: (Overhead ÷ Direct Labour Cost) × 100 = 62% of Direct Labour Cost.</li>
+          <li><strong>Machine Hour Rate</strong>: Overhead ÷ Machine Hours = <div class="math-formula">$$\frac{₹62,000}{50,000}=₹1.24\text{ per MHR}$$</div></li>
+          <li><strong>Prime Cost Rate</strong>: (Overhead ÷ Prime Cost) × 100 = 20.67% of Prime Cost.</li>
+        </ol>`;
+      }
+
+      // Q.13 - Worker earnings (simple steps)
+      if (title.includes('Q.13) Work out worker earnings under various wage systems')) {
+        body.innerHTML = `<ol>
+          <li><strong>Straight Piece Rate</strong>: pieces × rate = 150 × ₹1.50 = ₹225.</li>
+          <li><strong>Differential Piece Rate</strong>: if 120% rate applies use 1.2×rate → 150 × (1.5×1.2) = ₹270.</li>
+          <li><strong>Halsey Premium</strong>: Basic pay for hours worked + percentage (example uses 50%) of time saved as bonus.</li>
+          <li><strong>Rowan</strong>: Basic pay + proportion of time saved × basic (worked example gives ₹187.20).</li>
+        </ol>`;
+      }
+
+      // Q.15 - Labour Turnover rates (clear steps)
+      if (title.includes('Q.15) Calculate Labour Turnover Rates')) {
+        body.innerHTML = `<ol>
+          <li>Average workers = (Opening + Closing) / 2 = (7,600 + 8,400) / 2 = 8,000.</li>
+          <li>Separation Rate = separations / average × 100 = 400 / 8,000 × 100 = <strong>5%</strong>.</li>
+          <li>Replacement Rate = replacements / average × 100 = 300 / 8,000 × 100 = <strong>3.75%</strong>.</li>
+          <li>Flux Rate = (separations + replacements) / average × 100 = (400 + 300) / 8,000 × 100 = <strong>8.75%</strong>.</li>
+        </ol>`;
+      }
+    });
+
+    // Ensure MathJax renders after modifications
+    wrapMathInHTML(document.getElementById('main-content-wrapper'));
+    safeTypeset();
+  }
+
+  // When main content receives children, enhance answers and typeset math.
+  const main = document.getElementById('main-content-wrapper');
+  if (!main) return;
+
+  const observer = new MutationObserver(function(mutations, obs){
+    for (const m of mutations){
+      if (m.addedNodes && m.addedNodes.length > 0){
+        // small delay to let scripts finish
+        setTimeout(() => {
+          enhanceAnswersOnce();
+        }, 120);
+        // keep observing for additional dynamic inserts (do not disconnect)
+        break;
+      }
+    }
+  });
+  observer.observe(main, { childList: true, subtree: true });
+
+  // Also re-typeset after resize/scroll to handle lazy rendering
+  window.addEventListener('resize', safeTypeset);
+  window.addEventListener('scroll', safeTypeset);
+
+  // A final safety call in case content is already present
+  setTimeout(()=>{ if (main.children.length>0) enhanceAnswersOnce(); }, 300);
+})();
 </script>
 </body>
 </html>
