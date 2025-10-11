@@ -1,24 +1,27 @@
 <!DOCTYPE html>
-
-<html data-theme="light" lang="en">
+<html lang="en" data-theme="light">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
-<title>Cost Accounting QB - BirlaOne</title>
-<link href="https://i.ibb.co/N6QNPW56/logo-1-modified.png" rel="icon" type="image/png"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script async="" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>Cost Accounting QB - BirlaOne</title>
+  <link rel="icon" type="image/png" href="https://i.ibb.co/N6QNPW56/logo-1-modified.png" />
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+  <script>
     (function() {
       const savedTheme = localStorage.getItem('theme') || 'light';
       document.documentElement.setAttribute('data-theme', savedTheme);
     })();
   </script>
-<style>
+
+  <style>
     :root {
       --primary-accent: #C2185B;
       --primary-gradient: linear-gradient(90deg, #D32F2F, #C2185B);
@@ -123,9 +126,9 @@
     .container { padding: 16px; max-width: 800px; margin: 0 auto; position: relative; }
     .topic-title { font-family: var(--font-sans); font-size: 28px; font-weight: 700; margin-top: 30px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 4px solid var(--primary-accent); color: var(--primary-accent); }
     .note-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 24px; overflow: hidden; transition: all var(--transition-speed) ease; }
-    .note-title { font-family: var(--font-sans); font-size: 22px; font-weight: 700; padding: 18px 22px; background: var(--primary-gradient); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    .note-title { font-family: var(--font-sans); font-size: 20px; font-weight: 700; padding: 18px 22px; background: var(--primary-gradient); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
     .note-body { padding: 12px 22px 22px 22px; }
-    .note-body h3 { font-family: var(--font-sans); font-size: 1.2rem; font-weight: 700; border-bottom: 2px solid var(--primary-accent); padding-bottom: 6px; margin-top: 24px; margin-bottom: 12px; }
+    .note-body h3 { font-family: var(--font-sans); font-size: 1.1rem; font-weight: 700; border-bottom: 2px solid var(--primary-accent); padding-bottom: 6px; margin-top: 24px; margin-bottom: 12px; }
     .note-body p, .note-body li { margin-bottom: 16px; text-align: left; line-height: 1.8; font-size: 17px; }
     .note-body strong { font-family: var(--font-sans); font-weight: 700; color: var(--primary-accent);}
     .note-body ul, .note-body ol { padding-left: 25px; }
@@ -142,89 +145,44 @@
     #main-content-wrapper.locked > *:not(.lock-overlay) { filter: blur(8px); -webkit-filter: blur(8px); pointer-events: none; }
     .lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2; }
     .lock-overlay-content { background: rgba(var(--card-bg-rgb), 0.7); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); padding: 20px 30px; border-radius: 12px; box-shadow: var(--shadow); font-weight: 600; font-size: 16px; border: 1px solid var(--border-color); font-family: var(--font-sans); }
-  
-.math-formula {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 10px;
-  padding: 12px;
-  margin: 16px 0;
-  text-align: center;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  font-size: 1.15rem;
-}
-html[data-theme="dark"] .math-formula {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-/* Responsive container tweaks */
-.container { padding: 14px; max-width: 95%; width: 95%; margin: 0 auto; box-sizing: border-box; }
-@media(min-width:900px) { .container { max-width: 900px; } }
-
-.note-body p, .note-body li { font-size: 16px; line-height: 1.7; }
-.note-body ol { padding-left: 20px; margin-bottom: 12px; }
-.note-body ul { padding-left: 20px; }
-
-/* Math formula responsive font-size */
-.math-formula {
-  background: rgba(0,0,0,0.04);
-  border-radius: 10px;
-  padding: 10px;
-  margin: 12px 0;
-  text-align: center;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  font-size: clamp(1rem, 1.15vw + 0.6rem, 1.15rem);
-  word-break: break-word;
-}
-
-/* Slightly different background for dark theme */
-html[data-theme="dark"] .math-formula { background: rgba(255,255,255,0.03); }
-
-/* Make tables more mobile-friendly */
-.table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.styled-table { min-width: 600px; width: 100%; }
-@media (max-width:640px) {
-  .styled-table { min-width: 480px; font-size: 14px; }
-  .note-title { font-size: 18px; padding: 14px; }
-}
-
-/* Step highlight */
-.step-highlight { border-left: 4px solid var(--primary-accent); padding-left: 10px; margin: 10px 0; }
-</style>
+  </style>
 </head>
 <body>
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-<aside class="sidebar" id="sidebar">
-<div class="sidebar-profile-card">
-<img alt="Profile" class="sidebar-profile-img" id="sidebarProfilePic" src=""/>
-<div class="sidebar-user-info">
-<div id="sidebar-username">Loading...</div>
-<div id="sidebar-user-id">Student ID: ...</div>
-</div>
-</div>
-<nav>
-<a href="https://birlaone.github.io/BirlaOne/index.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
-<a href="#"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>QB (Marathi)</span></a>
-<a class="active" href="#"><svg class="nav-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><rect height="20" rx="2" ry="2" width="16" x="4" y="2"></rect><line x1="8" x2="16" y1="6" y2="6"></line><line x1="16" x2="8" y1="10" y2="10"></line><line x1="16" x2="8" y1="14" y2="14"></line><line x1="16" x2="8" y1="18" y2="18"></line></svg><span>QB (Cost Accounting)</span></a>
-</nav>
-<div class="sidebar-footer">
-<button class="logout-button" onclick="logout()">Logout</button>
-</div>
-</aside>
-<header class="top-bar">
-<button class="menu-toggle" onclick="toggleSidebar()"><span class="menu-icon">☰</span></button>
-<h1 class="title">BirlaOne</h1>
-<div class="theme-selector">
-<select aria-label="Select theme" id="themeSelect" onchange="changeTheme(this.value)">
-<option value="light">Light</option>
-<option value="dark">Dark</option>
-<option value="sepia">Sepia</option>
-</select>
-</div>
-</header>
-<main class="container" id="main-content-wrapper">
-</main>
+  
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-profile-card">
+      <img src="" id="sidebarProfilePic" class="sidebar-profile-img" alt="Profile"/>
+      <div class="sidebar-user-info">
+        <div id="sidebar-username">Loading...</div>
+        <div id="sidebar-user-id">Student ID: ...</div>
+      </div>
+    </div>
+    <nav>
+      <a href="https://birlaone.github.io/BirlaOne/index.html"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
+      <a href="#"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>QB (Marathi)</span></a>
+      <a href="#" class="active"><svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="10" x2="8" y2="10"></line><line x1="16" y1="14" x2="8" y2="14"></line><line x1="16" y1="18" x2="8" y2="18"></line></svg><span>QB (Cost Accounting)</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-button" onclick="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <header class="top-bar">
+    <button class="menu-toggle" onclick="toggleSidebar()"><span class="menu-icon">☰</span></button>
+    <h1 class="title">BirlaOne</h1>
+    <div class="theme-selector">
+        <select id="themeSelect" onchange="changeTheme(this.value)" aria-label="Select theme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="sepia">Sepia</option>
+        </select>
+    </div>
+  </header>
+
+  <main class="container" id="main-content-wrapper">
+      </main>
+
 <script>
     const SUPABASE_URL = 'https://eikriuddsuguybvvyzjl.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpa3JpdWRkc3VndXlidnZ5empsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgxMjIxNTAsImV4cCI6MjA3MzY5ODE1MH0.HNh2gGO8nWzAjxh5Oa3cs_8WKaq9mq9TyLCvPOkcr2c';
@@ -264,32 +222,33 @@ html[data-theme="dark"] .math-formula { background: rgba(255,255,255,0.03); }
                 topic: "ABC Costing",
                 questions: [
                     {
-                        title: "Q.1) Determine overhead per unit under Traditional and ABC approach.",
+                        title: "Q.1) A company produces two products, A and B. Determine the overhead allocated per unit under traditional and ABC approaches.",
                         content: `
                             <h3>a) Traditional Approach</h3>
                             <p><strong>Step 1: Calculate Total Direct Labour Hours</strong><br>
                             Product A: 500 units × 1 hour/unit = 500 hours<br>
                             Product B: 1,250 units × 2 hours/unit = 2,500 hours<br>
-                            Total Labour Hours = 3,000 hours</p>
+                            Total: 3,000 hours</p>
                             <p><strong>Step 2: Calculate Overhead Rate per Labour Hour</strong><br>
-                            $${'\\text{Overhead Rate} = \\frac{\\text{Total Overhead Cost}}{\\text{Total Direct Labour Hours}} = \\frac{₹2,61,780}{3,000 \\text{ hours}} = ₹87.26 \\text{ per hour}'}$$</p>
-                            <p><strong>Step 3: Allocate Overhead and Calculate Per Unit Cost</strong><br>
-                            <strong>Product A:</strong> 500 hrs × ₹87.26 = ₹43,630. Per unit = <strong>₹87.26</strong><br>
-                            <strong>Product B:</strong> 2,500 hrs × ₹87.26 = ₹2,18,150. Per unit = <strong>₹174.52</strong></p>
+                            $${'\\text{Overhead Rate} = \\frac{\\text{Total Overhead Cost}}{\\text{Total Direct Labour Hours}}'}$$
+                            $${'\\text{Overhead Rate} = \\frac{₹2,61,780}{3,000 \\text{ hours}} = ₹87.26 \\text{ per hour}'}$$</p>
+                            <p><strong>Step 3: Allocate Overhead</strong><br>
+                            <strong>Product A:</strong> ₹87.26 per hour × 1 hour = <strong>₹87.26 per unit</strong><br>
+                            <strong>Product B:</strong> ₹87.26 per hour × 2 hours = <strong>₹174.52 per unit</strong></p>
                             
                             <h3>b) Activity-Based Costing (ABC) Approach</h3>
                              <p><strong>Step 1: Calculate Cost Driver Rates</strong><br>
-                            Machine Setups: ₹27,140 / 46 setups = <strong>₹590 per setup</strong><br>
-                            Maintenance: ₹1,83,040 / 4,160 sq. ft. = <strong>₹44 per sq. ft.</strong><br>
-                            Inspections: ₹51,600 / 344 inspections = <strong>₹150 per inspection</strong></p>
-                            <p><strong>Step 2: Allocate Overhead and Calculate Per Unit Cost</strong></p>
+                            Machine Setups: ₹27,140 / (20+26) setups = <strong>₹590 per setup</strong><br>
+                            Maintenance: ₹1,83,040 / (1,620+2,540) sq. ft. = <strong>₹44 per sq. ft.</strong><br>
+                            Inspections: ₹51,600 / (56+288) inspections = <strong>₹150 per inspection</strong></p>
+                            <p><strong>Step 2: Allocate Overhead and Find Per Unit Cost</strong></p>
                             <div class="table-wrapper"><table class="styled-table">
-                                <thead><tr><th>Activity</th><th>Product A Cost</th><th>Product B Cost</th></tr></thead>
+                                <thead><tr><th>Activity</th><th>Product A Cost (₹)</th><th>Product B Cost (₹)</th></tr></thead>
                                 <tbody>
-                                    <tr><td>Machine Setups</td><td>₹11,800</td><td>₹15,340</td></tr>
-                                    <tr><td>Maintenance</td><td>₹71,280</td><td>₹1,11,760</td></tr>
-                                    <tr><td>Inspections</td><td>₹8,400</td><td>₹43,200</td></tr>
-                                    <tr class="final-row"><td><strong>Total Overhead</strong></td><td><strong>₹91,480</strong></td><td><strong>₹1,70,300</strong></td></tr>
+                                    <tr><td>Machine Setups</td><td>20 × 590 = 11,800</td><td>26 × 590 = 15,340</td></tr>
+                                    <tr><td>Maintenance</td><td>1,620 × 44 = 71,280</td><td>2,540 × 44 = 1,11,760</td></tr>
+                                    <tr><td>Inspections</td><td>56 × 150 = 8,400</td><td>288 × 150 = 43,200</td></tr>
+                                    <tr class="final-row"><td><strong>Total Overhead</strong></td><td><strong>91,480</strong></td><td><strong>1,70,300</strong></td></tr>
                                 </tbody>
                             </table></div>
                             <p><strong>Overhead per unit (Product A):</strong> ₹91,480 / 500 units = <strong>₹182.96</strong><br>
@@ -297,20 +256,20 @@ html[data-theme="dark"] .math-formula { background: rgba(255,255,255,0.03); }
                         `
                     },
                     {
-                        title: "Q.2) Calculate overheads absorbed using activity-based costing.",
+                        title: "Q.2) A company manufactures two products A and B. Calculate the overheads absorbed using activity-based costing approach.",
                         content: `
                            <p><strong>Step 1: Calculate Cost Driver Rates</strong><br>
-                            Machine Activity Rate: ₹3,00,000 / 9,000 hours = <strong>₹33.33 per machine hour</strong><br>
+                            Machine Activity Rate: ₹3,00,000 / 9,000 machine hours = <strong>₹33.33 per machine hour</strong><br>
                             Set-up Rate: ₹30,000 / 65 setups = <strong>₹461.54 per setup</strong><br>
                             Order Rate: ₹35,000 / 88 orders = <strong>₹397.73 per order</strong></p>
                             <p><strong>Step 2: Allocate Overheads to Each Product</strong></p>
                             <div class="table-wrapper"><table class="styled-table">
-                                <thead><tr><th>Activity</th><th>Product A Cost</th><th>Product B Cost</th></tr></thead>
+                                <thead><tr><th>Activity</th><th>Product A (₹)</th><th>Product B (₹)</th></tr></thead>
                                 <tbody>
-                                    <tr><td>Machine Activity</td><td>₹1,99,980</td><td>₹99,990</td></tr>
-                                    <tr><td>Set-ups</td><td>₹6,923</td><td>₹23,077</td></tr>
-                                    <tr><td>Orders</td><td>₹7,159</td><td>₹27,841</td></tr>
-                                    <tr class="final-row"><td><strong>Total Overheads</strong></td><td><strong>₹2,14,062</strong></td><td><strong>₹1,50,908</strong></td></tr>
+                                    <tr><td>Machine Activity</td><td>6,000 hrs × 33.33 = 1,99,980</td><td>3,000 hrs × 33.33 = 99,990</td></tr>
+                                    <tr><td>Set-ups</td><td>15 × 461.54 = 6,923</td><td>50 × 461.54 = 23,077</td></tr>
+                                    <tr><td>Orders</td><td>18 × 397.73 = 7,159</td><td>70 × 397.73 = 27,841</td></tr>
+                                    <tr class="final-row"><td><strong>Total Overheads Absorbed</strong></td><td><strong>2,14,062</strong></td><td><strong>1,50,908</strong></td></tr>
                                 </tbody>
                             </table></div>
                         `
@@ -322,8 +281,7 @@ html[data-theme="dark"] .math-formula { background: rgba(255,255,255,0.03); }
                 questions: [
                     {
                         title: "Q.7) Prepare a Stores Ledger Account using FIFO method.",
-                        content: `
-                            <p>FIFO ("First-In, First-Out") means materials received first are issued first.</p>
+                        content: `<p>FIFO ("First-In, First-Out") means materials received first are issued first.</p>
                             <div class="table-wrapper"><table class="styled-table">
                                 <thead><tr><th>Date</th><th>Particulars</th><th>Receipts (Qty@Rate=Amt)</th><th>Issues (Qty@Rate=Amt)</th><th>Balance (Qty@Rate=Amt)</th></tr></thead>
                                 <tbody>
@@ -338,26 +296,25 @@ html[data-theme="dark"] .math-formula { background: rgba(255,255,255,0.03); }
                                     <tr><td>Jul 27</td><td>Received</td><td>200 @ 20 = 4000</td><td>-</td><td>50 @ 23 = 1150<br>200 @ 20 = 4000</td></tr>
                                     <tr class="final-row"><td>Jul 31</td><td>Issued</td><td>-</td><td>50 @ 23 = 1150<br>130 @ 20 = 2600</td><td><strong>70 @ 20 = 1400</strong></td></tr>
                                 </tbody>
-                            </table></div>
-                        `
+                            </table></div>`
                     },
                     {
-                        title: "Q.10) Calculate various stock levels.",
+                        title: "Q.10) From the following information, calculate the various stock levels.",
                         content: `
-                             <p><strong>a) Reorder Level (ROL)</strong><br>
+                            <p><strong>a) Reorder Level (ROL)</strong><br>
                             $${'\\text{ROL} = \\text{Max. Usage} \\times \\text{Max. Reorder Period} = 600 \\times 6 = 3,600 \\text{ units}'}$$</p>
                             <p><strong>b) Maximum Level</strong><br>
                             $${'\\text{Max. Level} = \\text{ROL} + \\text{ROQ} - (\\text{Min. Usage} \\times \\text{Min. Period}) = 3,600 + 1,500 - (400 \\times 2) = 4,300 \\text{ units}'}$$</p>
                             <p><strong>c) Minimum Level</strong><br>
                             $${'\\text{Min. Level} = \\text{ROL} - (\\text{Normal Usage} \\times \\text{Avg. Period}) = 3,600 - (450 \\times 4) = 1,800 \\text{ units}'}$$</p>
                             <p><strong>d) Average Stock Level</strong><br>
-                            $${'\\text{Avg. Stock Level} = \\text{Min. Level} + \\frac{1}{2} \\times \\text{ROQ} = 1,800 + \\frac{1}{2} \\times 1,500 = 2,550 \\text{ units}'}$$</p>
+                            $${'\\text{Avg. Stock Level} = \\text{Min. Level} + \\frac{1}{2} \\times \\text{ROQ} = 1,800 + (\\frac{1}{2} \\times 1,500) = 2,550 \\text{ units}'}$$</p>
                         `
                     },
                     {
-                        title: "Q.11) Ascertain the Economic Order Quantity (EOQ) and number of orders.",
+                        title: "Q.11) Ascertain the Economic Order Quantity (EOQ) and the number of orders to be placed in the year.",
                         content: `
-                            <p><strong>Step 1: Calculate Economic Order Quantity (EOQ)</strong><br>
+                             <p><strong>Step 1: Calculate Economic Order Quantity (EOQ)</strong><br>
                             $${'EOQ = \\sqrt{\\frac{2 \\times \\text{Annual Consumption} \\times \\text{Ordering Cost}}{\\text{Carrying Cost per unit}}}'}$$
                             $${'EOQ = \\sqrt{\\frac{2 \\times 15,000 \\times 48}{0.16}} = 3,000 \\text{ Kg}'}$$</p>
                             <p><strong>Step 2: Calculate Number of Orders</strong><br>
@@ -370,30 +327,30 @@ html[data-theme="dark"] .math-formula { background: rgba(255,255,255,0.03); }
                 topic: "Labour",
                 questions: [
                     {
-                        title: "Q.13) Work out worker earnings under various wage systems.",
+                        title: "Q.13) From the following particulars, work out earnings for the week of a worker under various wage systems.",
                         content: `
                             <p><strong>1. Straight Piece Rate System</strong><br>
                             $${'\\text{Earnings} = 150 \\text{ pieces} \\times ₹1.50 = ₹225'}$$</p>
-                            <p><strong>2. Differential Piece Rate System</strong> (120% rate applies)<br>
+                            <p><strong>2. Differential Piece Rate System</strong> (120% rate applies as output > standard)<br>
                             $${'\\text{Earnings} = 150 \\text{ pieces} \\times (₹1.50 \\times 1.20) = ₹270'}$$</p>
                             <p><strong>3. Halsey Premium System (50% Bonus)</strong><br>
-                            $${'\\text{Earnings} = (48 \\text{ hrs} \\times ₹3.75) + (50\\% \\times 2 \\text{ hrs} \\times ₹3.75) = ₹183.75'}$$</p>
+                            $${'\\text{Earnings} = (48 \\text{ hrs} \\times ₹3.75) + (50\\% \\times 2 \\text{ hrs} \\times ₹3.75) = ₹180 + ₹3.75 = ₹183.75'}$$</p>
                             <p><strong>4. Rowan System</strong><br>
-                            $${'\\text{Earnings} = (48 \\times 3.75) + \\left( \\frac{2 \\text{ hrs saved}}{50 \\text{ hrs std.}} \\times 48 \\times 3.75 \\right) = ₹187.20'}$$</p>
+                            $${'\\text{Earnings} = (48 \\times 3.75) + \\left( \\frac{2 \\text{ hrs saved}}{50 \\text{ hrs std.}} \\times 48 \\text{ hrs taken} \\times ₹3.75 \\right) = ₹180 + ₹7.20 = ₹187.20'}$$</p>
                         `
                     },
                      {
-                        title: "Q.15) Calculate Labour Turnover Rates.",
+                        title: "Q.15) From the following information, calculate Labour turnover rate and Labour flux rate.",
                         content: `
                             <p><strong>Step 1: Calculate Average Number of Workers</strong><br>
-                            $${'\\text{Average Workers} = \\frac{7,600 + 8,400}{2} = 8,000'}$$</p>
+                            $${'\\text{Average Workers} = \\frac{\\text{Beginning Workers} + \\text{End Workers}}{2} = \\frac{7,600 + 8,400}{2} = 8,000'}$$</p>
                             <p><strong>Step 2: Calculate Rates</strong></p>
                             <p><strong>Separation Rate:</strong> (Based on 400 separations)<br>
-                            $${'\\text{Rate} = \\frac{400}{8,000} \\times 100 = 5\\%'}$$</p>
+                            $${'\\text{Rate} = \\frac{\\text{No. of Separations}}{\\text{Average Workers}} \\times 100 = \\frac{400}{8,000} \\times 100 = 5\\%'}$$</p>
                             <p><strong>Replacement Rate:</strong> (Based on 300 replacements)<br>
-                            $${'\\text{Rate} = \\frac{300}{8,000} \\times 100 = 3.75\\%'}$$</p>
+                            $${'\\text{Rate} = \\frac{\\text{No. of Replacements}}{\\text{Average Workers}} \\times 100 = \\frac{300}{8,000} \\times 100 = 3.75\\%'}$$</p>
                             <p><strong>Flux Rate:</strong><br>
-                            $${'\\text{Rate} = \\frac{400 + 300}{8,000} \\times 100 = 8.75\\%'}$$</p>
+                            $${'\\text{Rate} = \\frac{\\text{Separations} + \\text{Replacements}}{\\text{Average Workers}} \\times 100 = \\frac{400 + 300}{8,000} \\times 100 = 8.75\\%'}$$</p>
                         `
                     }
                 ]
@@ -402,8 +359,9 @@ html[data-theme="dark"] .math-formula { background: rgba(255,255,255,0.03); }
                 topic: "Overhead",
                 questions: [
                     {
-                        title: "Q.18) Prepare a primary overhead distribution summary.",
+                        title: "Q.18) Prepare a statement showing apportionment of costs to various departments.",
                         content: `
+                            <p>This statement, known as the Primary Overhead Distribution Summary, allocates indirect costs to different departments on an equitable basis.</p>
                              <div class="table-wrapper"><table class="styled-table">
                                 <thead>
                                     <tr><th>Particulars</th><th>Basis</th><th>Total (₹)</th><th>Dept A</th><th>Dept B</th><th>Dept C</th><th>Dept D</th></tr>
@@ -423,17 +381,17 @@ html[data-theme="dark"] .math-formula { background: rgba(255,255,255,0.03); }
                         `
                     },
                     {
-                        title: "Q.21) Work out overhead application rates.",
+                        title: "Q.21) Workout overhead application rates by using the following methods.",
                         content: `
                             <p><strong>a) Direct Labour Hour Rate</strong><br>
-                            $${'\\text{Rate} = \\frac{₹62,000}{1,55,000 \\text{ hrs}} = ₹0.40 \\text{ per DLH}'}$$</p>
+                            $${'\\text{Rate} = \\frac{\\text{Factory Overheads}}{\\text{Direct Labour Hours}} = \\frac{₹62,000}{1,55,000 \\text{ hrs}} = ₹0.40 \\text{ per DLH}'}$$</p>
                             <p><strong>b) Direct Labour Cost Rate</strong><br>
-                            $${'\\text{Rate} = \\frac{₹62,000}{₹1,00,000} \\times 100 = 62\\% \\text{ of DLC}'}$$</p>
+                            $${'\\text{Rate} = \\frac{\\text{Factory Overheads}}{\\text{Direct Labour Cost}} \\times 100 = \\frac{₹62,000}{₹1,00,000} \\times 100 = 62\\%'}$$</p>
                             <p><strong>c) Machine Hour Rate</strong><br>
-                            $${'\\text{Rate} = \\frac{₹62,000}{50,000 \\text{ hrs}} = ₹1.24 \\text{ per MHR}'}$$</p>
+                            $${'\\text{Rate} = \\frac{\\text{Factory Overheads}}{\\text{Machine Hours}} = \\frac{₹62,000}{50,000 \\text{ hrs}} = ₹1.24 \\text{ per MHR}'}$$</p>
                             <p><strong>d) Prime Cost Rate</strong><br>
-                            Prime Cost = ₹2,00,000 + ₹1,00,000 = ₹3,00,000<br>
-                            $${'\\text{Rate} = \\frac{₹62,000}{₹3,00,000} \\times 100 = 20.67\\% \\text{ of Prime Cost}'}$$</p>
+                            $${'\\text{Prime Cost} = \\text{Direct Material} + \\text{Direct Labour} = ₹2,00,000 + ₹1,00,000 = ₹3,00,000'}$$
+                            $${'\\text{Rate} = \\frac{\\text{Factory Overheads}}{\\text{Prime Cost}} \\times 100 = \\frac{₹62,000}{₹3,00,000} \\times 100 = 20.67\\%'}$$</p>
                         `
                     }
                 ]
@@ -465,7 +423,6 @@ html[data-theme="dark"] .math-formula { background: rgba(255,255,255,0.03); }
 
         const mainContent = document.getElementById('main-content-wrapper');
         renderCostAccountingQB(mainContent);
-if (window.MathJax) { MathJax.typesetPromise(); }
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
@@ -487,37 +444,6 @@ if (window.MathJax) { MathJax.typesetPromise(); }
             }
         });
     });
-</script>
-
-
-<script>
-(function(){
-  let debounceTimer;
-  function debounce(func, wait){
-    return function(){
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(func, wait);
-    };
-  }
-
-  function safeTypeset(){
-    if (window.MathJax && MathJax.typesetPromise) {
-      MathJax.typesetClear();
-      MathJax.typesetPromise().catch(err=>console.error(err));
-    }
-  }
-
-  // Observe for new content
-  const main = document.getElementById('main-content-wrapper');
-  if (main) {
-    const observer = new MutationObserver(debounce(safeTypeset, 400));
-    observer.observe(main, {childList:true,subtree:true});
-  }
-
-  // Once loaded
-  window.addEventListener('load', safeTypeset);
-  window.addEventListener('resize', debounce(safeTypeset, 800));
-})();
 </script>
 </body>
 </html>
