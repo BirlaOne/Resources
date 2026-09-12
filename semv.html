@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Syllabus & Paper Patterns</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+    
+    <style>
+        :root {
+            /* Material 3 Light Theme */
+            --bg-color: #F0F4F8;
+            --surface-color: #FFFFFF;
+            --surface-container: #F1F3F4;
+            --primary-color: #0B57D0;
+            --primary-hover: #0842A0;
+            --on-primary: #FFFFFF;
+            --primary-container: #D3E3FD;
+            --on-primary-container: #041E49;
+            --text-primary: #1F1F1F;
+            --text-secondary: #444746;
+            --border-color: #E0E2E0;
+            --shadow-elevation: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        [data-theme="dark"] {
+            /* Material 3 Dark Theme */
+            --bg-color: #131314;
+            --surface-color: #1E1F20;
+            --surface-container: #2D2F31;
+            --primary-color: #A8C7FA;
+            --primary-hover: #D3E3FD;
+            --on-primary: #000000;
+            --primary-container: #004A77;
+            --on-primary-container: #C2E7FF;
+            --text-primary: #E3E3E3;
+            --text-secondary: #C4C7C5;
+            --border-color: #444746;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: calc(env(safe-area-inset-top, 24px) + 24px) 0 16px 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Header Area */
+        .header {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+        .header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            background: var(--surface-container);
+            border-radius: 100px;
+            padding: 4px;
+            margin-bottom: 8px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 100px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-tab.active {
+            background: var(--surface-color);
+            color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-tab .material-symbols-rounded {
+            font-size: 20px;
+        }
+
+        /* Content Views */
+        .view {
+            display: none;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .view.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* List Items */
+        .resource-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .resource-card {
+            background-color: var(--surface-color);
+            border-radius: 20px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-elevation);
+            border-color: var(--primary-color);
+        }
+
+        .resource-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-right: 16px;
+        }
+
+        .resource-title {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .resource-meta {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .action-icon {
+            background: var(--primary-container);
+            color: var(--primary-color);
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .resource-card:hover .action-icon {
+            background: var(--primary-color);
+            color: var(--on-primary);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="header">
+            <h1>Academic Resources</h1>
+            <p>Semester V Study Materials</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('syllabus')">
+                <span class="material-symbols-rounded">menu_book</span> Syllabus
+            </button>
+            <button class="nav-tab" onclick="switchTab('patterns')">
+                <span class="material-symbols-rounded">assignment</span> Paper Patterns
+            </button>
+        </div>
+
+        <!-- Syllabus View -->
+        <div id="view-syllabus" class="view active">
+            <div class="resource-list" id="syllabus-list">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <!-- Paper Patterns View -->
+        <div id="view-patterns" class="view">
+            <div class="resource-list" id="patterns-list">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 1. Check URL for Theme Preference
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+        }
+
+        // 2. Data from page_services_rows.csv
+        const rawData = [
+            { title: "Corporate Financial Reporting - I", url: "https://drive.google.com/file/d/1dZa01ErA4HHo67ShbZu3w5vBIv9Njrzi/view?usp=drive_link", desc: "University Syllabus for SEM V" },
+            { title: "Financial Accounting - V", url: "https://i.ibb.co/Fky8nL0K/image.png", desc: "Paper Pattern for SEM V" },
+            { title: "Corporate Financial Reporting - I", url: "https://i.ibb.co/YTjx578q/image.png", desc: "Paper Pattern for SEM V" },
+            { title: "Indian Knowledge System in A&F", url: "https://i.ibb.co/vCRsQNCP/image.png", desc: "Paper Pattern for SEM V" },
+            { title: "Direct and Indirect Tax – I", url: "https://drive.google.com/file/d/1tKXbUzcctXQy7Dg2gGKA8AtgXcv6JMtz/view?usp=drive_link", desc: "University Syllabus for SEM V" },
+            { title: "Fundamentals of Marketing Management", url: "https://i.ibb.co/LdQ8M7K9/image.png", desc: "Paper Pattern for SEM V" },
+            { title: "Sustainability Reporting Standards", url: "https://drive.google.com/file/d/1tKXbUzcctXQy7Dg2gGKA8AtgXcv6JMtz/view?usp=drive_link", desc: "University Syllabus for SEM V" },
+            { title: "Sustainability Reporting Standards", url: "https://i.ibb.co/hRYr7Rym/image.png", desc: "Paper Pattern for SEM V" },
+            { title: "Financial Accounting - V", url: "https://drive.google.com/file/d/1X64qQz8h_679-e58f0Vn0K9Uj43N4wD5/view?usp=drive_link", desc: "University Syllabus for SEM V" },
+            { title: "Direct and Indirect Tax – I", url: "https://i.ibb.co/5WYrts2Z/image.png", desc: "Paper Pattern for SEM V" },
+            { title: "Indian Knowledge System in A&F", url: "https://drive.google.com/file/d/1tKXbUzcctXQy7Dg2gGKA8AtgXcv6JMtz/view?usp=drive_link", desc: "University Syllabus for SEM V" }
+        ];
+
+        // 3. Tab Switching Logic
+        function switchTab(tabName) {
+            // Update Buttons
+            document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Update Views
+            document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+            document.getElementById(`view-${tabName}`).classList.add('active');
+        }
+
+        // 4. Render Data
+        function renderLists() {
+            const syllabusList = document.getElementById('syllabus-list');
+            const patternsList = document.getElementById('patterns-list');
+
+            const syllabusHTML = rawData
+                .filter(item => item.desc.includes("Syllabus"))
+                .map(item => createCardHTML(item, 'picture_as_pdf'))
+                .join('');
+            
+            const patternsHTML = rawData
+                .filter(item => item.desc.includes("Paper Pattern"))
+                .map(item => createCardHTML(item, 'image'))
+                .join('');
+
+            syllabusList.innerHTML = syllabusHTML;
+            patternsList.innerHTML = patternsHTML;
+        }
+
+        function createCardHTML(item, iconName) {
+            return `
+                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="resource-card">
+                    <div class="resource-info">
+                        <span class="resource-title">${item.title}</span>
+                        <span class="resource-meta">${item.desc}</span>
+                    </div>
+                    <div class="action-icon">
+                        <span class="material-symbols-rounded">${iconName}</span>
+                    </div>
+                </a>
+            `;
+        }
+
+        // Initialize
+        renderLists();
+
+    </script>
+</body>
+</html>
